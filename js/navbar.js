@@ -87,6 +87,10 @@
                   '<h4>Your Lists</h4>' +
                   '<a href="my-orders.html">My Orders</a>' +
                   '<a href="cart.html">Shopping Cart</a>' +
+                  '<hr class="amz-dropdown-divider">' +
+                  '<h4>Partner Portals</h4>' +
+                  '<a href="delivery/login.html" style="color:#8B1A4A;font-weight:700;">&#128757; Delivery Partner Sign In</a>' +
+                  '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Seller Portal Sign In</a>' +
                 '</div>' +
               '</div>' +
               '<div id="nn-dropdown-signed-in" style="display:none">' +
@@ -97,6 +101,10 @@
                   '<h4>Your Account</h4>' +
                   '<a href="my-account.html">My Account</a>' +
                   '<a href="my-orders.html">My Orders</a>' +
+                  '<hr class="amz-dropdown-divider">' +
+                  '<h4>Partner Portals</h4>' +
+                  '<a href="delivery/login.html" style="color:#8B1A4A;font-weight:700;">&#128757; Delivery Partner Portal</a>' +
+                  '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Seller Portal</a>' +
                   '<hr class="amz-dropdown-divider">' +
                   '<button onclick="if(window.App)App.signOut()" class="amz-dropdown-signout">Sign Out</button>' +
                 '</div>' +
@@ -119,33 +127,34 @@
               '<line x1="3" y1="6" x2="21" y2="6"/>' +
               '<path d="M16 10a4 4 0 01-8 0"/>' +
               '</svg>' +
-              '<span class="amz-cart-count" id="cart-count" style="display:none">0</span>' +
+              '<span class="amz-cart-count" id="nn-cart-count">0</span>' +
             '</div>' +
-            '<strong>Cart</strong>' +
+            '<span class="amz-cart-label">Cart</span>' +
           '</a>' +
-
-          /* Install App Button */
-          '<button class="amz-install-btn pwa-install-trigger" id="navbar-install-btn"' +
-            ' onclick="if(window.triggerPWAInstall)window.triggerPWAInstall()" title="Install App">' +
-            'Install App' +
-          '</button>' +
-
-          /* Hamburger */
-          '<button class="amz-hamburger" id="nn-hamburger" aria-label="Toggle menu">' +
-            '<span></span><span></span><span></span>' +
-          '</button>' +
 
         '</div>' +
 
-        /* Category Menu Bar */
-        '<nav class="amz-menu" id="amz-menu">' +
-          menuLinks +
+        /* Category Nav Strip */
+        '<nav class="amz-nav-strip" aria-label="Quick Categories">' +
+          '<a href="shop.html" class="amz-nav-strip-item">&#9776; All</a>' +
+          '<a href="shop.html?cat=Sarees" class="amz-nav-strip-item">Sarees</a>' +
+          '<a href="shop.html?cat=Suits" class="amz-nav-strip-item">Salwar Suits</a>' +
+          '<a href="shop.html?cat=Lehengas" class="amz-nav-strip-item">Lehengas</a>' +
+          '<a href="shop.html?cat=Kurtas" class="amz-nav-strip-item">Kurtas</a>' +
+          '<a href="shop.html?cat=Dupattas" class="amz-nav-strip-item">Dupattas</a>' +
+          '<a href="shop.html?cat=Accessories" class="amz-nav-strip-item">Accessories</a>' +
+          '<a href="seller/login.html" class="amz-nav-strip-item" style="color:#D4AF37;font-weight:700;">&#127978; Sell</a>' +
+          '<a href="delivery/login.html" class="amz-nav-strip-item" style="color:#FFE082;font-weight:700;">&#128757; Delivery</a>' +
         '</nav>' +
 
-      '</header>' +
+      '</header>'
+    );
+  }
 
-      /* Mobile Drawer */
-      '<div class="amz-mobile-nav" id="nn-mobile-nav">' +
+  /* --- 1b. BUILD MOBILE DRAWER HTML --- */
+  function buildDrawer() {
+    return (
+      '<div class="amz-mobile-drawer" id="nn-mobile-drawer">' +
         '<div class="amz-drawer-header">' +
           '<div class="amz-drawer-user">' +
             '<span class="amz-drawer-user-icon">&#128100;</span>' +
@@ -163,6 +172,9 @@
         '<a href="cart.html">Cart</a>' +
         '<a href="my-orders.html">My Orders</a>' +
         '<a href="login.html">Login / Register</a>' +
+        '<hr style="border-color:rgba(255,255,255,0.12);margin:0.5rem 0">' +
+        '<a href="delivery/login.html" style="color:#FFE082;font-weight:700;">&#128757; Delivery Partner Portal</a>' +
+        '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Sell on Nari Niketan</a>' +
         '<button class="pwa-install-trigger"' +
           ' onclick="if(window.triggerPWAInstall)window.triggerPWAInstall()"' +
           ' style="background:none;border:none;color:#D4AF37;font-weight:700;padding:0.75rem 1.25rem;text-align:left;cursor:pointer;font-size:0.95rem;width:100%;">' +
@@ -197,13 +209,14 @@
           '</div>' +
 
           '<div class="amz-footer-col">' +
-            '<h3>Shop</h3>' +
+            '<h3>Shop &amp; Join</h3>' +
             '<a href="shop.html">All Products</a>' +
             '<a href="shop.html?cat=Sarees">Sarees</a>' +
             '<a href="shop.html?cat=Suits">Salwar Suits</a>' +
             '<a href="shop.html?cat=Lehengas">Lehengas</a>' +
             '<a href="shop.html?cat=Kurtas">Kurtas</a>' +
-            '<a href="seller/index.html">Sell on Nari Niketan</a>' +
+            '<a href="seller/login.html" style="color:#D4AF37;font-weight:600;">&#127978; Sell on Nari Niketan</a>' +
+            '<a href="delivery/login.html" style="color:#FFE082;font-weight:600;">&#128757; Delivery Partner Portal</a>' +
           '</div>' +
 
           '<div class="amz-footer-col">' +
