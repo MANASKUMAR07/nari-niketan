@@ -97,7 +97,8 @@ const AdminNav = {
     products:  "🛍️ Products",
     coupons:   "🎟️ Coupons",
     refunds:   "💸 Refunds",
-    returns:   "↩️ Returns"
+    returns:   "↩️ Returns",
+    "delivery-partners": "🛵 Delivery Partners"
   },
   go(section) {
     // Hide all sections
@@ -129,6 +130,7 @@ const AdminNav = {
     if (section === "coupons")   AdminCoupons.load();
     if (section === "refunds")   AdminRefunds.load();
     if (section === "returns")   AdminReturns.load();
+    if (section === "delivery-partners" && typeof AdminDelivery !== 'undefined') AdminDelivery.load();
   },
   toggleMobileSidebar() {
     document.getElementById("admin-sidebar")?.classList.toggle("open");

@@ -29,6 +29,8 @@
       { path: '/my-orders.html', title: 'My Orders', isProtected: true },
       { path: '/seller/login.html', title: 'Seller Login', isPublic: true },
       { path: '/seller/index.html', title: 'Seller Portal', isProtected: true },
+      { path: '/delivery/login.html', title: 'Delivery Partner Login', isPublic: true },
+      { path: '/delivery/index.html', title: 'Delivery Partner Portal', isProtected: true },
       { path: '/admin/index.html', title: 'Admin Operations', isProtected: true },
       { path: '/grievance-redressal.html', title: 'Grievance Redressal', isPublic: true },
       { path: '/privacy-policy.html', title: 'Privacy Policy', isPublic: true },

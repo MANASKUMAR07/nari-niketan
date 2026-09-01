@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Delivery Partner Login — Nari Niketan</title>
+  <meta name="description" content="Nari Niketan Delivery Partner Portal. Sign in or register to deliver premium ethnic wear orders.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Delivery">
+  <link rel="stylesheet" href="delivery.css">
+  <link rel="icon" type="image/png" href="../images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="../images/icons/apple-touch-icon.png">
+</head>
+<body style="padding-top:0; padding-bottom:0;">
+
+  <div class="delivery-auth-wrap">
+    
+    <!-- BRAND LOGO -->
+    <div class="auth-logo-box">
+      <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan">
+      <h1 style="font-size:1.35rem; font-weight:800; color:#fff; margin-bottom:0.2rem;">Nari Niketan</h1>
+      <p style="font-size:0.82rem; color:var(--gold); font-weight:700; text-transform:uppercase; letter-spacing:1px;">🛵 Delivery Partner Portal</p>
+    </div>
+
+    <!-- PENDING APPROVAL NOTICE -->
+    <div id="pending-notice" class="auth-card" style="display:none; text-align:center; margin-bottom:1.5rem; border-color:var(--status-pending);">
+      <div style="font-size:2.5rem; margin-bottom:0.75rem;">⏳</div>
+      <h2 style="font-size:1.15rem; font-weight:800; color:#FDE68A; margin-bottom:0.5rem;">Application Under Review</h2>
+      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1.2rem;">
+        Your Delivery Partner registration has been submitted successfully. Our operations admin will review and activate your account shortly.
+      </p>
+      <button class="btn-delivery btn-delivery-outline" onclick="location.href='login.html'">Back to Sign In</button>
+    </div>
+
+    <!-- MAIN AUTH CARD -->
+    <div class="auth-card" id="auth-main-card">
+      
+      <!-- TABS -->
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:1px solid var(--border-soft); padding-bottom:0.75rem;">
+        <button id="tab-btn-login" class="queue-tab active" style="flex:1;" onclick="switchAuthTab('login')">Sign In</button>
+        <button id="tab-btn-register" class="queue-tab" style="flex:1;" onclick="switchAuthTab('register')">Register Partner</button>
+      </div>
+
+      <!-- ERROR ALERT -->
+      <div id="auth-error" style="display:none; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#F87171; border-radius:var(--radius-sm); padding:0.65rem 0.85rem; font-size:0.82rem; margin-bottom:1rem;"></div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" onsubmit="handleDeliveryLogin(event)">
+        <div class="form-group">
+          <label for="login-email">Registered Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="rider@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" id="btn-login-submit" class="btn-delivery btn-delivery-primary" style="margin-top:1.2rem;">
+          🛵 Sign In to Delivery Panel
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-register" style="display:none;" onsubmit="handleDeliveryRegister(event)">
+        <div class="form-group">
+          <label for="reg-name">Full Name *</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-phone">Mobile Phone (WhatsApp Active) *</label>
+          <input type="tel" id="reg-phone" class="form-control" placeholder="+91 98765 43210" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address *</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="rider@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Create Password *</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="Min 6 characters" minlength="6" required>
+        </div>
+        
+        <div style="font-size:0.78rem; font-weight:800; color:var(--gold); text-transform:uppercase; margin:1rem 0 0.5rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:0.75rem;">
+          Vehicle & Zone Details
+        </div>
+
+        <div class="form-group">
+          <label for="reg-vehicle-type">Vehicle Type *</label>
+          <select id="reg-vehicle-type" class="form-control" required style="background:var(--bg-card);">
+            <option value="Motorcycle">🏍️ Motorcycle / Bike</option>
+            <option value="Scooter">🛵 Scooter / Scooty</option>
+            <option value="Electric Vehicle">⚡ Electric Vehicle (EV)</option>
+            <option value="Van / Car">🚗 Van / Car</option>
+            <option value="Bicycle">🚲 Bicycle</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-vehicle-num">Vehicle Registration Number *</label>
+          <input type="text" id="reg-vehicle-num" class="form-control" placeholder="e.g. UP 64 AB 1234" required>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-zone">Primary Delivery Zone *</label>
+          <select id="reg-zone" class="form-control" required style="background:var(--bg-card);">
+            <option value="Sonbhadra Central">Sonbhadra Central</option>
+            <option value="Robertsganj">Robertsganj</option>
+            <option value="Anpara">Anpara</option>
+            <option value="Obra">Obra</option>
+            <option value="Renukoot">Renukoot</option>
+            <option value="Rihand Nagar">Rihand Nagar / Shaktinagar</option>
+            <option value="Chopan">Chopan</option>
+            <option value="Duddhi">Duddhi</option>
+            <option value="Singrauli">Singrauli Border Area</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-license">Driving License / Aadhaar ID *</label>
+          <input type="text" id="reg-license" class="form-control" placeholder="e.g. DL-UP6420230001234" required>
+        </div>
+
+        <button type="submit" id="btn-reg-submit" class="btn-delivery btn-delivery-primary" style="margin-top:1.2rem;">
+          🚀 Submit Partner Application
+        </button>
+      </form>
+
+      <div style="text-align:center; margin-top:1.25rem; font-size:0.8rem;">
+        <a href="../index.html" style="color:var(--text-muted); text-decoration:none;">← Back to Storefront</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/store.js"></script>
+
+  <script>
+    function switchAuthTab(tab) {
+      document.getElementById('tab-btn-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-btn-register').classList.toggle('active', tab === 'register');
+      document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+      document.getElementById('auth-error').style.display = 'none';
+    }
+
+    async function handleDeliveryLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login-submit');
+      const errEl = document.getElementById('auth-error');
+      
+      btn.disabled = true;
+      btn.textContent = 'Verifying credentials...';
+      errEl.style.display = 'none';
+
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, pass);
+        const doc = await db.collection('users').doc(cred.user.uid).get();
+        
+        if (!doc.exists) {
+          throw new Error('No user profile found for this account.');
+        }
+
+        const data = doc.data();
+
+        // Check if Delivery Partner
+        if (!data.isDeliveryPartner && data.deliveryPartnerStatus !== 'approved' && data.deliveryPartnerStatus !== 'active') {
+          if (data.deliveryPartnerStatus === 'pending') {
+            await auth.signOut();
+            document.getElementById('auth-main-card').style.display = 'none';
+            document.getElementById('pending-notice').style.display = 'block';
+            return;
+          } else if (data.deliveryPartnerStatus === 'suspended') {
+            await auth.signOut();
+            throw new Error('Your Delivery Partner account has been suspended by administration. Please contact support.');
+          } else {
+            await auth.signOut();
+            throw new Error('This account is not registered as a Delivery Partner. Please use the Register Partner tab.');
+          }
+        }
+
+        // Successfully authenticated delivery partner
+        window.location.replace('index.html');
+      } catch (err) {
+        console.error('Login error:', err);
+        let msg = err.message || 'Login failed. Please verify email and password.';
+        if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+          msg = 'Invalid email or password.';
+        }
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '🛵 Sign In to Delivery Panel';
+      }
+    }
+
+    async function handleDeliveryRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const pass = document.getElementById('reg-password').value;
+      const vehicleType = document.getElementById('reg-vehicle-type').value;
+      const vehicleNum = document.getElementById('reg-vehicle-num').value.trim();
+      const zone = document.getElementById('reg-zone').value;
+      const license = document.getElementById('reg-license').value.trim();
+      const btn = document.getElementById('btn-reg-submit');
+      const errEl = document.getElementById('auth-error');
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting Application...';
+      errEl.style.display = 'none';
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        const uid = cred.user.uid;
+
+        await db.collection('users').doc(uid).set({
+          uid: uid,
+          displayName: name,
+          firstName: name.split(' ')[0] || name,
+          lastName: name.split(' ').slice(1).join(' ') || '',
+          email: email,
+          phone: phone,
+          isDeliveryPartner: false, // Requires admin approval
+          deliveryPartnerStatus: 'pending',
+          shiftStatus: 'offline',
+          role: 'deliveryPartner',
+          deliveryProfile: {
+            vehicleType: vehicleType,
+            vehicleNumber: vehicleNum,
+            zone: zone,
+            licenseId: license,
+            commissionPerOrder: 50,
+            rating: 5.0,
+            totalDeliveries: 0
+          },
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await auth.signOut();
+        document.getElementById('auth-main-card').style.display = 'none';
+        document.getElementById('pending-notice').style.display = 'block';
+      } catch (err) {
+        console.error('Registration error:', err);
+        let msg = err.message || 'Registration failed. Please try again.';
+        if (err.code === 'auth/email-already-in-use') {
+          msg = 'An account with this email already exists. Please Sign In.';
+        }
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '🚀 Submit Partner Application';
+      }
+    }
+  </script>
+</body>
+</html>

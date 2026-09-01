@@ -35,6 +35,17 @@ service cloud.firestore {
         );
     }
 
+    // Helper: Check if requesting user is an approved Delivery Partner
+    function isDeliveryPartner() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isDeliveryPartner == true ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.deliveryPartnerStatus == 'approved' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.deliveryPartnerStatus == 'active'
+        );
+    }
+
     // 1. PRODUCTS COLLECTION
     match /products/{productId} {
       allow read: if true;
@@ -47,13 +58,17 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow read: if isAdmin() ||
         (isAuthenticated() && resource.data.userId == request.auth.uid) ||
-        (isSeller() && resource.data.keys().hasAll(['sellerIds']) && request.auth.uid in resource.data.sellerIds);
+        (isSeller() && resource.data.keys().hasAll(['sellerIds']) && request.auth.uid in resource.data.sellerIds) ||
+        (isDeliveryPartner() && resource.data.assignedDeliveryPartnerId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin() ||
         (isAuthenticated() && resource.data.userId == request.auth.uid && (
           request.resource.data.status == "Cancelled" ||
           request.resource.data.status == "Return Requested"
-        ));
+        )) ||
+        (isDeliveryPartner() && resource.data.assignedDeliveryPartnerId == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'deliveryState', 'acceptedAt', 'rejectedAt', 'rejectionReason', 'pickedUpAt', 'outForDeliveryAt', 'reachedCustomerAt', 'deliveredAt', 'deliveryOtpVerified', 'otpVerified', 'otpVerifiedAt', 'codCollected', 'codCollectedAt', 'codCollectedAmount', 'proofOfDeliveryUrl', 'deliveryNotes', 'updatedAt']));
       allow delete: if isAdmin();
     }
 
@@ -85,8 +100,25 @@ service cloud.firestore {
         (isOwner() && request.auth.uid == userId) ||
         (isAuthenticated() && request.auth.uid == userId &&
           !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['isAdmin', 'isSeller', 'sellerStatus']));
+            .hasAny(['isAdmin', 'isSeller', 'sellerStatus', 'isDeliveryPartner', 'deliveryPartnerStatus']));
       allow delete: if isAdmin();
+    }
+
+    // 6b. DELIVERY PARTNERS COLLECTION
+    match /deliveryPartners/{partnerId} {
+      allow read: if isAdmin() || (isAuthenticated() && (request.auth.uid == partnerId || request.auth.uid == resource.data.userId));
+      allow create: if isAuthenticated() && (request.auth.uid == partnerId || request.resource.data.userId == request.auth.uid);
+      allow update: if isAdmin() ||
+        (isAuthenticated() && (request.auth.uid == partnerId || resource.data.userId == request.auth.uid) &&
+          !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['status', 'deliveryPartnerStatus', 'isApproved', 'approvedAt', 'commissionRate', 'payoutStatus']));
+      allow delete: if isAdmin();
+    }
+
+    // 6c. DELIVERY PAYOUTS COLLECTION
+    match /deliveryPayouts/{payoutId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.deliveryPartnerId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
     }
 
     // 7. FEEDBACK & FEEDBACKS COLLECTION

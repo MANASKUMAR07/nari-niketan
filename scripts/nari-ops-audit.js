@@ -35,7 +35,7 @@ console.log('--- Pillar 1: Core Routes & File Integrity ---');
 const coreRoutes = [
   'index.html', 'shop.html', 'product.html', 'cart.html', 'checkout.html',
   'login.html', 'register.html', 'my-account.html', 'my-orders.html',
-  'seller/login.html', 'seller/index.html', 'admin/index.html',
+  'seller/login.html', 'seller/index.html', 'delivery/login.html', 'delivery/index.html', 'admin/index.html',
   'grievance-redressal.html', 'privacy-policy.html', 'terms-and-conditions.html', 'return-policy.html'
 ];
 

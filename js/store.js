@@ -892,5 +892,299 @@ const Store = {
 
   async saveSiteSettings(data) {
     return db.collection("settings").doc("site").set({ ...data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+  },
+
+  // ===== DELIVERY PARTNER METHODS =====
+  async getDeliveryPartnerProfile(uid) {
+    try {
+      const doc = await db.collection("users").doc(uid).get();
+      if (!doc.exists) return null;
+      const data = doc.data();
+      if (!data.isDeliveryPartner && !data.deliveryPartnerStatus) return null;
+      return { id: doc.id, ...data };
+    } catch(e) {
+      console.error("getDeliveryPartnerProfile error:", e);
+      return null;
+    }
+  },
+
+  async updateDeliveryPartnerProfile(uid, data) {
+    const safeData = { ...data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    delete safeData.isAdmin;
+    delete safeData.isSeller;
+    delete safeData.sellerStatus;
+    delete safeData.isDeliveryPartner;
+    delete safeData.deliveryPartnerStatus;
+    delete safeData.commissionRate;
+    return db.collection("users").doc(uid).set(safeData, { merge: true });
+  },
+
+  async getAllDeliveryPartners() {
+    try {
+      const snap = await db.collection("users").get();
+      const list = [];
+      snap.docs.forEach(d => {
+        const data = d.data();
+        if (data.isDeliveryPartner === true || data.deliveryPartnerStatus) {
+          list.push({ id: d.id, ...data });
+        }
+      });
+      return list;
+    } catch(e) {
+      console.error("getAllDeliveryPartners error:", e);
+      return [];
+    }
+  },
+
+  async updateDeliveryPartnerApproval(uid, status, commissionRate = null) {
+    const isApproved = status === 'approved' || status === 'active';
+    const update = {
+      deliveryPartnerStatus: status,
+      isDeliveryPartner: isApproved,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (isApproved) {
+      update.approvedAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.shiftStatus = update.shiftStatus || 'available';
+    }
+    if (commissionRate !== null) {
+      update['deliveryProfile.commissionPerOrder'] = Number(commissionRate) || 50;
+    }
+    await db.collection("users").doc(uid).update(update);
+    return update;
+  },
+
+  async assignDeliveryPartner(orderId, partnerId, partnerName = "", assignedBy = "Admin") {
+    const update = {
+      assignedDeliveryPartnerId: partnerId,
+      deliveryPartnerName: partnerName,
+      deliveryState: "assigned",
+      assignedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      assignedBy: assignedBy,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection("orders").doc(orderId).update(update);
+
+    // Notify delivery partner
+    try {
+      await db.collection("notifications").add({
+        title: "New Delivery Assigned 📦",
+        message: `Order #${orderId.substring(0,8).toUpperCase()} has been assigned to you.`,
+        type: "delivery_assigned",
+        targetUserId: partnerId,
+        orderId: orderId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch(e) {}
+
+    await this.logAdminAction("Assign Delivery Partner", `Order #${orderId.substring(0,8).toUpperCase()} assigned to ${partnerName || partnerId}`);
+    return update;
+  },
+
+  async getAssignedDeliveries(partnerId) {
+    try {
+      const snap = await db.collection("orders")
+        .where("assignedDeliveryPartnerId", "==", partnerId)
+        .get();
+      let list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      list.sort((a, b) => {
+        const getMs = (item) => {
+          if (!item) return 0;
+          if (item.assignedAt && item.assignedAt.toMillis) return item.assignedAt.toMillis();
+          if (item.createdAt && item.createdAt.toMillis) return item.createdAt.toMillis();
+          if (item.clientCreatedAt) return new Date(item.clientCreatedAt).getTime();
+          return 0;
+        };
+        return getMs(b) - getMs(a);
+      });
+      return list;
+    } catch(e) {
+      console.error("getAssignedDeliveries error:", e);
+      return [];
+    }
+  },
+
+  async updateDeliveryState(orderId, partnerId, nextState, metadata = {}) {
+    const doc = await db.collection("orders").doc(orderId).get();
+    if (!doc.exists) {
+      throw new Error("Order not found.");
+    }
+    const order = doc.data();
+
+    // Verify assignment security
+    if (order.assignedDeliveryPartnerId !== partnerId) {
+      throw new Error("Unauthorized: Order is not assigned to this delivery partner.");
+    }
+
+    const currentState = order.deliveryState || "assigned";
+
+    // Valid state transition map
+    const validTransitions = {
+      assigned: ["accepted", "rejected"],
+      accepted: ["reached_store", "picked_up", "cancelled_by_customer"],
+      reached_store: ["picked_up", "cancelled_by_customer"],
+      picked_up: ["out_for_delivery", "cancelled_by_customer"],
+      out_for_delivery: ["reached_customer", "delivered", "failed", "customer_unavailable", "wrong_address", "customer_cancelled"],
+      reached_customer: ["delivered", "failed", "customer_unavailable", "wrong_address", "customer_cancelled"],
+      failed: ["out_for_delivery", "returned_to_store"],
+      customer_unavailable: ["out_for_delivery", "returned_to_store"],
+      wrong_address: ["out_for_delivery", "returned_to_store"],
+      customer_cancelled: ["returned_to_store"]
+    };
+
+    const allowed = validTransitions[currentState] || [];
+    if (!allowed.includes(nextState)) {
+      throw new Error(`Invalid state transition from "${currentState}" to "${nextState}".`);
+    }
+
+    const update = {
+      deliveryState: nextState,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (nextState === "accepted") {
+      update.acceptedAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.status = "Processing";
+    } else if (nextState === "rejected") {
+      update.rejectedAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.rejectionReason = metadata.reason || "Partner declined";
+      update.assignedDeliveryPartnerId = null; // Unassign so admin can reassign
+      update.deliveryState = "rejected";
+    } else if (nextState === "reached_store") {
+      update.reachedStoreAt = firebase.firestore.FieldValue.serverTimestamp();
+    } else if (nextState === "picked_up") {
+      update.pickedUpAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.status = "Shipped";
+    } else if (nextState === "out_for_delivery") {
+      update.outForDeliveryAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.status = "Out for Delivery";
+    } else if (nextState === "reached_customer") {
+      update.reachedCustomerAt = firebase.firestore.FieldValue.serverTimestamp();
+    } else if (nextState === "delivered") {
+      // Must verify OTP if not already verified
+      if (!order.otpVerified && !order.deliveryOtpVerified && !metadata.otpVerified) {
+        if (!metadata.enteredOtp || String(metadata.enteredOtp).trim() !== String(order.deliveryOtp || "").trim()) {
+          throw new Error("Delivery OTP verification is mandatory before marking as Delivered.");
+        }
+      }
+      update.status = "Delivered";
+      update.deliveredAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.deliveredBy = partnerId;
+      update.deliveryOtpVerified = true;
+      update.otpVerified = true;
+      update.otpVerifiedAt = firebase.firestore.FieldValue.serverTimestamp();
+      if (metadata.codCollected) {
+        update.codCollected = true;
+        update.codCollectedAmount = Number(order.totalAmount || 0);
+        update.codCollectedAt = firebase.firestore.FieldValue.serverTimestamp();
+        update.paymentStatus = "Paid (COD Collected by Delivery Partner)";
+      }
+      if (metadata.proofOfDeliveryUrl) {
+        update.proofOfDeliveryUrl = metadata.proofOfDeliveryUrl;
+      }
+    } else if (["failed", "customer_unavailable", "wrong_address", "customer_cancelled"].includes(nextState)) {
+      update.deliveryFailureReason = metadata.reason || nextState;
+      update.failedAt = firebase.firestore.FieldValue.serverTimestamp();
+    } else if (nextState === "returned_to_store") {
+      update.returnedToStoreAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.status = "Returned to Store";
+    }
+
+    if (metadata.notes) update.deliveryNotes = metadata.notes;
+
+    await db.collection("orders").doc(orderId).update(update);
+    return update;
+  },
+
+  async getDeliveryPartnerEarnings(partnerId) {
+    try {
+      const snap = await db.collection("orders")
+        .where("assignedDeliveryPartnerId", "==", partnerId)
+        .where("status", "==", "Delivered")
+        .get();
+
+      let totalOrders = snap.size;
+      let commissionPerOrder = 50; // default ₹50 per delivered parcel
+
+      // Get custom commission rate if set on profile
+      const userDoc = await db.collection("users").doc(partnerId).get();
+      if (userDoc.exists && userDoc.data().deliveryProfile?.commissionPerOrder) {
+        commissionPerOrder = Number(userDoc.data().deliveryProfile.commissionPerOrder);
+      }
+
+      const now = new Date();
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const startOfWeek = new Date(now.getTime() - (now.getDay() * 24 * 60 * 60 * 1000)).setHours(0, 0, 0, 0);
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+      let todayCount = 0;
+      let weekCount = 0;
+      let monthCount = 0;
+      let totalCodCollected = 0;
+
+      snap.docs.forEach(d => {
+        const o = d.data();
+        const dMs = o.deliveredAt?.toMillis?.() || (o.deliveredAt?.seconds ? o.deliveredAt.seconds * 1000 : 0);
+        if (dMs >= startOfDay) todayCount++;
+        if (dMs >= startOfWeek) weekCount++;
+        if (dMs >= startOfMonth) monthCount++;
+        if (o.codCollected) totalCodCollected += Number(o.codCollectedAmount || o.totalAmount || 0);
+      });
+
+      return {
+        totalOrders,
+        commissionPerOrder,
+        todayEarnings: todayCount * commissionPerOrder,
+        weekEarnings: weekCount * commissionPerOrder,
+        monthEarnings: monthCount * commissionPerOrder,
+        totalEarnings: totalOrders * commissionPerOrder,
+        totalCodCollected,
+        todayCount,
+        weekCount,
+        monthCount
+      };
+    } catch(e) {
+      console.error("getDeliveryPartnerEarnings error:", e);
+      return {
+        totalOrders: 0,
+        commissionPerOrder: 50,
+        todayEarnings: 0,
+        weekEarnings: 0,
+        monthEarnings: 0,
+        totalEarnings: 0,
+        totalCodCollected: 0,
+        todayCount: 0,
+        weekCount: 0,
+        monthCount: 0
+      };
+    }
+  },
+
+  async createDeliveryPayout(partnerId, amount, notes = "", transactionRef = "") {
+    return db.collection("deliveryPayouts").add({
+      deliveryPartnerId: partnerId,
+      amount: Number(amount),
+      notes: notes || "Delivery Partner Weekly/Monthly Payout",
+      transactionRef: transactionRef || "",
+      status: "Processed",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  },
+
+  async getDeliveryPartnerPayouts(partnerId) {
+    try {
+      const snap = await db.collection("deliveryPayouts")
+        .where("deliveryPartnerId", "==", partnerId)
+        .get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ms = x => x.createdAt?.toMillis?.() || x.createdAt?.seconds * 1000 || 0;
+          return ms(b) - ms(a);
+        });
+    } catch(e) {
+      console.error("getDeliveryPartnerPayouts error:", e);
+      return [];
+    }
   }
 };

@@ -78,8 +78,12 @@
       <a class="sidebar-link" data-section="shipping" onclick="AdminNav.go('shipping')">
         <span class="icon">&#x1F69A;</span> Shipping
       </a>
+      <a class="sidebar-link" data-section="delivery-partners" onclick="AdminNav.go('delivery-partners')">
+        <span class="icon">&#x1F6F5;</span> Delivery Partners
+        <span class="badge-count" id="badge-delivery-partners" style="display:none">0</span>
+      </a>
 
-            <div class="sidebar-section-label">Marketing</div>
+      <div class="sidebar-section-label">Marketing</div>
       <a class="sidebar-link" data-section="aiads" onclick="AdminNav.go('aiads')">
         <span class="icon">&#x1F4E2;</span> Nari AI Ads &amp; Marketing
         <span class="badge-count" id="badge-aiads" style="display:none;background:var(--accent)">0</span>
@@ -255,6 +259,103 @@
           <div class="panel-body" id="marketing-insights-container" style="display:flex;flex-direction:column;gap:0.75rem;">
             <!-- Dynamic insights -->
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 18. DELIVERY PARTNERS & FLEET OPERATIONS ==================== -->
+    <section class="admin-section" id="section-delivery-partners">
+      <div class="page-header" style="margin-bottom:1.5rem">
+        <div>
+          <h2>🛵 Delivery Partners &amp; Fleet Management</h2>
+          <p>Oversee registered delivery riders, verify applications, assign shipments, and process payouts</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline" onclick="AdminDelivery.load()">🔄 Refresh Fleet</button>
+        </div>
+      </div>
+
+      <!-- Quick Fleet Metrics Grid -->
+      <div class="stats-grid" style="margin-bottom:1.5rem">
+        <div class="stat-card sellers">
+          <span class="stat-icon">🛵</span>
+          <div class="stat-value" id="stat-del-active-partners">0</div>
+          <div class="stat-label">Active Partners</div>
+        </div>
+        <div class="stat-card pending">
+          <span class="stat-icon">⏳</span>
+          <div class="stat-value" id="stat-del-pending-approvals">0</div>
+          <div class="stat-label">Pending Approval</div>
+        </div>
+        <div class="stat-card orders">
+          <span class="stat-icon">⚡</span>
+          <div class="stat-value" id="stat-del-on-trip">0</div>
+          <div class="stat-label">On Active Delivery</div>
+        </div>
+        <div class="stat-card revenue">
+          <span class="stat-icon">💰</span>
+          <div class="stat-value" id="stat-del-total-earnings">₹0</div>
+          <div class="stat-label">Total Payouts Done</div>
+        </div>
+      </div>
+
+      <!-- Fleet Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-accent" id="del-tab-btn-all" onclick="AdminDelivery.setTab('all')">All Partners</button>
+        <button class="btn btn-sm btn-outline" id="del-tab-btn-pending" onclick="AdminDelivery.setTab('pending')">Pending Approval <span id="del-badge-pending" class="badge" style="background:#F59E0B;color:#000;display:none;margin-left:4px;padding:1px 6px;border-radius:10px;font-size:0.7rem;font-weight:800;">0</span></button>
+        <button class="btn btn-sm btn-outline" id="del-tab-btn-active" onclick="AdminDelivery.setTab('active')">Active / Online</button>
+        <button class="btn btn-sm btn-outline" id="del-tab-btn-payouts" onclick="AdminDelivery.setTab('payouts')">Payout Management</button>
+      </div>
+
+      <!-- Partners Table Panel -->
+      <div class="panel" id="del-panel-partners">
+        <div class="panel-header">
+          <h3>🛵 Registered Delivery Fleet</h3>
+          <input type="text" id="del-search-input" class="form-control" placeholder="Search partner by name, phone, zone..." style="max-width:280px;" oninput="AdminDelivery.filterList(this.value)">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Partner Name</th>
+                <th>Contact</th>
+                <th>Vehicle &amp; Zone</th>
+                <th>Shift Status</th>
+                <th>Completed</th>
+                <th>Rating</th>
+                <th>Approval</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="delivery-partners-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Payouts Panel (Shown on payouts tab) -->
+      <div class="panel" id="del-panel-payouts" style="display:none;">
+        <div class="panel-header">
+          <h3>💰 Delivery Partner Commission Payouts</h3>
+          <button class="btn btn-primary btn-sm" onclick="AdminDelivery.openPayoutModal()">+ Process New Payout</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Partner</th>
+                <th>Amount</th>
+                <th>Transaction Ref</th>
+                <th>Notes</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="delivery-payouts-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -1529,6 +1630,40 @@
     </div>
     <div class="modal-footer" style="border-top:1px solid rgba(212,175,55,0.2);padding:0.85rem 1.25rem;display:flex;justify-content:flex-end;">
       <button class="btn btn-outline" onclick="NariAdminMonitor.closeExportModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delivery Partner Payout Modal -->
+<div class="modal-overlay hidden" id="delivery-payout-modal">
+  <div class="modal-box sm" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 class="modal-title">💰 Process Partner Payout</h3>
+      <button class="modal-close" onclick="AdminDelivery.closePayoutModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:1.25rem;">
+      <form id="delivery-payout-form" onsubmit="event.preventDefault()">
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label class="form-label">Select Delivery Partner <span class="required">*</span></label>
+          <select class="form-control" id="payout-partner-select" required></select>
+        </div>
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label class="form-label">Payout Amount (₹) <span class="required">*</span></label>
+          <input type="number" class="form-control" id="payout-amount" placeholder="e.g. 1500" min="1" required>
+        </div>
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label class="form-label">Bank / UPI Transaction Reference</label>
+          <input type="text" class="form-control" id="payout-ref" placeholder="e.g. UPI-1234567890">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <input type="text" class="form-control" id="payout-notes" placeholder="e.g. Weekly Payout for Delivered Orders">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminDelivery.closePayoutModal()">Cancel</button>
+      <button class="btn btn-success" onclick="AdminDelivery.submitPayout()">Confirm &amp; Record Payout</button>
     </div>
   </div>
 </div>

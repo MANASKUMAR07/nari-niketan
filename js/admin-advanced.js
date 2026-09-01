@@ -184,7 +184,8 @@ const AdminNav = {
     notifications: '&#x1F514; Notifications', settings: '&#x2699;&#xFE0F; Site Settings',
     security: '&#x1F512; Security & Audit Logs',
     monitor: '&#x1F916; Nari AI Monitor',
-    aistylist: '&#x2728; Nari AI Stylist & Analytics'
+    aistylist: '&#x2728; Nari AI Stylist & Analytics',
+    'delivery-partners': '&#x1F6F5; Delivery Partners & Fleet'
   },
   loaders: {
     dashboard: () => AdminDashboard.load(),
@@ -207,7 +208,8 @@ const AdminNav = {
     settings: () => AdminSettings.load(),
     security: () => AdminSecurity.load(),
     monitor: () => NariAdminMonitor.load(),
-    aistylist: () => AdminAIStylist.load()
+    aistylist: () => AdminAIStylist.load(),
+    'delivery-partners': () => AdminDelivery.load()
   },
   current: 'dashboard',
   init() {
@@ -1089,6 +1091,30 @@ const AdminOrders = {
               </div>` : ''}
           </div>` : ''}
 
+        ${o.fulfillmentType !== 'pickup' ? `
+          <div style="background:rgba(59,130,246,0.1);border:1.5px solid rgba(59,130,246,0.35);border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:6px;">
+              <strong style="color:#60A5FA;font-size:0.88rem;display:flex;align-items:center;gap:6px;">
+                🛵 Delivery Partner Assignment
+              </strong>
+              ${o.assignedDeliveryPartnerId ? `
+                <span class="badge badge-success" style="font-size:0.75rem;">
+                  Assigned: ${o.deliveryPartnerName || 'Partner'} (${(o.deliveryState || 'assigned').replace(/_/g, ' ')})
+                </span>` : `
+                <span class="badge" style="background:#EF4444;color:#fff;font-size:0.72rem;">⚠️ Unassigned</span>`}
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:0.5rem;">
+              <select id="admin-order-partner-select-${o.id}" class="form-control" style="flex:1;min-width:200px;background:rgba(0,0,0,0.4);font-size:0.82rem;">
+                <option value="">-- Loading Active Delivery Partners... --</option>
+              </select>
+              <button type="button" class="btn btn-accent btn-sm" onclick="AdminOrders.assignDeliveryPartner('${o.id}')" style="font-weight:700;font-size:0.78rem;">
+                ${o.assignedDeliveryPartnerId ? 'Reassign Partner' : 'Assign Partner'}
+              </button>
+            </div>
+            <div id="admin-order-smart-assign-hint-${o.id}" style="font-size:0.75rem;color:#A89CB0;margin-top:0.4rem;"></div>
+          </div>` : ''}
+
         ${(() => {
           if (o.fulfillmentType === 'pickup') {
             return `
@@ -1127,6 +1153,80 @@ const AdminOrders = {
         ${o.adminNote ? `<div class="alert alert-warning" style="margin-top:1rem"><strong>Admin Note:</strong> ${o.adminNote}</div>` : ''}`;
     }
     document.getElementById('order-detail-modal').classList.remove('hidden');
+
+    if (o.fulfillmentType !== 'pickup') {
+      this.populatePartnerDropdown(o.id, o.shippingAddress?.pincode || o.shippingAddress?.city || '', o.assignedDeliveryPartnerId);
+    }
+  },
+  async populatePartnerDropdown(orderId, zoneHint, currentAssignedId = null) {
+    try {
+      const partners = await Store.getAllDeliveryPartners();
+      const activePartners = partners.filter(p => p.deliveryPartnerStatus === 'approved' || p.deliveryPartnerStatus === 'active');
+      const select = document.getElementById(`admin-order-partner-select-${orderId}`);
+      const hint = document.getElementById(`admin-order-smart-assign-hint-${orderId}`);
+      if (!select) return;
+
+      if (activePartners.length === 0) {
+        select.innerHTML = '<option value="">No active delivery partners registered</option>';
+        return;
+      }
+
+      // Calculate active assignments per partner
+      const orders = this._data || [];
+      const activeCounts = {};
+      orders.forEach(ord => {
+        if (ord.assignedDeliveryPartnerId && ord.status !== 'Delivered' && ord.status !== 'Cancelled') {
+          activeCounts[ord.assignedDeliveryPartnerId] = (activeCounts[ord.assignedDeliveryPartnerId] || 0) + 1;
+        }
+      });
+
+      // Smart Assignment algorithm: pick partner with matching zone & lowest active load
+      let recommended = null;
+      let minLoad = 9999;
+      activePartners.forEach(p => {
+        const load = activeCounts[p.id] || 0;
+        const pZone = (p.deliveryProfile?.zone || '').toLowerCase();
+        const matchesZone = zoneHint && pZone.includes(zoneHint.toLowerCase());
+        const score = load - (matchesZone ? 2 : 0);
+        if (score < minLoad) {
+          minLoad = score;
+          recommended = p;
+        }
+      });
+
+      select.innerHTML = '<option value="">-- Select Delivery Partner --</option>' + 
+        activePartners.map(p => {
+          const load = activeCounts[p.id] || 0;
+          const isSelected = p.id === currentAssignedId;
+          const isRec = recommended && recommended.id === p.id;
+          return `<option value="${p.id}" ${isSelected ? 'selected' : ''}>
+            ${isRec ? '✨ (Recommended) ' : ''}${p.displayName || p.firstName} (${p.deliveryProfile?.vehicleType || 'Bike'} - Zone: ${p.deliveryProfile?.zone || 'All'} | ${load} active orders)
+          </option>`;
+        }).join('');
+
+      if (hint && recommended) {
+        hint.innerHTML = `✨ <strong>Smart Recommendation:</strong> ${recommended.displayName || recommended.firstName} (Zone: ${recommended.deliveryProfile?.zone || 'Sonbhadra'}, ${activeCounts[recommended.id] || 0} active deliveries)`;
+      }
+    } catch(e) {
+      console.error('Error populating delivery partner dropdown:', e);
+    }
+  },
+  async assignDeliveryPartner(orderId) {
+    const select = document.getElementById(`admin-order-partner-select-${orderId}`);
+    const partnerId = select ? select.value : '';
+    if (!partnerId) {
+      AdminToast.show('Please select a delivery partner to assign.', 'warning');
+      return;
+    }
+    const partnerName = select.options[select.selectedIndex].text.split('(')[0].replace('✨ (Recommended) ', '').trim();
+    try {
+      await Store.assignDeliveryPartner(orderId, partnerId, partnerName, 'Admin');
+      AdminToast.show(`Order assigned to ${partnerName}!`, 'success');
+      this.load();
+      this.viewDetail(orderId);
+    } catch (e) {
+      AdminToast.show('Assignment failed: ' + e.message, 'error');
+    }
   },
   async updateStatus(id, status) {
     if (!status) return;
@@ -3242,5 +3342,246 @@ const AdminMarketing = {
         </button>
       </div>
     `;
+  }
+};
+
+// ==================== 19. ADMIN DELIVERY FLEET MANAGEMENT ====================
+const AdminDelivery = {
+  _data: [],
+  _tab: 'all',
+
+  async load() {
+    try {
+      this._data = await Store.getAllDeliveryPartners();
+      this.updateMetrics();
+      this.render();
+    } catch (e) {
+      console.error('Error loading AdminDelivery:', e);
+    }
+  },
+
+  updateMetrics() {
+    let active = 0, pending = 0, onTrip = 0;
+    this._data.forEach(p => {
+      const st = p.deliveryPartnerStatus || (p.isDeliveryPartner ? 'approved' : 'pending');
+      if (st === 'approved' || st === 'active') active++;
+      if (st === 'pending') pending++;
+      if (p.shiftStatus === 'on_delivery') onTrip++;
+    });
+
+    const elActive = document.getElementById('stat-del-active-partners');
+    const elPending = document.getElementById('stat-del-pending-approvals');
+    const elTrip = document.getElementById('stat-del-on-trip');
+    const badgePending = document.getElementById('del-badge-pending');
+
+    if (elActive) elActive.textContent = active;
+    if (elPending) elPending.textContent = pending;
+    if (elTrip) elTrip.textContent = onTrip;
+    if (badgePending) {
+      badgePending.textContent = pending;
+      badgePending.style.display = pending > 0 ? 'inline-block' : 'none';
+    }
+  },
+
+  setTab(tab) {
+    this._tab = tab;
+    ['all', 'pending', 'active', 'payouts'].forEach(t => {
+      const btn = document.getElementById(`del-tab-btn-${t}`);
+      if (btn) {
+        btn.className = (t === tab) ? 'btn btn-sm btn-accent' : 'btn btn-sm btn-outline';
+      }
+    });
+
+    const panelPartners = document.getElementById('del-panel-partners');
+    const panelPayouts = document.getElementById('del-panel-payouts');
+
+    if (tab === 'payouts') {
+      if (panelPartners) panelPartners.style.display = 'none';
+      if (panelPayouts) panelPayouts.style.display = 'block';
+      this.loadPayouts();
+    } else {
+      if (panelPartners) panelPartners.style.display = 'block';
+      if (panelPayouts) panelPayouts.style.display = 'none';
+      this.render();
+    }
+  },
+
+  filterList(query) {
+    const q = (query || '').toLowerCase().trim();
+    this.render(q);
+  },
+
+  render(searchQuery = '') {
+    const tbody = document.getElementById('delivery-partners-tbody');
+    if (!tbody) return;
+
+    let list = this._data;
+    if (this._tab === 'pending') {
+      list = list.filter(p => p.deliveryPartnerStatus === 'pending');
+    } else if (this._tab === 'active') {
+      list = list.filter(p => p.deliveryPartnerStatus === 'approved' || p.deliveryPartnerStatus === 'active');
+    }
+
+    if (searchQuery) {
+      list = list.filter(p => {
+        const name = (p.displayName || p.firstName || '').toLowerCase();
+        const phone = (p.phone || '').toLowerCase();
+        const zone = (p.deliveryProfile?.zone || '').toLowerCase();
+        return name.includes(searchQuery) || phone.includes(searchQuery) || zone.includes(searchQuery);
+      });
+    }
+
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">No delivery partners found in this view.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(p => {
+      const dp = p.deliveryProfile || {};
+      const status = p.deliveryPartnerStatus || (p.isDeliveryPartner ? 'approved' : 'pending');
+      const isOnline = p.shiftStatus === 'available' || p.shiftStatus === 'online';
+      const isOnDelivery = p.shiftStatus === 'on_delivery';
+
+      return `
+        <tr>
+          <td>
+            <div style="font-weight:700;color:#fff;">${p.displayName || p.firstName || 'Partner'}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">${p.email || '—'}</div>
+          </td>
+          <td>${formatIndianPhone(p.phone)}</td>
+          <td>
+            <div>${dp.vehicleType || 'Vehicle'} (${dp.vehicleNumber || '—'})</div>
+            <div style="font-size:0.75rem;color:var(--gold);">${dp.zone || 'Sonbhadra'}</div>
+          </td>
+          <td>
+            <span class="badge" style="background:${isOnDelivery ? '#F59E0B' : (isOnline ? '#10B981' : '#6B7280')};color:#fff;font-size:0.72rem;">
+              ${isOnDelivery ? '⚡ On Delivery' : (isOnline ? '🟢 Available' : '⚪ Offline')}
+            </span>
+          </td>
+          <td><strong>${dp.totalDeliveries || 0}</strong> orders</td>
+          <td>⭐ ${dp.rating || '5.0'}</td>
+          <td>
+            <span class="badge" style="background:${status === 'approved' || status === 'active' ? '#10B981' : (status === 'suspended' ? '#EF4444' : '#F59E0B')};color:#fff;font-size:0.72rem;">
+              ${status.toUpperCase()}
+            </span>
+          </td>
+          <td style="display:flex;gap:4px;flex-wrap:wrap;">
+            ${status === 'pending' ? `
+              <button class="btn btn-success btn-xs" onclick="AdminDelivery.approve('${p.id}')">✓ Approve</button>
+              <button class="btn btn-danger btn-xs" onclick="AdminDelivery.suspend('${p.id}')">✕ Reject</button>
+            ` : ''}
+            ${status === 'approved' || status === 'active' ? `
+              <button class="btn btn-warning btn-xs" onclick="AdminDelivery.suspend('${p.id}')">Suspend</button>
+              <button class="btn btn-accent btn-xs" onclick="AdminDelivery.openPayoutModal('${p.id}')">Payout</button>
+            ` : ''}
+            ${status === 'suspended' ? `
+              <button class="btn btn-success btn-xs" onclick="AdminDelivery.activate('${p.id}')">Re-activate</button>
+            ` : ''}
+          </td>
+        </tr>
+      `;
+    }).join('');
+  },
+
+  async approve(uid) {
+    try {
+      await Store.updateDeliveryPartnerApproval(uid, 'approved');
+      AdminToast.show('Delivery Partner approved and activated!', 'success');
+      await this.load();
+    } catch (e) {
+      AdminToast.show('Approval failed: ' + e.message, 'error');
+    }
+  },
+
+  async suspend(uid) {
+    try {
+      await Store.updateDeliveryPartnerApproval(uid, 'suspended');
+      AdminToast.show('Delivery Partner account suspended.', 'warning');
+      await this.load();
+    } catch (e) {
+      AdminToast.show('Suspension failed: ' + e.message, 'error');
+    }
+  },
+
+  async activate(uid) {
+    try {
+      await Store.updateDeliveryPartnerApproval(uid, 'active');
+      AdminToast.show('Delivery Partner reactivated successfully.', 'success');
+      await this.load();
+    } catch (e) {
+      AdminToast.show('Activation failed: ' + e.message, 'error');
+    }
+  },
+
+  openPayoutModal(partnerId = '') {
+    const select = document.getElementById('payout-partner-select');
+    if (select) {
+      select.innerHTML = '<option value="">-- Choose Partner --</option>' + 
+        this._data.filter(p => p.deliveryPartnerStatus === 'approved' || p.deliveryPartnerStatus === 'active')
+          .map(p => `<option value="${p.id}" ${p.id === partnerId ? 'selected' : ''}>${p.displayName || p.firstName} (${p.deliveryProfile?.zone || 'Zone'})</option>`)
+          .join('');
+    }
+    const modal = document.getElementById('delivery-payout-modal');
+    if (modal) modal.classList.remove('hidden');
+  },
+
+  closePayoutModal() {
+    const modal = document.getElementById('delivery-payout-modal');
+    if (modal) modal.classList.add('hidden');
+  },
+
+  async submitPayout() {
+    const partnerId = document.getElementById('payout-partner-select').value;
+    const amount = document.getElementById('payout-amount').value;
+    const ref = document.getElementById('payout-ref').value;
+    const notes = document.getElementById('payout-notes').value;
+
+    if (!partnerId || !amount || Number(amount) <= 0) {
+      AdminToast.show('Please select a partner and valid payout amount.', 'error');
+      return;
+    }
+
+    try {
+      await Store.createDeliveryPayout(partnerId, amount, notes, ref);
+      this.closePayoutModal();
+      AdminToast.show(`Payout of ₹${amount} recorded successfully!`, 'success');
+      if (this._tab === 'payouts') this.loadPayouts();
+    } catch (e) {
+      AdminToast.show('Failed to record payout: ' + e.message, 'error');
+    }
+  },
+
+  async loadPayouts() {
+    const tbody = document.getElementById('delivery-payouts-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading payouts...</td></tr>';
+
+    try {
+      const snap = await db.collection('deliveryPayouts').get();
+      let payouts = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+      if (payouts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No payouts recorded yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = payouts.map(p => {
+        const partner = this._data.find(x => x.id === p.deliveryPartnerId);
+        const dateStr = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('en-IN') : 'Recent';
+        return `
+          <tr>
+            <td>${dateStr}</td>
+            <td><strong>${partner ? (partner.displayName || partner.firstName) : (p.deliveryPartnerId || 'Partner')}</strong></td>
+            <td style="color:#10B981;font-weight:700;">₹${p.amount || 0}</td>
+            <td><code>${p.transactionRef || '—'}</code></td>
+            <td>${p.notes || 'Weekly Commission'}</td>
+            <td><span class="badge badge-success">Processed</span></td>
+          </tr>
+        `;
+      }).join('');
+    } catch (e) {
+      console.error('Error loading payouts:', e);
+    }
   }
 };
