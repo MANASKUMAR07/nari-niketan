@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account - Nari Niketan</title>
+  <meta name="description" content="Manage your Nari Niketan account &mdash; orders, wishlist, profile, addresses, and more.">
+  <meta name="theme-color" content="#0F0A1A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.1">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #D4AF37;
+      --accent2: #8B1A4A;
+      --bg: #0F0A1A;
+      --bg-card: #1A1025;
+      --bg-card2: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.09);
+      --text: #F5F0FF;
+      --text-muted: #B8A9CC;
+      --text-dim: #7A6B8A;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .account-page { max-width: 580px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+    /* Profile Header */
+    .profile-header {
+      background: linear-gradient(135deg, #1A1025 0%, #2A0F3A 50%, #1A0F25 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.75rem 1.5rem;
+      display: flex; align-items: center; gap: 1.25rem;
+      margin-bottom: 1.25rem;
+      position: relative; overflow: hidden;
+    }
+    .profile-header::before {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(212,175,55,.18) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .profile-avatar {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; font-weight: 800; color: #fff;
+      flex-shrink: 0; border: 3px solid rgba(212,175,55,.4);
+    }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-info h2 { font-size: 1.15rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .profile-info p { font-size: .82rem; color: var(--text-muted); margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .profile-badge {
+      background: linear-gradient(135deg, rgba(212,175,55,.2), rgba(139,26,74,.2));
+      border: 1px solid rgba(212,175,55,.4);
+      border-radius: 20px; padding: .3rem .75rem;
+      font-size: .7rem; font-weight: 700; color: var(--accent);
+      display: inline-flex; align-items: center; gap: .3rem; margin-top: .45rem;
+    }
+    .edit-profile-btn {
+      background: rgba(212,175,55,.12); border: 1px solid rgba(212,175,55,.3);
+      color: var(--accent); padding: .45rem .9rem; border-radius: 10px;
+      cursor: pointer; font-size: .8rem; font-weight: 600;
+      font-family: inherit; flex-shrink: 0; transition: all .2s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: .35rem;
+    }
+    .edit-profile-btn:hover { background: rgba(212,175,55,.22); }
+
+    /* Plus Banner */
+    .plus-banner {
+      background: linear-gradient(135deg, #1A0F25, #2A1535, #1A0825);
+      border: 1px solid rgba(212,175,55,.35); border-radius: var(--radius);
+      padding: 1rem 1.15rem; display: flex; align-items: center; gap: 1rem;
+      cursor: pointer; transition: all .2s; text-decoration: none;
+      margin-bottom: 1.25rem; position: relative; overflow: hidden;
+    }
+    .plus-banner::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,.05), transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 0%,100%{opacity:0} 50%{opacity:1} }
+    .plus-banner:hover { border-color: rgba(212,175,55,.6); }
+    .plus-icon {
+      width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent2), var(--accent));
+      border-radius: 11px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .plus-text { flex: 1; }
+    .plus-text strong { font-size: .9rem; color: var(--accent); font-weight: 800; display: block; }
+    .plus-text span { font-size: .76rem; color: var(--text-muted); }
+    .plus-cta {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff; font-size: .72rem; font-weight: 700;
+      padding: .35rem .75rem; border-radius: 8px; flex-shrink: 0;
+    }
+
+    /* Section Groups */
+    .section-group { margin-bottom: 1.15rem; }
+    .section-label {
+      font-size: .68rem; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--text-dim); font-weight: 700; margin-bottom: .5rem; padding-left: .2rem;
+    }
+    .section-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .account-item {
+      display: flex; align-items: center; gap: .9rem;
+      padding: .85rem 1rem; text-decoration: none; color: var(--text);
+      cursor: pointer; border-bottom: 1px solid var(--border);
+      transition: background .18s; background: none;
+      border-left: none; border-right: none; border-top: none;
+      width: 100%; font-family: inherit; font-size: 1rem; text-align: left;
+    }
+    .account-item:last-child { border-bottom: none; }
+    .account-item:hover { background: rgba(255,255,255,.04); }
+    .item-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .item-text { flex: 1; }
+    .item-title { font-size: .87rem; font-weight: 600; }
+    .item-desc { font-size: .73rem; color: var(--text-muted); margin-top: .08rem; }
+    .item-arrow { color: var(--text-dim); font-size: .85rem; }
+    .item-badge {
+      font-size: .68rem; font-weight: 700; padding: .12rem .45rem; border-radius: 20px;
+    }
+
+    .ic-gold{background:rgba(212,175,55,.15)} .ic-pink{background:rgba(139,26,74,.2)}
+    .ic-blue{background:rgba(59,130,246,.15)} .ic-green{background:rgba(34,197,94,.15)}
+    .ic-purple{background:rgba(139,92,246,.15)} .ic-orange{background:rgba(249,115,22,.15)}
+    .ic-teal{background:rgba(20,184,166,.15)} .ic-red{background:rgba(239,68,68,.15)}
+    .ic-indigo{background:rgba(99,102,241,.15)}
+
+    /* Sign Out */
+    .signout-btn {
+      width: 100%; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2);
+      color: #EF4444; border-radius: var(--radius); padding: .8rem;
+      font-family: inherit; font-size: .88rem; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      margin-top: .5rem;
+    }
+    .signout-btn:hover { background: rgba(239,68,68,.16); }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: var(--text-muted); text-decoration: none; font-size: .85rem;
+      margin-bottom: 1rem; transition: color .2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75);
+      backdrop-filter: blur(7px); z-index: 9999;
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 18px; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+    }
+    .modal-head {
+      padding: 1.1rem 1.3rem; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; background: var(--bg-card);
+      border-radius: 18px 18px 0 0; z-index: 1;
+    }
+    .modal-head h3 { font-size: .97rem; font-weight: 800; }
+    .modal-close {
+      background: rgba(255,255,255,.06); border: none; color: var(--text-muted);
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      font-size: .95rem; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-body { padding: 1.2rem 1.3rem; }
+    .form-group { margin-bottom: .9rem; }
+    .form-group label { display: block; font-size: .78rem; font-weight: 600; color: var(--text-muted); margin-bottom: .35rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: inherit;
+      font-size: .86rem; padding: .55rem .85rem; outline: none; transition: border .2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .btn-save {
+      width: 100%; background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff; border: none; border-radius: 10px; padding: .7rem;
+      font-family: inherit; font-size: .88rem; font-weight: 700;
+      cursor: pointer; transition: opacity .2s; margin-top: .5rem;
+    }
+    .btn-save:hover { opacity: .88; }
+
+    /* FAQ */
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      width: 100%; background: none; border: none; color: var(--text);
+      font-family: inherit; font-size: .86rem; font-weight: 600;
+      padding: .85rem 0; text-align: left; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    .faq-a { font-size: .82rem; color: var(--text-muted); line-height: 1.6; padding-bottom: .85rem; display: none; }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-chevron { transition: transform .25s; font-size: .75rem; flex-shrink: 0; }
+
+    /* Toggle */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .8rem 0; border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: .86rem; font-weight: 600; }
+    .toggle-desc { font-size: .73rem; color: var(--text-muted); }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0; background: rgba(255,255,255,.12);
+      border-radius: 12px; cursor: pointer; transition: background .3s;
+    }
+    .toggle-track::before {
+      content: ''; position: absolute; left: 3px; top: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; transition: transform .3s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--accent2); }
+    .toggle input:checked + .toggle-track::before { transform: translateX(20px); }
+
+    #acct-toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: .6rem 1.1rem; font-size: .83rem;
+      font-weight: 600; display: none; z-index: 99999;
+      box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+
+    @media(max-width:600px) {
+      .profile-header { flex-wrap: wrap; padding: 1.25rem 1rem; }
+      .edit-profile-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+
+<div class="account-page">
+
+  <a href="index.html" class="back-link">&larr; Back to Store</a>
+
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-avatar" id="acct-avatar">U</div>
+    <div class="profile-info">
+      <h2 id="acct-name">Loading&hellip;</h2>
+      <p id="acct-email"></p>
+      <div class="profile-badge">&#9733; Nari Niketan Member</div>
+    </div>
+    <a href="#" class="edit-profile-btn" onclick="openModal('modal-profile'); return false;">&#9998; Edit</a>
+  </div>
+
+  <!-- Plus Membership -->
+  <a href="#" class="plus-banner" onclick="openModal('modal-plus'); return false;">
+    <div class="plus-icon">&#9733;</div>
+    <div class="plus-text">
+      <strong>Nari Niketan Plus</strong>
+      <span>Free delivery, exclusive offers & early access</span>
+    </div>
+    <div class="plus-cta">Explore</div>
+  </a>
+
+  <!-- Admin Section (Exclusive for Admin / Store Owner) -->
+  <div class="section-group" id="admin-section" style="display:none;">
+    <div class="section-label" style="color:var(--accent); font-weight:700;">👑 Store Administration</div>
+    <div class="section-card" style="border: 1.5px solid var(--accent); background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(139,26,74,.12));">
+      <a href="admin/index.html" class="account-item" style="text-decoration:none;">
+        <div class="item-icon ic-gold" style="background:rgba(212,175,55,.2); color:var(--accent); font-size:1.3rem;">&#9881;</div>
+        <div class="item-text">
+          <div class="item-title" style="color:var(--accent); font-weight:700;">Admin Dashboard</div>
+          <div class="item-desc" style="color:var(--text-muted);">Manage orders, products, coupons, refunds &amp; sellers</div>
+        </div>
+        <span class="item-badge" style="background:var(--accent); color:#1A0A0F; font-weight:700;">Admin</span>
+        <span class="item-arrow" style="color:var(--accent);">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Shopping -->
+  <div class="section-group">
+    <div class="section-label">My Shopping</div>
+    <div class="section-card">
+      <a href="my-orders.html" class="account-item">
+        <div class="item-icon ic-gold"></div>
+        <div class="item-text"><div class="item-title">My Orders</div><div class="item-desc">Track, return or buy again</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-wishlist'); return false;">
+        <div class="item-icon ic-pink">&#9825;</div>
+        <div class="item-text"><div class="item-title">My Wishlist</div><div class="item-desc">Items you've saved for later</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Account Settings -->
+  <div class="section-group">
+    <div class="section-label">&#9881; Account Settings</div>
+    <div class="section-card">
+      <a href="#" class="account-item" onclick="openModal('modal-profile'); return false;">
+        <div class="item-icon ic-purple"></div>
+        <div class="item-text"><div class="item-title">Edit Profile</div><div class="item-desc">Update name, email & phone</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-address'); return false;">
+        <div class="item-icon ic-blue"></div>
+        <div class="item-text"><div class="item-title">Saved Addresses</div><div class="item-desc">Manage delivery addresses</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item pwa-install-trigger" onclick="window.triggerPWAInstall(); return false;">
+        <div class="item-icon ic-gold"></div>
+        <div class="item-text"><div class="item-title">Install Mobile App</div><div class="item-desc">Add Nari Niketan to your Home Screen</div></div>
+        <span class="item-badge" style="background:rgba(212,175,55,.2);color:var(--accent)">Install</span>
+        <span class="item-arrow" style="margin-left:.3rem">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-notifications'); return false;">
+        <div class="item-icon ic-orange">&#128276;</div>
+        <div class="item-text"><div class="item-title">Notification Settings</div><div class="item-desc">Email, SMS & push preferences</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-privacy'); return false;">
+        <div class="item-icon ic-teal"></div>
+        <div class="item-text"><div class="item-title">Privacy Center</div><div class="item-desc">Data & privacy controls</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- My Activity -->
+  <div class="section-group">
+    <div class="section-label">&#9997; My Activity</div>
+    <div class="section-card">
+      <a href="#" class="account-item" onclick="openModal('modal-reviews'); return false;">
+        <div class="item-icon ic-gold">&#9733;</div>
+        <div class="item-text"><div class="item-title">My Reviews</div><div class="item-desc">Ratings & reviews you've written</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-qa'); return false;">
+        <div class="item-icon ic-indigo">&#128172;</div>
+        <div class="item-text"><div class="item-title">Questions & Answers</div><div class="item-desc">Your product Q&amp;As</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Earn with Nari Niketan -->
+  <div class="section-group">
+    <div class="section-label">&#128188; Earn with Nari Niketan</div>
+    <div class="section-card">
+      <a href="seller/index.html" class="account-item">
+        <div class="item-icon ic-green">&#127978;</div>
+        <div class="item-text"><div class="item-title">Become a Seller</div><div class="item-desc">Start selling on our platform</div></div>
+        <span class="item-badge" style="background:rgba(34,197,94,.15);color:#22C55E">New</span>
+        <span class="item-arrow" style="margin-left:.3rem">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-feedback'); return false;">
+        <div class="item-icon ic-orange">&#128172;</div>
+        <div class="item-text"><div class="item-title">Feedback</div><div class="item-desc">Share your experience with us</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Help & Support -->
+  <div class="section-group">
+    <div class="section-label">&#127911; Help & Support</div>
+    <div class="section-card">
+      <a href="#" class="account-item" onclick="openModal('modal-help'); return false;">
+        <div class="item-icon ic-blue">&#127911;</div>
+        <div class="item-text"><div class="item-title">Help Center</div><div class="item-desc">Get support for orders & account</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="#" class="account-item" onclick="openModal('modal-faq'); return false;">
+        <div class="item-icon ic-purple">&#10068;</div>
+        <div class="item-text"><div class="item-title">Browse FAQs</div><div class="item-desc">Frequently asked questions</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Information -->
+  <div class="section-group">
+    <div class="section-label">&#128196; Information &amp; Legal</div>
+    <div class="section-card">
+      <a href="grievance-redressal.html" class="account-item">
+        <div class="item-icon ic-teal">&#9878;</div>
+        <div class="item-text"><div class="item-title">Grievance Redressal</div><div class="item-desc">Lodge a complaint / Nodal Officer details</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="terms-and-conditions.html" class="account-item">
+        <div class="item-icon ic-teal"></div>
+        <div class="item-text"><div class="item-title">Terms &amp; Conditions</div><div class="item-desc">Indian Contract Act &amp; platform usage terms</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="privacy-policy.html" class="account-item">
+        <div class="item-icon ic-teal"></div>
+        <div class="item-text"><div class="item-title">Privacy Policy</div><div class="item-desc">DPDP Act 2023 &amp; personal data protection</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+      <a href="return-policy.html" class="account-item">
+        <div class="item-icon ic-red">&#8634;</div>
+        <div class="item-text"><div class="item-title">Return &amp; Refund Policy</div><div class="item-desc">7-day returns &amp; customer dispute resolution</div></div>
+        <span class="item-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
+
+  <button class="signout-btn" onclick="doSignOut()">Sign Out</button>
+</div>
+
+<!-- ======================================
+     MODALS
+====================================== -->
+
+<!-- Edit Profile -->
+<div id="modal-profile" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-profile')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Edit Profile</h3><button class="modal-close" onclick="closeModal('modal-profile')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Full Name</label><input type="text" id="pf-name" placeholder="Your full name"></div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="pf-phone" placeholder="+91 98765 43210"></div>
+      <div class="form-group"><label>Email (read only)</label><input type="email" id="pf-email" disabled style="opacity:.5"></div>
+      <div class="form-group"><label>Date of Birth</label><input type="date" id="pf-dob"></div>
+      <div class="form-group"><label>Gender</label>
+        <select id="pf-gender"><option value="">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select>
+      </div>
+      <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Saved Addresses -->
+<div id="modal-address" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-address')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Saved Addresses</h3><button class="modal-close" onclick="closeModal('modal-address')">&#10005;</button></div>
+    <div class="modal-body">
+      <div id="addr-list"><p style="color:var(--text-dim);font-size:.83rem;text-align:center;padding:.75rem 0">No saved addresses yet.</p></div>
+      <div style="border-top:1px solid var(--border);margin-top:.75rem;padding-top:.75rem">
+        <p style="font-size:.78rem;font-weight:600;color:var(--text-muted);margin-bottom:.7rem">+ Add New Address</p>
+        <div class="form-group"><label>Full Name</label><input type="text" id="addr-name" placeholder="Recipient name"></div>
+        <div class="form-group"><label>Mobile</label><input type="tel" id="addr-phone" placeholder="10-digit number"></div>
+        <div class="form-group"><label>Pincode</label><input type="text" id="addr-pin" placeholder="400001" maxlength="6"></div>
+        <div class="form-group"><label>Address (House, Street, Area)</label><textarea id="addr-full" rows="2" placeholder="Flat/House No., Street&hellip;"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+          <div class="form-group"><label>City</label><input type="text" id="addr-city" placeholder="Mumbai"></div>
+          <div class="form-group"><label>State</label><input type="text" id="addr-state" placeholder="Maharashtra"></div>
+        </div>
+        <button class="btn-save" onclick="saveAddress()">Save Address</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications -->
+<div id="modal-notifications" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-notifications')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#128276; Notification Settings</h3><button class="modal-close" onclick="closeModal('modal-notifications')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="toggle-row"><div><div class="toggle-label">Order Updates</div><div class="toggle-desc">Shipping, delivery & return status</div></div><label class="toggle"><input type="checkbox" id="notif-orders" checked><span class="toggle-track"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Promotional Offers</div><div class="toggle-desc">Sales, discounts & exclusive deals</div></div><label class="toggle"><input type="checkbox" id="notif-promo"><span class="toggle-track"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Price Drop Alerts</div><div class="toggle-desc">When wishlist items go on sale</div></div><label class="toggle"><input type="checkbox" id="notif-price" checked><span class="toggle-track"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">New Arrivals</div><div class="toggle-desc">Latest collections & launches</div></div><label class="toggle"><input type="checkbox" id="notif-new"><span class="toggle-track"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">SMS Notifications</div><div class="toggle-desc">Receive updates via SMS</div></div><label class="toggle"><input type="checkbox" id="notif-sms" checked><span class="toggle-track"></span></label></div>
+      <button class="btn-save" onclick="saveNotifSettings()">Save Preferences</button>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Center -->
+<div id="modal-privacy" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-privacy')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Privacy Center</h3><button class="modal-close" onclick="closeModal('modal-privacy')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="toggle-row"><div><div class="toggle-label">Personalised Recommendations</div><div class="toggle-desc">Use browsing history to suggest products</div></div><label class="toggle"><input type="checkbox" id="priv-rec" checked><span class="toggle-track"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Share Usage Data</div><div class="toggle-desc">Help improve our platform anonymously</div></div><label class="toggle"><input type="checkbox" id="priv-usage"><span class="toggle-track"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Third-party Personalisation</div><div class="toggle-desc">Allow partners to personalise ads</div></div><label class="toggle"><input type="checkbox" id="priv-3p"><span class="toggle-track"></span></label></div>
+      <div style="margin-top:1.1rem;padding:.8rem;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:10px">
+        <p style="font-size:.78rem;font-weight:700;color:#EF4444;margin-bottom:.3rem">&#9888; Data & Account</p>
+        <p style="font-size:.75rem;color:var(--text-muted);line-height:1.5">To request deletion of your account and personal data, contact <strong style="color:var(--accent)">privacy@nari-niketan.com</strong>. Processed within 30 days.</p>
+      </div>
+      <button class="btn-save" onclick="savePrivacy()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- My Reviews -->
+<div id="modal-reviews" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-reviews')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#9733; My Reviews</h3><button class="modal-close" onclick="closeModal('modal-reviews')">&#10005;</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-size:2.2rem;margin-bottom:.6rem">&#9997;</div>
+        <p style="font-weight:600;margin-bottom:.35rem">No reviews yet</p>
+        <p style="font-size:.82rem;color:var(--text-muted)">Reviews you write on products will appear here.</p>
+        <a href="my-orders.html" style="display:inline-block;margin-top:.9rem;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);color:var(--accent);padding:.45rem 1rem;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:600">View Orders to Review</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Q&A -->
+<div id="modal-qa" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-qa')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#128172; Questions & Answers</h3><button class="modal-close" onclick="closeModal('modal-qa')">&#10005;</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-size:2.2rem;margin-bottom:.6rem">&#128172;</div>
+        <p style="font-weight:600;margin-bottom:.35rem">No questions yet</p>
+        <p style="font-size:.82rem;color:var(--text-muted)">Questions you ask on product pages will appear here.</p>
+        <a href="shop.html" style="display:inline-block;margin-top:.9rem;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);color:var(--accent);padding:.45rem 1rem;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:600">Browse Products</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Plus Member -->
+<div id="modal-plus" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-plus')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#9733; Nari Niketan Plus</h3><button class="modal-close" onclick="closeModal('modal-plus')">&#10005;</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:1.25rem">
+        <div style="font-size:2.5rem;margin-bottom:.4rem">&#9733;</div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:var(--accent)">Unlock Premium Benefits</h3>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.25rem">
+        <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)">
+          <span style="font-size:1.1rem"></span><div><div style="font-weight:600;font-size:.85rem">Free Delivery</div><div style="font-size:.75rem;color:var(--text-muted)">No minimum order value, ever</div></div>
+        </div>
+        <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)">
+          <span style="font-size:1.1rem">&#9825;</span><div><div style="font-weight:600;font-size:.85rem">Early Access</div><div style="font-size:.75rem;color:var(--text-muted)">Shop new collections 24h before everyone</div></div>
+        </div>
+        <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)">
+          <span style="font-size:1.1rem"></span><div><div style="font-weight:600;font-size:.85rem">Exclusive Deals</div><div style="font-size:.75rem;color:var(--text-muted)">Special discounts only for Plus</div></div>
+        </div>
+        <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)">
+          <span style="font-size:1.1rem">&#8634;</span><div><div style="font-weight:600;font-size:.85rem">Priority Returns</div><div style="font-size:.75rem;color:var(--text-muted)">Refunds processed within 24h</div></div>
+        </div>
+        <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)">
+          <span style="font-size:1.1rem">&#127911;</span><div><div style="font-weight:600;font-size:.85rem">Dedicated Support</div><div style="font-size:.75rem;color:var(--text-muted)">Skip the queue with priority care</div></div>
+        </div>
+      </div>
+      <button class="btn-save" onclick="acctToast('Coming soon! Plus launching soon ');closeModal('modal-plus')">Join Plus &mdash; Coming Soon</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback -->
+<div id="modal-feedback" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-feedback')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#128172; Share Feedback</h3><button class="modal-close" onclick="closeModal('modal-feedback')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>What's on your mind?</label>
+        <select id="fb-type"><option value="general">General Feedback</option><option value="bug">Report a Bug</option><option value="feature">Feature Request</option><option value="complaint">Complaint</option><option value="compliment">Compliment</option></select>
+      </div>
+      <div class="form-group"><label>Overall Rating</label>
+        <div id="star-rating" style="display:flex;gap:.35rem;font-size:1.5rem;cursor:pointer;margin-top:.15rem">
+          <span data-v="1">&#9734;</span><span data-v="2">&#9734;</span><span data-v="3">&#9734;</span><span data-v="4">&#9734;</span><span data-v="5">&#9734;</span>
+        </div>
+      </div>
+      <div class="form-group"><label>Your Message</label><textarea id="fb-msg" rows="4" placeholder="Tell us what you think&hellip;"></textarea></div>
+      <button class="btn-save" onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help Center -->
+<div id="modal-help" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-help')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#127911; Help Center</h3><button class="modal-close" onclick="closeModal('modal-help')">&#10005;</button></div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <a href="my-orders.html" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text)">
+          <span style="font-size:1.2rem"></span><div><div style="font-weight:600;font-size:.86rem">Track / Manage Orders</div><div style="font-size:.73rem;color:var(--text-muted)">View status, initiate returns</div></div></a>
+        <a href="grievance-redressal.html" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text)">
+          <span style="font-size:1.2rem"></span><div><div style="font-weight:600;font-size:.86rem">Consumer Grievance Cell</div><div style="font-size:.73rem;color:var(--text-muted)">Lodge formal complaint / Nodal Officer</div></div></a>
+        <a href="return-policy.html" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text)">
+          <span style="font-size:1.2rem">&#8634;</span><div><div style="font-weight:600;font-size:.86rem">Returns &amp; Refunds</div><div style="font-size:.73rem;color:var(--text-muted)">Policy &amp; how-to guide</div></div></a>
+        <a href="terms-and-conditions.html" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text)">
+          <span style="font-size:1.2rem"></span><div><div style="font-weight:600;font-size:.86rem">Terms &amp; Conditions</div><div style="font-size:.73rem;color:var(--text-muted)">User agreement &amp; legal terms</div></div></a>
+        <a href="privacy-policy.html" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text)">
+          <span style="font-size:1.2rem"></span><div><div style="font-weight:600;font-size:.86rem">Privacy Policy</div><div style="font-size:.73rem;color:var(--text-muted)">DPDP Act 2023 compliance</div></div></a>
+        <a href="mailto:nariniketan07@gmail.com" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text)">
+          <span style="font-size:1.2rem">&#9993;</span><div><div style="font-weight:600;font-size:.86rem">Email Support</div><div style="font-size:.73rem;color:var(--text-muted)">nariniketan07@gmail.com</div></div></a>
+        <div onclick="closeModal('modal-help');openModal('modal-feedback')" style="display:flex;align-items:center;gap:.8rem;padding:.75rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;cursor:pointer;color:var(--text)">
+          <span style="font-size:1.2rem">&#128172;</span><div><div style="font-weight:600;font-size:.86rem">Send Feedback</div><div style="font-size:.73rem;color:var(--text-muted)">Share your experience</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div id="modal-faq" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-faq')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#10068; Browse FAQs</h3><button class="modal-close" onclick="closeModal('modal-faq')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>How do I track my order?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">Go to My Orders from your account menu. Each order shows real-time status including Shipped, Out for Delivery, and Delivered.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>What is the return policy?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">We offer a 7-day easy return policy on most products. Visit our Return Policy page for full details.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>How long does delivery take?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">Standard delivery takes 5&ndash;7 business days. Express delivery (2&ndash;3 days) is available for select pincodes.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>How do I cancel an order?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">Orders can be cancelled within 24 hours of placing them. Go to My Orders &rarr; select the order &rarr; Cancel Order.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>Are the products authentic?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">Yes! All sellers on Nari Niketan are verified. Products are quality-checked before dispatch.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>How do refunds work?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">Refunds are processed within 5&ndash;7 business days to your original payment method after we receive the returned item.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)"><span>How do I become a seller?</span><span class="faq-chevron">&#9660;</span></button><div class="faq-a">Click "Become a Seller" in your account. Fill in your store details and start listing products after verification.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Terms -->
+<div id="modal-terms" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-terms')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Terms & Conditions</h3><button class="modal-close" onclick="closeModal('modal-terms')">&#10005;</button></div>
+    <div class="modal-body" style="font-size:.82rem;line-height:1.7;color:var(--text-muted)">
+      <p style="color:var(--text-dim);font-size:.72rem;margin-bottom:.9rem">Last updated: August 2026</p>
+      <div style="margin-bottom:.8rem"><strong style="color:var(--text);display:block;margin-bottom:.2rem">1. Acceptance of Terms</strong>By using Nari Niketan, you agree to these terms. If you disagree, please do not use our platform.</div>
+      <div style="margin-bottom:.8rem"><strong style="color:var(--text);display:block;margin-bottom:.2rem">2. Account Responsibility</strong>You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.</div>
+      <div style="margin-bottom:.8rem"><strong style="color:var(--text);display:block;margin-bottom:.2rem">3. Product Listings</strong>Nari Niketan acts as a marketplace. Sellers are responsible for listing accuracy. We verify sellers but do not guarantee every listing.</div>
+      <div style="margin-bottom:.8rem"><strong style="color:var(--text);display:block;margin-bottom:.2rem">4. Payments</strong>All transactions are secured. We accept UPI, cards, and net banking. Prices include applicable taxes unless stated otherwise.</div>
+      <div style="margin-bottom:.8rem"><strong style="color:var(--text);display:block;margin-bottom:.2rem">5. Intellectual Property</strong>All content on Nari Niketan is our property. You may not reproduce or distribute it without permission.</div>
+      <div style="margin-bottom:.8rem"><strong style="color:var(--text);display:block;margin-bottom:.2rem">6. Governing Law</strong>These terms are governed by the laws of India. Disputes are subject to courts in New Delhi.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Wishlist -->
+<div id="modal-wishlist" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-wishlist')">
+  <div class="modal-box">
+    <div class="modal-head"><h3>&#9825; My Wishlist</h3><button class="modal-close" onclick="closeModal('modal-wishlist')">&#10005;</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-size:2.2rem;margin-bottom:.6rem">&#128172;</div>
+        <p style="font-weight:600;margin-bottom:.35rem">Your wishlist is empty</p>
+        <p style="font-size:.82rem;color:var(--text-muted)">Save items you love by tapping the heart &#9825; on any product.</p>
+        <a href="shop.html" style="display:inline-block;margin-top:.9rem;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);color:var(--accent);padding:.45rem 1rem;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:600">Start Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="acct-toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/store.js?v=3.8"></script>
+<script src="js/auth.js"></script>
+
+<script>
+  let _user = null;
+  let _starRating = 0;
+
+  auth.onAuthStateChanged(async user => {
+    if (!user) { window.location.href = 'login.html?redirect=my-account.html'; return; }
+    _user = user;
+    const name = user.displayName || '';
+    const email = user.email || user.phoneNumber || '';
+    document.getElementById('acct-avatar').textContent = (name || email || 'U').charAt(0).toUpperCase();
+    document.getElementById('acct-name').textContent = name || 'My Account';
+    document.getElementById('acct-email').textContent = email;
+    document.getElementById('pf-name').value = name;
+    document.getElementById('pf-email').value = email;
+    try {
+      const profile = await Store.getUserProfile(user.uid);
+      if (profile) {
+        if (profile.phone) document.getElementById('pf-phone').value = profile.phone;
+        if (profile.dob) document.getElementById('pf-dob').value = profile.dob;
+        if (profile.gender) document.getElementById('pf-gender').value = profile.gender;
+        if (profile.addresses && profile.addresses.length) renderAddresses(profile.addresses);
+      }
+      const isAdmin = await Store.isUserAdmin(user.uid);
+      if (isAdmin) {
+        const adm = document.getElementById('admin-section');
+        if (adm) adm.style.display = 'block';
+      }
+    } catch(e) { console.warn('Profile load:', e); }
+  });
+
+  function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+  function acctToast(msg) {
+    const t = document.getElementById('acct-toast');
+    t.textContent = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  async function doSignOut() {
+    await auth.signOut();
+    window.location.href = 'index.html';
+  }
+
+  async function saveProfile() {
+    if (!_user) return;
+    const name = document.getElementById('pf-name').value.trim();
+    let phone = document.getElementById('pf-phone').value.trim().replace(/\D/g, '');
+    if (phone.startsWith('191') && phone.length >= 12) phone = phone.slice(1);
+    if (phone.startsWith('91') && phone.length === 12) phone = phone.slice(2);
+    if (phone && !/^[6-9]\d{9}$/.test(phone)) {
+      acctToast('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+    const formattedPhone = phone ? ('+91 ' + phone) : '';
+    const dob = document.getElementById('pf-dob').value;
+    const gender = document.getElementById('pf-gender').value;
+    try {
+      await _user.updateProfile({ displayName: name });
+      await Store.updateUserProfile(_user.uid, { name, phone: formattedPhone, dob, gender });
+      document.getElementById('acct-name').textContent = name || 'My Account';
+      document.getElementById('acct-avatar').textContent = (name || 'U').charAt(0).toUpperCase();
+      acctToast('&#10003; Profile updated!');
+      closeModal('modal-profile');
+    } catch(e) { acctToast('&#10060; ' + e.message); }
+  }
+
+  function renderAddresses(addrs) {
+    const list = document.getElementById('addr-list');
+    if (!addrs || !addrs.length) return;
+    list.innerHTML = addrs.map(a =>
+      `<div style="padding:.65rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;margin-bottom:.4rem;font-size:.82rem">
+        <div style="font-weight:700">${a.name}</div>
+        <div style="color:var(--text-muted);margin-top:.15rem">${a.full}, ${a.city}, ${a.state} &ndash; ${a.pin}</div>
+        <div style="color:var(--text-muted)">${a.phone}</div>
+      </div>`).join('');
+  }
+
+  async function saveAddress() {
+    if (!_user) return;
+    let phone = document.getElementById('addr-phone').value.trim().replace(/\D/g, '');
+    if (phone.startsWith('191') && phone.length >= 12) phone = phone.slice(1);
+    if (phone.startsWith('91') && phone.length === 12) phone = phone.slice(2);
+    if (phone && !/^[6-9]\d{9}$/.test(phone)) {
+      acctToast('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+    const addr = {
+      name: document.getElementById('addr-name').value.trim(),
+      phone: phone ? ('+91 ' + phone) : '',
+      pin: document.getElementById('addr-pin').value.trim(),
+      full: document.getElementById('addr-full').value.trim(),
+      city: document.getElementById('addr-city').value.trim(),
+      state: document.getElementById('addr-state').value.trim(),
+    };
+    if (!addr.name || !addr.full || !addr.pin) { acctToast('Please fill required fields.'); return; }
+    try {
+      const profile = await Store.getUserProfile(_user.uid) || {};
+      const addresses = [...(profile.addresses || []), addr];
+      await Store.updateUserProfile(_user.uid, { addresses });
+      renderAddresses(addresses);
+      ['addr-name','addr-phone','addr-pin','addr-full','addr-city','addr-state'].forEach(id => document.getElementById(id).value = '');
+      acctToast('&#10003; Address saved!');
+    } catch(e) { acctToast('&#10060; ' + e.message); }
+  }
+
+  async function saveNotifSettings() {
+    if (!_user) return;
+    try {
+      await Store.updateUserProfile(_user.uid, { notifPrefs: {
+        orders: document.getElementById('notif-orders').checked,
+        promo: document.getElementById('notif-promo').checked,
+        price: document.getElementById('notif-price').checked,
+        newArrivals: document.getElementById('notif-new').checked,
+        sms: document.getElementById('notif-sms').checked,
+      }});
+      acctToast('&#10003; Notification preferences saved!');
+      closeModal('modal-notifications');
+    } catch(e) { acctToast('&#10060; ' + e.message); }
+  }
+
+  async function savePrivacy() {
+    if (!_user) return;
+    try {
+      await Store.updateUserProfile(_user.uid, { privacy: {
+        recommendations: document.getElementById('priv-rec').checked,
+        usageData: document.getElementById('priv-usage').checked,
+        thirdParty: document.getElementById('priv-3p').checked,
+      }});
+      acctToast('&#10003; Privacy settings saved!');
+      closeModal('modal-privacy');
+    } catch(e) { acctToast('&#10060; ' + e.message); }
+  }
+
+  document.getElementById('star-rating').addEventListener('click', e => {
+    if (!e.target.dataset.v) return;
+    _starRating = parseInt(e.target.dataset.v);
+    document.querySelectorAll('#star-rating span').forEach((s,i) => {
+      s.textContent = i < _starRating ? '&#9733;' : '&#9734;';
+      s.style.color = i < _starRating ? 'var(--accent)' : 'var(--text-dim)';
+    });
+  });
+
+  async function submitFeedback() {
+    const msg = document.getElementById('fb-msg').value.trim();
+    if (!msg) { acctToast('Please write your feedback.'); return; }
+    try {
+      await db.collection('feedback').add({
+        userId: _user?.uid || 'anonymous',
+        email: _user?.email || '',
+        type: document.getElementById('fb-type').value,
+        rating: _starRating,
+        message: msg,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      document.getElementById('fb-msg').value = '';
+      _starRating = 0;
+      document.querySelectorAll('#star-rating span').forEach(s => { s.textContent='&#9734;'; s.style.color=''; });
+      acctToast('&#10003; Thank you for your feedback!');
+      closeModal('modal-feedback');
+    } catch(e) { acctToast('&#10060; Could not submit. Try again.'); }
+  }
+
+  function toggleFAQ(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+</script>
+<script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

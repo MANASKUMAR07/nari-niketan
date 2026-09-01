@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Login — Nari Niketan</title>
+  <meta name="description" content="Join Nari Niketan as a seller. Register your store and start selling premium Indian ethnic wear.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan Seller">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="stylesheet" href="seller.css">
+  <link rel="stylesheet" href="../css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="../images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="../images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+  <div class="auth-page" id="auth-page">
+    <div class="auth-box">
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan">
+        <div class="auth-logo-text">
+          <div class="brand">Nari Niketan</div>
+          <div class="sub">Seller Portal</div>
+        </div>
+      </div>
+
+      <h1 class="auth-heading">Welcome, Seller</h1>
+      <p class="auth-subheading">Sign in or create your seller account to manage your products and orders.</p>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form class="auth-form active" id="form-login" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required autocomplete="current-password">
+        </div>
+        <div id="login-error" style="color:#EF4444;font-size:0.82rem;margin-bottom:0.75rem;display:none;"></div>
+        <button type="submit" class="btn-auth" id="login-btn">🔑 Sign In to Seller Panel</button>
+        <p class="auth-footer">Don't have an account? <a href="#" onclick="switchTab('register'); return false;">Register as Seller</a></p>
+        <p class="auth-footer" style="margin-top:0.4rem"><a href="../index.html" style="color:var(--text-dim)">← Back to Store</a></p>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form class="auth-form" id="form-register" onsubmit="handleRegister(event)">
+        <div class="notice info" style="margin-bottom:1rem">
+          <span class="notice-icon">ℹ️</span>
+          <div class="notice-text"><strong>Seller Registration</strong>Your account will be reviewed by admin before you can list products.</div>
+        </div>
+
+        <div class="form-section" style="margin-bottom:0.75rem;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);padding-bottom:0.4rem;border-bottom:1px solid rgba(255,255,255,0.07);">Personal Info</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-fname">First Name *</label>
+            <input type="text" id="reg-fname" placeholder="First" required autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="reg-lname">Last Name *</label>
+            <input type="text" id="reg-lname" placeholder="Last" required autocomplete="family-name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address *</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="reg-phone">Phone Number *</label>
+          <input type="tel" id="reg-phone" placeholder="+91 XXXXX XXXXX" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-password">Password *</label>
+            <input type="password" id="reg-password" placeholder="Min 6 characters" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label for="reg-confirm">Confirm Password *</label>
+            <input type="password" id="reg-confirm" placeholder="Repeat password" required>
+          </div>
+        </div>
+
+        <div class="form-section" style="margin:0.5rem 0 0.75rem;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);padding-bottom:0.4rem;border-bottom:1px solid rgba(255,255,255,0.07);">Business Info</div>
+        <div class="form-group">
+          <label for="reg-store">Store / Brand Name *</label>
+          <input type="text" id="reg-store" placeholder="e.g. Priya's Boutique" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-gstin">GSTIN (Optional)</label>
+          <input type="text" id="reg-gstin" placeholder="22AAAAA0000A1Z5" maxlength="15">
+        </div>
+        <div class="form-group">
+          <label for="reg-category">Primary Category *</label>
+          <select id="reg-category" required>
+            <option value="">Select category...</option>
+            <option value="Sarees">Sarees</option>
+            <option value="Suits">Suits / Salwar Kameez</option>
+            <option value="Lehengas">Lehengas</option>
+            <option value="Kurtas">Kurtas</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Jewellery">Jewellery</option>
+            <option value="Multiple">Multiple Categories</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-desc">Brief Business Description *</label>
+          <textarea id="reg-desc" placeholder="Tell us about your products and business..." required style="height:70px"></textarea>
+        </div>
+
+        <div id="reg-error" style="color:#EF4444;font-size:0.82rem;margin-bottom:0.75rem;display:none;"></div>
+        <button type="submit" class="btn-auth" id="reg-btn">🚀 Submit Seller Application</button>
+        <p class="auth-footer">Already have an account? <a href="#" onclick="switchTab('login'); return false;">Sign In</a></p>
+        <p class="auth-footer" style="margin-top:0.4rem"><a href="../index.html" style="color:var(--text-dim)">← Back to Store</a></p>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script>
+    // ─── TAB SWITCH ─────────────────────────────────
+    function switchTab(tab) {
+      ['login', 'register'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+        document.getElementById('form-' + t).classList.toggle('active', t === tab);
+      });
+    }
+
+    // ─── CHECK ALREADY LOGGED IN ─────────────────────
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) return;
+      try {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          const data = doc.data();
+          if (data.isSeller || data.sellerStatus === 'approved') {
+            window.location.href = 'index.html';
+          } else if (data.sellerStatus === 'pending') {
+            showPendingMsg();
+          }
+        }
+      } catch (e) { /* not a seller */ }
+    });
+
+    function showPendingMsg() {
+      document.getElementById('auth-page').innerHTML = `
+        <div class="auth-box" style="text-align:center">
+          <div style="font-size:3rem;margin-bottom:1rem">⏳</div>
+          <h2 style="font-family:var(--font-display);color:var(--accent);margin-bottom:0.5rem">Application Under Review</h2>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem">Your seller application is being reviewed. We'll notify you once approved.</p>
+          <a href="../index.html" style="color:var(--accent);font-weight:600">← Back to Store</a>
+        </div>`;
+    }
+
+    // ─── LOGIN ───────────────────────────────────────
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const errEl = document.getElementById('login-error');
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+
+      const email = document.getElementById('login-email').value.trim();
+      const pass  = document.getElementById('login-password').value;
+
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, pass);
+        const doc  = await db.collection('users').doc(cred.user.uid).get();
+        if (!doc.exists) throw new Error('NOT_SELLER');
+        const data = doc.data();
+        if (!data.isSeller && data.sellerStatus !== 'approved') {
+          if (data.sellerStatus === 'pending') {
+            await auth.signOut();
+            showPendingMsg();
+            return;
+          }
+          throw new Error('NOT_SELLER');
+        }
+        window.location.href = 'index.html';
+      } catch (err) {
+        let msg = 'Sign in failed. Please check your credentials.';
+        if (err.message === 'NOT_SELLER') {
+          msg = 'This account is not registered as a seller yet. Please fill in the details below to register your store.';
+          switchTab('register');
+          const regEmail = document.getElementById('reg-email');
+          if (regEmail) regEmail.value = email;
+          const regErr = document.getElementById('reg-error');
+          if (regErr) { regErr.textContent = msg; regErr.style.display = 'block'; }
+          btn.disabled = false;
+          btn.textContent = '🔑 Sign In to Seller Panel';
+          return;
+        }
+        else if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
+        else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Please try again later.';
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '🔑 Sign In to Seller Panel';
+      }
+    }
+
+    // ─── REGISTER ────────────────────────────────────
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('reg-btn');
+      const errEl = document.getElementById('reg-error');
+      errEl.style.display = 'none';
+
+      const pass    = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+      if (pass !== confirm) {
+        errEl.textContent = 'Passwords do not match.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      const fname    = document.getElementById('reg-fname').value.trim();
+      const lname    = document.getElementById('reg-lname').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const phone    = document.getElementById('reg-phone').value.trim();
+      const store    = document.getElementById('reg-store').value.trim();
+      const gstin    = document.getElementById('reg-gstin').value.trim();
+      const category = document.getElementById('reg-category').value;
+      const desc     = document.getElementById('reg-desc').value.trim();
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        await db.collection('users').doc(cred.user.uid).set({
+          uid: cred.user.uid,
+          firstName: fname,
+          lastName: lname,
+          displayName: fname + ' ' + lname,
+          email,
+          phone,
+          isSeller: false,
+          isAdmin: false,
+          sellerStatus: 'pending', // pending | approved | rejected
+          sellerProfile: {
+            storeName: store,
+            gstin: gstin || '',
+            primaryCategory: category,
+            description: desc,
+            rating: 0,
+            totalSales: 0,
+            totalRevenue: 0,
+          },
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        await auth.signOut();
+        showPendingMsg();
+      } catch (err) {
+        let msg = 'Registration failed. Please try again.';
+        if (err.code === 'auth/email-already-in-use') msg = 'An account with this email already exists.';
+        else if (err.code === 'auth/weak-password') msg = 'Password must be at least 6 characters.';
+        else if (err.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '🚀 Submit Seller Application';
+      }
+    }
+    // Auto show pending msg if redirected from dashboard
+    if (new URLSearchParams(window.location.search).get('pending') === '1') {
+      showPendingMsg();
+    }
+  </script>
+  <script src="../js/pwa-install.js" defer></script>
+</body>
+</html>

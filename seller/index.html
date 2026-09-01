@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard — Nari Niketan</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan Seller">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <!-- ⚡ DNS Preconnect: pre-warm Firebase connections during HTML parse -->
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
+  <link rel="stylesheet" href="seller.css">
+  <link rel="stylesheet" href="seller-wizard.css?v=2.1">
+  <link rel="stylesheet" href="../css/nari-ai-ads.css?v=1.1">
+  <link rel="stylesheet" href="../css/pwa.css?v=1.0">
+  <!-- Auth Guard: hide body until Firebase auth resolves to prevent flash -->
+  <style id="seller-auth-guard-style">body{visibility:hidden!important;opacity:0!important}</style>
+  <link rel="icon" type="image/png" href="../images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="../images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="SellerNav.closeMobile()"></div>
+
+  <div class="seller-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="seller-sidebar" id="seller-sidebar">
+      <div class="sidebar-brand">
+        <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan" class="sidebar-brand-logo">
+        <div>
+          <div class="sidebar-brand-name">Nari Niketan</div>
+          <div class="sidebar-brand-sub">Seller Portal</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Overview</div>
+        <button class="sidebar-link active" data-section="dashboard" onclick="SellerNav.go('dashboard')">
+          <span class="icon">📊</span> Dashboard
+        </button>
+
+        <div class="sidebar-section-label">Catalog</div>
+        <button class="sidebar-link" data-section="products" onclick="SellerNav.go('products')">
+          <span class="icon">🛍️</span> My Products
+          <span class="badge-count" id="badge-products" style="display:none">0</span>
+        </button>
+        <button class="sidebar-link" data-section="add-product" onclick="SellerNav.go('add-product')">
+          <span class="icon">➕</span> Add Product
+        </button>
+
+        <div class="sidebar-section-label">Sales</div>
+        <button class="sidebar-link" data-section="orders" onclick="SellerNav.go('orders')">
+          <span class="icon">📦</span> Orders
+          <span class="badge-count warning" id="badge-orders" style="display:none">0</span>
+        </button>
+        <button class="sidebar-link" data-section="earnings" onclick="SellerNav.go('earnings')">
+          <span class="icon">💰</span> Earnings
+        </button>
+
+        <div class="sidebar-section-label">Account</div>
+        <button class="sidebar-link" data-section="profile" onclick="SellerNav.go('profile')">
+          <span class="icon">🏪</span> Store Profile
+        </button>
+        <button class="sidebar-link" data-section="settings" onclick="SellerNav.go('settings')">
+          <span class="icon">⚙️</span> Settings
+        </button>
+        <a class="sidebar-link" href="../index.html" target="_blank">
+          <span class="icon">🏬</span> View Store ↗
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user-info">
+          <div class="sidebar-avatar" id="sidebar-avatar">S</div>
+          <div>
+            <div class="sidebar-user-name" id="sidebar-name">Seller</div>
+            <div class="sidebar-user-role" id="sidebar-store">My Store</div>
+          </div>
+        </div>
+        <button class="sidebar-signout-btn" onclick="auth.signOut().then(()=>window.location.href='login.html')">
+          🚪 Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="seller-main">
+
+      <!-- TOPBAR -->
+      <header class="seller-topbar">
+        <div class="topbar-left">
+          <button class="hamburger-btn" id="hamburger-btn" onclick="SellerNav.openMobile()" aria-label="Menu">☰</button>
+          <span id="topbar-page-title">📊 Dashboard</span>
+        </div>
+        <div class="topbar-right">
+          <a href="../index.html" target="_blank" class="topbar-store-btn">🏪 View Store</a>
+          <div class="topbar-avatar" id="topbar-avatar" title="Your account">S</div>
+        </div>
+      </header>
+
+      <div class="seller-content">
+
+        <!-- ====================================================
+             SECTION: DASHBOARD
+             ==================================================== -->
+        <section class="seller-section active" id="section-dashboard">
+          <div class="page-header">
+            <div>
+              <h2>Dashboard</h2>
+              <p id="dashboard-greeting">Welcome back! Here's your store summary.</p>
+            </div>
+            <button class="btn btn-primary" onclick="SellerNav.go('add-product')">➕ Add Product</button>
+          </div>
+
+          <!-- Approval Notice -->
+          <div class="notice warning" id="approval-notice" style="display:none">
+            <span class="notice-icon">⏳</span>
+            <div class="notice-text">
+              <strong>Approval Pending</strong>
+              Your seller account is under review. You can add products, but they won't be visible in the store until approved.
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card primary">
+              <div class="stat-icon">🛍️</div>
+              <div class="stat-label">Total Products</div>
+              <div class="stat-value primary" id="stat-products">—</div>
+              <div class="stat-change" id="stat-products-active"></div>
+            </div>
+            <div class="stat-card accent">
+              <div class="stat-icon">📦</div>
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-value accent" id="stat-orders">—</div>
+              <div class="stat-change" id="stat-orders-pending"></div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-icon">💰</div>
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-value green" id="stat-revenue">—</div>
+              <div class="stat-change" id="stat-revenue-month"></div>
+            </div>
+            <div class="stat-card teal">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-label">Store Rating</div>
+              <div class="stat-value" id="stat-rating">—</div>
+              <div class="stat-change">based on reviews</div>
+            </div>
+          </div>
+
+          <div class="dash-grid">
+            <!-- Recent Orders -->
+            <div class="panel">
+              <div class="panel-header">
+                <h3>📦 Recent Orders</h3>
+                <button class="btn btn-ghost btn-sm" onclick="SellerNav.go('orders')">View All</button>
+              </div>
+              <div class="panel-body" id="recent-orders-list">
+                <div class="empty-state"><div class="empty-icon">📦</div><p>No orders yet</p></div>
+              </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="panel">
+              <div class="panel-header">
+                <h3>📈 Revenue (Last 6 Months)</h3>
+              </div>
+              <div class="panel-body">
+                <div class="bar-chart" id="revenue-chart">
+                  <!-- JS renders bars -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Tips -->
+          <div class="panel" style="margin-top:1rem">
+            <div class="panel-header"><h3>💡 Quick Tips for Sellers</h3></div>
+            <div class="panel-body">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+                <div style="background:var(--bg-card2);border-radius:var(--radius);padding:1rem">
+                  <div style="font-size:1.4rem;margin-bottom:0.4rem">📸</div>
+                  <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem">High Quality Images</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Use clear, bright photos on plain background for better conversions.</div>
+                </div>
+                <div style="background:var(--bg-card2);border-radius:var(--radius);padding:1rem">
+                  <div style="font-size:1.4rem;margin-bottom:0.4rem">✍️</div>
+                  <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem">Detailed Descriptions</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Include fabric, occasion, care instructions and sizing info.</div>
+                </div>
+                <div style="background:var(--bg-card2);border-radius:var(--radius);padding:1rem">
+                  <div style="font-size:1.4rem;margin-bottom:0.4rem">🏷️</div>
+                  <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem">Competitive Pricing</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Offer discounts to boost visibility and attract first-time buyers.</div>
+                </div>
+                <div style="background:var(--bg-card2);border-radius:var(--radius);padding:1rem">
+                  <div style="font-size:1.4rem;margin-bottom:0.4rem">⚡</div>
+                  <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem">Quick Dispatch</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Ship within 24-48 hours to get better ratings and repeat buyers.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+             SECTION: MY PRODUCTS
+             ==================================================== -->
+        <section class="seller-section" id="section-products">
+          <div class="page-header">
+            <div>
+              <h2>My Products</h2>
+              <p>Manage your product catalog</p>
+            </div>
+            <button class="btn btn-primary" onclick="SellerNav.go('add-product')">➕ Add Product</button>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="filter-bar" style="margin:0;flex:1">
+                <div class="search-input-wrap">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" class="search-input" id="product-search" placeholder="Search products…" oninput="SellerProducts.filter()">
+                </div>
+                <select class="filter-select" id="product-cat-filter" onchange="SellerProducts.filter()">
+                  <option value="">All Categories</option>
+                  <option value="Sarees">Sarees</option>
+                  <option value="Suits">Suits</option>
+                  <option value="Lehengas">Lehengas</option>
+                  <option value="Kurtas">Kurtas</option>
+                  <option value="Accessories">Accessories</option>
+                </select>
+                <select class="filter-select" id="product-status-filter" onchange="SellerProducts.filter()">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="products-tbody">
+                  <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🛍️</div><h3>No products yet</h3><p>Start by adding your first product</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+             SECTION: ADD / EDIT PRODUCT
+             ==================================================== -->
+                <!-- ====================================================
+             SECTION: ADD / EDIT PRODUCT (4-STEP AI WIZARD)
+             ==================================================== -->
+        <section class="seller-section" id="section-add-product">
+          <div class="page-header" style="margin-bottom:1rem">
+            <div>
+              <h2 id="add-product-title">Add New Product</h2>
+              <p>Create a beautiful, high-converting product listing in 4 simple steps</p>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <button class="btn btn-accent btn-sm" onclick="SellerWizard.openQuickAdd()" style="display:inline-flex;align-items:center;gap:6px">
+                ⚡ Quick Add with AI
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="SellerNav.go('products')">← Back to Products</button>
+            </div>
+          </div>
+
+          <div class="wizard-container">
+            <input type="hidden" id="product-edit-id">
+
+            <!-- Stepper Progress Header -->
+            <div class="wizard-stepper-wrap">
+              <div class="wizard-stepper">
+                <div class="wizard-progress-track">
+                  <div class="wizard-progress-bar" id="wizard-progress-bar"></div>
+                </div>
+                
+                <div class="wizard-step-item active" id="step-nav-1" onclick="SellerWizard.goToStep(1)">
+                  <div class="wizard-step-bubble" id="step-bubble-1">1</div>
+                  <span class="wizard-step-label">Details</span>
+                </div>
+
+                <div class="wizard-step-item" id="step-nav-2" onclick="SellerWizard.goToStep(2)">
+                  <div class="wizard-step-bubble" id="step-bubble-2">2</div>
+                  <span class="wizard-step-label">Photos</span>
+                </div>
+
+                <div class="wizard-step-item" id="step-nav-3" onclick="SellerWizard.goToStep(3)">
+                  <div class="wizard-step-bubble" id="step-bubble-3">3</div>
+                  <span class="wizard-step-label">AI Description</span>
+                </div>
+
+                <div class="wizard-step-item" id="step-nav-4" onclick="SellerWizard.goToStep(4)">
+                  <div class="wizard-step-bubble" id="step-bubble-4">4</div>
+                  <span class="wizard-step-label">Preview &amp; Publish</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quality Score Banner -->
+            <div class="quality-score-card">
+              <div class="quality-score-info">
+                <span>✨ Listing Quality:</span>
+                <strong id="quality-score-val">25%</strong>
+                <span style="font-size:0.75rem;color:var(--text-dim)" id="quality-score-tip">— Enter product details to improve listing</span>
+              </div>
+              <div class="quality-score-meter">
+                <div class="quality-score-fill" id="quality-score-fill" style="width:25%"></div>
+              </div>
+            </div>
+
+            <!-- ==============================================
+                 STEP 1: PRODUCT DETAILS
+                 ============================================== -->
+            <div class="wizard-step-panel active" id="wizard-step-1">
+              <!-- AI Suggestions Box (Populated dynamically) -->
+              <div class="ai-suggestions-box" id="ai-suggestions-box" style="display:none">
+                <div class="ai-suggestions-header">
+                  <div class="ai-suggestions-title">✨ AI Field Suggestions</div>
+                  <button type="button" class="btn btn-ghost btn-xs" onclick="SellerWizard.acceptAllSuggestions()" style="color:#FFE082;font-size:0.75rem">Accept All ✓</button>
+                </div>
+                <div class="ai-chip-grid" id="ai-suggestions-chips"></div>
+              </div>
+
+              <!-- Basic Information Card -->
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">📝 Basic Information</h3>
+                    <p class="step-card-sub">Important information buyers use to search for your outfit</p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="p-name">Product Name *</label>
+                  <input class="form-control" type="text" id="p-name" placeholder="e.g. Banarasi Silk Wedding Saree with Zari Border" required oninput="SellerWizard.onTitleChange()">
+                  <div class="form-hint">Use a clear, descriptive name (e.g. fabric + outfit type + color + occasion)</div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="p-category">Category *</label>
+                    <select class="form-control" id="p-category" required onchange="SellerWizard.onCategoryChange(this.value)">
+                      <option value="">Select Category…</option>
+                      <option value="Sarees">Sarees</option>
+                      <option value="Suits">Suits / Salwar Kameez</option>
+                      <option value="Lehengas">Lehengas</option>
+                      <option value="Kurtas">Kurtas</option>
+                      <option value="Accessories">Accessories</option>
+                      <option value="Jewellery">Jewellery</option>
+                      <option value="__other__">✏️ Other (type your own)</option>
+                    </select>
+                    <div id="p-category-custom-wrap" style="display:none;margin-top:.5rem">
+                      <input class="form-control" type="text" id="p-category-custom" placeholder="e.g. Dupattas, Blouses, Ethnic Gowns…">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="p-fabric">Fabric / Material</label>
+                    <input class="form-control" type="text" id="p-fabric" placeholder="e.g. Banarasi Silk, Georgette, Chanderi Cotton" oninput="SellerWizard.updateQualityScore()">
+                  </div>
+                </div>
+
+                <div class="form-row-3">
+                  <div class="form-group">
+                    <label for="p-price">MRP Price (₹) *</label>
+                    <input class="form-control" type="number" id="p-price" placeholder="2499" min="0" required oninput="SellerWizard.updateQualityScore()">
+                    <div class="form-hint">Original printed price</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="p-sale-price">Selling Price (₹)</label>
+                    <input class="form-control" type="number" id="p-sale-price" placeholder="1999" min="0" oninput="SellerWizard.updateQualityScore()">
+                    <div class="form-hint">Final price customer pays</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="p-stock">Stock Quantity *</label>
+                    <input class="form-control" type="number" id="p-stock" placeholder="25" min="0" required oninput="SellerWizard.updateQualityScore()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ethnic Attributes & Variants (Clean Card) -->
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">👗 Colors, Sizes &amp; Occasion (Optional)</h3>
+                    <p class="step-card-sub">Help buyers filter by occasion, size, and color</p>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="p-occasion">Occasion</label>
+                    <select class="form-control" id="p-occasion" onchange="SellerWizard.updateQualityScore()">
+                      <option value="">Select Occasion…</option>
+                      <option value="Wedding / Bridal">Wedding / Bridal</option>
+                      <option value="Festival">Festival (Diwali, Eid, Puja)</option>
+                      <option value="Party / Evening">Party / Reception</option>
+                      <option value="Casual / Daily">Casual / Daily</option>
+                      <option value="Office / Formal">Office / Formal</option>
+                      <option value="Religious">Religious / Ceremony</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="p-color">Color(s)</label>
+                    <input class="form-control" type="text" id="p-color" placeholder="e.g. Ruby Red, Royal Blue, Mustard Gold">
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="p-sizes">Available Sizes</label>
+                    <input class="form-control" type="text" id="p-sizes" placeholder="e.g. S, M, L, XL, Free Size">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-sku">SKU / Product Code</label>
+                    <input class="form-control" type="text" id="p-sku" placeholder="e.g. NN-SAR-001">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="p-tags">Search Tags (comma-separated)</label>
+                  <input class="form-control" type="text" id="p-tags" placeholder="e.g. wedding, festive, silk, traditional, zari">
+                  <div class="form-hint">Keywords to help customers discover your outfit in search</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==============================================
+                 STEP 2: PRODUCT PHOTOS
+                 ============================================== -->
+            <div class="wizard-step-panel" id="wizard-step-2">
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">📸 Product Photos (Up to 6)</h3>
+                    <p class="step-card-sub">Clear photos on plain or festive backgrounds sell 3x faster</p>
+                  </div>
+                  <button type="button" class="btn btn-accent btn-sm" onclick="SellerWizard.analyzeMainImage()" id="btn-ai-analyze-img">
+                    ✨ Analyze Photo with AI
+                  </button>
+                </div>
+
+                <!-- Large Drag & Drop Upload Zone -->
+                <div class="upload-dropzone-large" id="upload-zone-large"
+                     onclick="document.getElementById('img-file-input').click()"
+                     ondragover="SellerProducts.dragOver(event)"
+                     ondragleave="SellerProducts.dragLeave(event)"
+                     ondrop="SellerProducts.drop(event)">
+                  <div class="upload-icon-large">🖼️</div>
+                  <h4 style="color:#fff;font-size:1.1rem;margin-bottom:0.3rem">Upload Product Images</h4>
+                  <p style="color:#FFE082;font-weight:600;font-size:0.9rem">Drag &amp; drop or choose from device</p>
+                  <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.4rem">JPG, PNG, WEBP &bull; Max 5MB per image &bull; Up to 6 photos</p>
+                </div>
+                <input type="file" id="img-file-input" multiple accept="image/*" style="display:none" onchange="SellerProducts.handleImageFiles(this.files)">
+
+                <!-- Photo Count Indicator -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;margin-bottom:0.5rem;flex-wrap:wrap;gap:6px;">
+                  <span style="font-size:0.85rem;font-weight:700;color:#FFE082;">Your Product Images:</span>
+                  <span class="ai-photo-counter-badge" id="photo-count-badge">0 / 6 images</span>
+                </div>
+
+                <!-- Interactive Photo Manager Grid -->
+                <div class="photo-grid-manager" id="photo-grid-manager"></div>
+
+                <!-- ✨ AI PRODUCT PHOTO ASSISTANT PANEL -->
+                <div class="ai-photo-assistant-card" id="ai-photo-assistant-card">
+                  <!-- Rendered dynamically by SellerProducts.renderAiPhotoAssistant() -->
+                </div>
+
+                <!-- Pending AI Candidate Review Tray -->
+                <div class="ai-review-tray" id="ai-review-tray" style="display:none;">
+                  <div class="ai-review-tray-header">
+                    <div class="ai-review-tray-title">
+                      <span>🤖 AI Generated Views — Review Before Using</span>
+                    </div>
+                    <span style="font-size:0.75rem;color:var(--text-dim);">Approve or regenerate each view individually</span>
+                  </div>
+                  <div class="ai-candidates-grid" id="ai-candidates-grid"></div>
+                </div>
+
+                <!-- Visual AI Detection Notice Box -->
+                <div id="visual-ai-result-box" style="display:none;margin-top:1.25rem;background:rgba(212,175,55,0.08);border:1px solid #D4AF37;border-radius:10px;padding:1rem;">
+                  <div style="font-weight:700;color:#FFE082;font-size:0.88rem;margin-bottom:0.4rem">✨ Visual AI Photo Insights</div>
+                  <div id="visual-ai-result-content" style="font-size:0.82rem;color:#ECE0E6;line-height:1.5;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==============================================
+                 STEP 3: AI PRODUCT DESCRIPTION STUDIO
+                 ============================================== -->
+            <div class="wizard-step-panel" id="wizard-step-3">
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">✨ AI Product Description Studio</h3>
+                    <p class="step-card-sub">Generate a boutique-quality product description tailored to your brand voice in seconds</p>
+                  </div>
+                </div>
+
+                <!-- Style Selector -->
+                <label style="font-size:0.85rem;font-weight:700;color:#FFE082;margin-bottom:0.6rem;display:block">
+                  1. Select Writing Style:
+                </label>
+                <div class="ai-style-grid" id="ai-style-selector-grid">
+                  <!-- Dynamically populated style cards -->
+                </div>
+
+                <!-- Generate Trigger Button -->
+                <div style="text-align:center;margin:1.25rem 0">
+                  <button type="button" class="btn btn-primary btn-lg" id="btn-generate-ai-desc" onclick="SellerWizard.generateAiDescription()" style="min-width:240px;box-shadow:0 4px 20px rgba(139,26,74,0.4)">
+                    ✨ Generate Description with AI
+                  </button>
+                </div>
+
+                <!-- AI Quick Refinement Toolbar -->
+                <div class="ai-action-toolbar" id="ai-refine-toolbar" style="display:none">
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('shorter')">✂ Make Shorter</button>
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('detailed')">📖 Make Detailed</button>
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('premium')">💎 Make Premium</button>
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('simpler')">😊 Make Simpler</button>
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('festive')">🎉 Make Festive</button>
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('seo')">🔎 SEO Optimize</button>
+                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.generateAiDescription()">🔄 Regenerate</button>
+                </div>
+
+                <!-- Editable Description Fields -->
+                <div class="form-group" style="margin-top:1rem">
+                  <label for="p-short-desc">Short Description (Summary)</label>
+                  <input class="form-control" type="text" id="p-short-desc" placeholder="1-sentence highlight of your product...">
+                </div>
+
+                <div class="form-group">
+                  <label for="p-desc">Full Product Description *</label>
+                  <textarea class="form-control" id="p-desc" placeholder="Detailed product story, fabric feel, occasions, and styling notes..." style="min-height:140px" required></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="p-highlights">Key Product Highlights (One per line)</label>
+                  <textarea class="form-control" id="p-highlights" placeholder="• Premium fabric&#10;• Traditional handloom zari border&#10;• Perfect for festive celebrations" style="min-height:90px"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==============================================
+                 STEP 4: CUSTOMER PREVIEW & PUBLISH
+                 ============================================== -->
+            <div class="wizard-step-panel" id="wizard-step-4">
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">👁️ Live Customer Preview</h3>
+                    <p class="step-card-sub">This is exactly how buyers will see your outfit on the Nari Niketan storefront</p>
+                  </div>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="SellerWizard.goToStep(1)">✏ Edit Details</button>
+                </div>
+
+                <!-- Customer View Mock -->
+                <div class="preview-mock-layout" id="customer-preview-mock">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Sticky Wizard Bottom Action Bar -->
+            <div class="wizard-footer-bar">
+              <div class="wizard-footer-left">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="SellerNav.go('products')">✕ Cancel</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="SellerWizard.saveDraft()" id="btn-save-draft">💾 Save Draft</button>
+              </div>
+
+              <div class="wizard-footer-right">
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-wizard-prev" onclick="SellerWizard.prevStep()" style="display:none">
+                  ← Back
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-wizard-next" onclick="SellerWizard.nextStep()">
+                  Continue →
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-wizard-publish" onclick="SellerWizard.publishProduct()" style="display:none;background:linear-gradient(135deg, #15803D, #2E8B57);border:none;">
+                  🚀 Publish Product Now
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ====================================================
+             SECTION: ORDERS
+             ==================================================== -->
+        <section class="seller-section" id="section-orders">
+          <div class="page-header">
+            <div>
+              <h2>Orders</h2>
+              <p>Orders containing your products</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="filter-bar" style="margin:0;flex:1">
+                <div class="search-input-wrap">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" class="search-input" id="order-search" placeholder="Search by order ID or customer…" oninput="SellerOrders.filter()">
+                </div>
+                <select class="filter-select" id="order-status-filter" onchange="SellerOrders.filter()">
+                  <option value="">All Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Products</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                  <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📦</div><h3>No orders yet</h3><p>Orders for your products will appear here</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+             SECTION: EARNINGS
+             ==================================================== -->
+        <section class="seller-section" id="section-earnings">
+          <div class="page-header">
+            <div>
+              <h2>Earnings</h2>
+              <p>Your revenue and payouts</p>
+            </div>
+          </div>
+
+          <div class="stats-grid" style="margin-bottom:1.25rem">
+            <div class="stat-card green">
+              <div class="stat-icon">💰</div>
+              <div class="stat-label">Total Earned</div>
+              <div class="stat-value green" id="earn-total">₹0</div>
+            </div>
+            <div class="stat-card accent">
+              <div class="stat-icon">📅</div>
+              <div class="stat-label">This Month</div>
+              <div class="stat-value accent" id="earn-month">₹0</div>
+            </div>
+            <div class="stat-card primary">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-label">Pending Payout</div>
+              <div class="stat-value primary" id="earn-pending">₹0</div>
+            </div>
+            <div class="stat-card teal">
+              <div class="stat-icon">✅</div>
+              <div class="stat-label">Paid Out</div>
+              <div class="stat-value" id="earn-paid">₹0</div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:1.25rem">
+            <div class="panel-header"><h3>📈 Monthly Revenue</h3></div>
+            <div class="panel-body">
+              <div class="bar-chart" id="earn-chart" style="height:150px"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h3>💳 Bank Account for Payouts</h3></div>
+            <div class="panel-body">
+              <div class="notice info">
+                <span class="notice-icon">ℹ️</span>
+                <div class="notice-text"><strong>Payout Schedule</strong>Payouts are processed every Monday for the previous week's delivered orders (after 7-day return window).</div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Account Holder Name</label>
+                  <input class="form-control" type="text" id="bank-name" placeholder="As per bank records">
+                </div>
+                <div class="form-group">
+                  <label>Account Number</label>
+                  <input class="form-control" type="text" id="bank-acc" placeholder="XXXXXXXXXXXXXXX">
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>IFSC Code</label>
+                  <input class="form-control" type="text" id="bank-ifsc" placeholder="HDFC0001234">
+                </div>
+                <div class="form-group">
+                  <label>Bank Name</label>
+                  <input class="form-control" type="text" id="bank-bank" placeholder="HDFC Bank">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>UPI ID (optional)</label>
+                <input class="form-control" type="text" id="bank-upi" placeholder="yourname@upi">
+              </div>
+              <button class="btn btn-primary" onclick="SellerProfile.saveBankDetails()">💾 Save Bank Details</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+             SECTION: STORE PROFILE
+             ==================================================== -->
+        <section class="seller-section" id="section-profile">
+          <div class="page-header">
+            <div>
+              <h2>Store Profile</h2>
+              <p>Manage your public seller information</p>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start">
+            <div class="panel">
+              <div class="panel-header"><h3>🏪 Business Details</h3></div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label>Store / Brand Name *</label>
+                  <input class="form-control" type="text" id="prof-store" placeholder="Your brand name">
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label>Primary Category</label>
+                    <select class="form-control" id="prof-category">
+                      <option value="">Select…</option>
+                      <option value="Sarees">Sarees</option>
+                      <option value="Suits">Suits</option>
+                      <option value="Lehengas">Lehengas</option>
+                      <option value="Kurtas">Kurtas</option>
+                      <option value="Accessories">Accessories</option>
+                      <option value="Jewellery">Jewellery</option>
+                      <option value="Multiple">Multiple Categories</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>GSTIN</label>
+                    <input class="form-control" type="text" id="prof-gstin" placeholder="Optional" maxlength="15">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Business Description</label>
+                  <textarea class="form-control" id="prof-desc" placeholder="Tell buyers about your store, specialities, and products…" style="min-height:100px"></textarea>
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label>Business Phone</label>
+                    <input class="form-control" type="tel" id="prof-phone" placeholder="+91 XXXXX XXXXX">
+                  </div>
+                  <div class="form-group">
+                    <label>Business Email</label>
+                    <input class="form-control" type="email" id="prof-email" placeholder="business@email.com">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Business Address</label>
+                  <textarea class="form-control" id="prof-address" placeholder="Street, City, State, PIN" style="min-height:70px"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="SellerProfile.save()">💾 Save Profile</button>
+              </div>
+            </div>
+
+            <!-- Right: Stats + Status -->
+            <div>
+              <div class="panel" style="margin-bottom:1rem">
+                <div class="panel-header"><h3>📊 Store Stats</h3></div>
+                <div class="panel-body" style="display:flex;flex-direction:column;gap:0.85rem">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="color:var(--text-muted);font-size:0.85rem">Account Status</span>
+                    <span class="badge" id="prof-status-badge">—</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="color:var(--text-muted);font-size:0.85rem">Total Products</span>
+                    <span style="font-weight:700;color:var(--text)" id="prof-stat-products">—</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="color:var(--text-muted);font-size:0.85rem">Total Orders</span>
+                    <span style="font-weight:700;color:var(--text)" id="prof-stat-orders">—</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="color:var(--text-muted);font-size:0.85rem">Total Revenue</span>
+                    <span style="font-weight:700;color:var(--accent)" id="prof-stat-revenue">—</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="color:var(--text-muted);font-size:0.85rem">Store Rating</span>
+                    <span style="font-weight:700;color:var(--text)" id="prof-stat-rating">—</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="color:var(--text-muted);font-size:0.85rem">Member Since</span>
+                    <span style="font-weight:600;color:var(--text-muted);font-size:0.82rem" id="prof-stat-since">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header"><h3>🔗 Policies</h3></div>
+                <div class="panel-body" style="display:flex;flex-direction:column;gap:0.6rem">
+                  <a href="../return-policy.html" target="_blank" class="btn btn-ghost btn-sm">↩️ View Return Policy</a>
+                  <a href="../index.html" target="_blank" class="btn btn-ghost btn-sm">🏬 View Store</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+             SECTION: SETTINGS
+             ==================================================== -->
+        <section class="seller-section" id="section-settings">
+          <div class="page-header">
+            <div>
+              <h2>Settings</h2>
+              <p>Manage your account security and preferences</p>
+            </div>
+          </div>
+          <div style="max-width:560px">
+            <div class="panel" style="margin-bottom:1.25rem">
+              <div class="panel-header"><h3>🔒 Change Password</h3></div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label>Current Password</label>
+                  <input class="form-control" type="password" id="set-old-pass" placeholder="Current password">
+                </div>
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input class="form-control" type="password" id="set-new-pass" placeholder="Min 6 characters" minlength="6">
+                </div>
+                <div class="form-group">
+                  <label>Confirm New Password</label>
+                  <input class="form-control" type="password" id="set-confirm-pass" placeholder="Repeat new password">
+                </div>
+                <button class="btn btn-primary" onclick="SellerSettings.changePassword()">🔐 Update Password</button>
+              </div>
+            </div>
+            <div class="panel" style="margin-bottom:1.25rem">
+              <div class="panel-header"><h3>🔔 Notification Preferences</h3></div>
+              <div class="panel-body">
+                <div style="display:flex;flex-direction:column;gap:0.85rem">
+                  <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                    <span style="font-size:0.88rem">New order received</span>
+                    <label class="toggle-switch"><div class="toggle-track on" id="notif-orders" onclick="this.classList.toggle('on')"></div></label>
+                  </label>
+                  <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                    <span style="font-size:0.88rem">Low stock alerts</span>
+                    <label class="toggle-switch"><div class="toggle-track on" id="notif-stock" onclick="this.classList.toggle('on')"></div></label>
+                  </label>
+                  <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                    <span style="font-size:0.88rem">Payout processed</span>
+                    <label class="toggle-switch"><div class="toggle-track on" id="notif-payout" onclick="this.classList.toggle('on')"></div></label>
+                  </label>
+                  <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                    <span style="font-size:0.88rem">Product review received</span>
+                    <label class="toggle-switch"><div class="toggle-track" id="notif-review" onclick="this.classList.toggle('on')"></div></label>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><h3 style="color:var(--error)">⚠️ Danger Zone</h3></div>
+              <div class="panel-body">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">Deactivating your seller account will hide all your products. Contact support to permanently delete your account.</p>
+                <button class="btn btn-danger" onclick="SellerSettings.deactivate()">Deactivate Seller Account</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /seller-content -->
+    </main>
+  </div><!-- /seller-layout -->
+
+    <!-- ===== SELLER AI PROMOTION REQUEST MODAL ===== -->
+  <div class="modal-overlay hidden" id="seller-promote-modal" style="z-index:99999;">
+    <div class="modal-box" style="max-width:520px;border:1.5px solid var(--gold);background:linear-gradient(145deg, #1A0D18 0%, #10060F 100%);border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,0.7);">
+      <div class="modal-header" style="border-bottom:1px solid rgba(212,175,55,0.25);padding:1rem 1.25rem;">
+        <h3 class="modal-title" style="color:#FFE082;font-size:1.15rem;display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;">
+          &#x1F4E2; Request Product Promotion (Nari AI Ads)
+        </h3>
+        <button class="modal-close" onclick="SellerProducts.closePromoteModal()">&#x2715;</button>
+      </div>
+      <div class="modal-body" id="seller-promote-modal-body" style="padding:1.25rem;">
+        <!-- Filled dynamically -->
+      </div>
+      <div class="modal-footer" style="border-top:1px solid rgba(255,255,255,0.08);padding:0.85rem 1.25rem;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.75rem;color:var(--text-dim);">&#x1F6E1;&#xFE0F; Subject to Admin Review</span>
+        <button class="btn btn-accent" id="btn-submit-promote-req" onclick="SellerProducts.submitPromoteRequest()">
+          &#x1F680; Submit Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ORDER DETAIL MODAL ===== -->
+  <div class="modal-overlay" id="order-modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="order-modal-title">Order Details</h3>
+        <button class="modal-close" onclick="SellerOrders.closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="order-modal-body"><!-- JS fills --></div>
+      <div class="modal-footer" id="order-modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- ===== CONFIRM DIALOG ===== -->
+  <div class="modal-overlay" id="confirm-overlay">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-body" style="text-align:center;padding:2rem 1.5rem">
+        <div id="confirm-icon" style="font-size:2.5rem;margin-bottom:0.75rem">⚠️</div>
+        <h3 id="confirm-title" style="margin-bottom:0.5rem">Are you sure?</h3>
+        <p id="confirm-msg" style="color:var(--text-muted);font-size:0.88rem;margin-bottom:1.5rem"></p>
+        <div style="display:flex;gap:0.75rem;justify-content:center">
+          <button class="btn btn-ghost" onclick="SellerConfirm.close(false)">Cancel</button>
+          <button class="btn btn-danger" onclick="SellerConfirm.close(true)">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="seller-toast-container"></div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/nari-ai-ads.js?v=1.0"></script>
+  <script src="seller-ai.js?v=2.1"></script>
+  <script src="seller.js?v=2.1"></script>
+  <script src="../js/pwa-install.js" defer></script>
+</body>
+</html>

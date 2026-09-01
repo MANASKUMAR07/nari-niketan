@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Checkout - Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <style>
+    .payment-subpanel {
+      background: #FDFAF7;
+      border: 1.5px solid rgba(139,26,74,0.15);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .upi-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(139,26,74,0.1);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .upi-tab-btn {
+      background: none;
+      border: 1px solid rgba(139,26,74,0.2);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .upi-tab-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+    .qr-container {
+      background: var(--white);
+      padding: 1rem;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1.5px solid var(--border);
+      max-width: 240px;
+    }
+    .qr-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+    }
+    .vpa-copy-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.85rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0.75rem 0;
+      gap: 0.5rem;
+    }
+    .upi-app-badges {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .upi-app-badge {
+      background: var(--white);
+      border: 1px solid rgba(139,26,74,0.15);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+  </style>
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+  <link rel="stylesheet" href="css/nari-maps.css?v=1.0">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <div class="nav-logo-text"><span class="brand-name">Nari Niketan</span></div>
+      </a>
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;color:var(--text-muted)">
+        <span style="color:var(--primary);font-weight:600">256-Bit SSL Secure Checkout</span>
+      </div>
+      <a href="cart.html" class="btn btn-ghost btn-sm">&#8592; Back to Bag</a>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="checkout-layout">
+      <!-- Left: Forms -->
+      <div id="checkout-form-col">
+        <h2 style="font-family:var(--font-display);color:var(--primary);margin-bottom:1.5rem">Complete Your Order</h2>
+
+        <!-- 1. Fulfillment Method (Delivery vs Store Pickup) -->
+        <div class="fulfillment-section">
+          <div class="fulfillment-title">
+            <span>📦</span> How would you like to receive your order?
+          </div>
+          <div class="fulfillment-grid">
+            <label class="fulfillment-card active" id="card-delivery" onclick="switchFulfillment('delivery')">
+              <input type="radio" name="fulfillment" value="delivery" checked>
+              <div class="fulfillment-card-info">
+                <h4>🚚 Home Delivery</h4>
+                <p>Delivered safely to your selected doorstep address.</p>
+              </div>
+            </label>
+            <label class="fulfillment-card" id="card-pickup" onclick="switchFulfillment('pickup')">
+              <input type="radio" name="fulfillment" value="pickup">
+              <div class="fulfillment-card-info">
+                <h4>🏪 Store Pickup <span class="fulfillment-card-badge">FREE</span></h4>
+                <p>Pick up directly from our Rihand Nagar store when ready.</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Store Pickup Information Box -->
+          <div class="store-pickup-box" id="store-pickup-info" style="display:none;">
+            <div class="store-pickup-header">
+              <h4>🏪 Nari Niketan Retail Store</h4>
+              <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer" class="store-directions-btn">
+                🧭 Get Directions &rarr;
+              </a>
+            </div>
+            <p class="store-pickup-addr">
+              <strong>Store Address:</strong> Main Market, Rihand Nagar, Sonbhadra, Uttar Pradesh 231223
+            </p>
+            <div class="store-pickup-meta">
+              <div>⏰ <strong>Store Timings:</strong> 10:00 AM &ndash; 9:00 PM (All 7 Days)</div>
+              <div>📞 <strong>Contact:</strong> +91 6307032042</div>
+              <div>🛍️ <strong>Pickup Fee:</strong> ₹0 (Free)</div>
+            </div>
+            <p style="font-size:0.78rem;color:#6B5329;margin:0;">
+              ✨ We will notify you once your order is packaged and ready for collection. No delivery address required!
+            </p>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="checkout-section">
+          <h3>Contact Information</h3>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">First Name *</label><input type="text" class="form-control" id="first-name" required placeholder="First name"></div>
+            <div class="form-group"><label class="form-label">Last Name *</label><input type="text" class="form-control" id="last-name" required placeholder="Last name"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email Address *</label><input type="email" class="form-control" id="checkout-email" required placeholder="email@example.com"></div>
+          <div class="form-group">
+            <label class="form-label">Phone Number (10-Digit Mobile) *</label>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <span style="background:var(--cream);border:1.5px solid var(--border);padding:0.6rem 0.85rem;border-radius:var(--radius-sm);font-weight:700;color:var(--primary);font-size:0.88rem;white-space:nowrap;">&#x1F1EE;&#x1F1F3; +91</span>
+              <input type="tel" class="form-control" id="checkout-phone" required placeholder="10-digit mobile number" maxlength="10" style="flex:1;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="checkout-section" id="shipping-address-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:8px;">
+            <h3 style="margin:0;">Delivery Address</h3>
+            <span style="font-size:0.75rem;color:var(--text-muted);">Select method or type manually</span>
+          </div>
+
+          <!-- Location Selection Mode Tabs -->
+          <div class="address-method-tabs">
+            <button type="button" class="address-tab-btn active" id="tab-addr-manual" onclick="setAddressMethod('manual')">
+              ✍️ Enter Manually
+            </button>
+            <button type="button" class="address-tab-btn" id="tab-addr-gps" onclick="useCurrentLocation()">
+              📍 Use My Current Location
+            </button>
+            <button type="button" class="address-tab-btn" id="tab-addr-map" onclick="toggleMapPicker()">
+              🗺️ Select Location on Map
+            </button>
+          </div>
+
+          <!-- GPS Confirmed Badge -->
+          <div id="gps-status-badge" style="display:none;" class="gps-confirmed-badge">
+            <span id="gps-status-text">📍 GPS Coordinates Captured</span>
+            <button type="button" onclick="clearGpsCoords()" style="background:none;border:none;color:#c00;font-size:0.72rem;cursor:pointer;font-weight:700;">✕ Clear</button>
+          </div>
+
+          <!-- Interactive Map Container -->
+          <div class="delivery-map-wrap" id="delivery-map-wrap" style="display:none;">
+            <div class="map-search-bar">
+              <input type="text" id="map-search-input" placeholder="Search area, town, or landmark..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapLocation();}">
+              <button type="button" class="btn btn-primary btn-sm" onclick="searchMapLocation()" style="padding:0.4rem 0.8rem;font-size:0.78rem;">Search</button>
+            </div>
+            <div class="map-viewport" id="delivery-map-viewport"></div>
+            <div class="map-selected-bar">
+              <div class="map-selected-info">
+                <div id="map-selected-label"><strong>Pin Location:</strong> Move marker to your exact doorstep</div>
+                <div class="map-selected-coords" id="map-selected-coords">Lat: —, Lng: —</div>
+              </div>
+              <button type="button" class="btn-confirm-loc" onclick="confirmMapLocation()">
+                ✓ Confirm Location
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group"><label class="form-label">Address Line 1 (House/Building/Street) *</label><input type="text" class="form-control" id="address1" required placeholder="House/Flat No., Building, Street Name"></div>
+          <div class="form-group"><label class="form-label">Address Line 2 (Area, Landmark)</label><input type="text" class="form-control" id="address2" placeholder="Area, Landmark (Optional)"></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">City *</label><input type="text" class="form-control" id="city" required placeholder="City"></div>
+            <div class="form-group"><label class="form-label">State *</label>
+              <select class="form-control" id="state" required>
+                <option value="">Select State</option>
+                <option>Uttar Pradesh</option><option>Delhi</option><option>Maharashtra</option>
+                <option>Gujarat</option><option>Rajasthan</option><option>Karnataka</option>
+                <option>Punjab</option><option>Haryana</option><option>Madhya Pradesh</option>
+                <option>Bihar</option><option>West Bengal</option><option>Tamil Nadu</option>
+                <option>Telangana</option><option>Andhra Pradesh</option><option>Kerala</option>
+                <option>Assam</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">PIN Code *</label><input type="text" class="form-control" id="pincode" required placeholder="6-digit PIN Code" maxlength="6"></div>
+            <div class="form-group"><label class="form-label">Country</label><input type="text" class="form-control" value="India" readonly style="background:var(--cream)"></div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="checkout-section">
+          <h3>Payment Method</h3>
+          <div class="payment-method-list">
+            
+            <!-- UPI Option -->
+            <label class="payment-method active" id="pm-upi" onclick="switchPayment('upi')">
+              <input type="radio" name="payment" value="UPI" checked>
+              <div class="payment-method-info">
+                <p class="payment-method-name">&#9889; BharatPe / Google Pay / PhonePe / Paytm UPI</p>
+                <p class="payment-method-desc">Pay instantly using any UPI App (Verified Merchant: Anshu Kumari)</p>
+              </div>
+              <span class="payment-method-icon"></span>
+            </label>
+
+            <!-- UPI Subpanel -->
+            <div class="payment-subpanel" id="upi-subpanel">
+              <div class="upi-tabs">
+                <button type="button" class="upi-tab-btn active" id="tab-btn-qr" onclick="setUpiTab('qr')">Official Merchant QR</button>
+                <button type="button" class="upi-tab-btn" id="tab-btn-apps" onclick="setUpiTab('apps')">&#128242; 1-Click Pay in App</button>
+                <button type="button" class="upi-tab-btn" id="tab-btn-vpa" onclick="setUpiTab('vpa')">&#9997; Copy UPI ID</button>
+              </div>
+
+              <!-- UPI Tab 1: Official BharatPe QR Code -->
+              <div id="upi-tab-qr" style="text-align:center;">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;">
+                  Scan with <strong>Google Pay, PhonePe, Paytm, BHIM, or CRED</strong>:
+                </p>
+                <div class="qr-container">
+                  <img src="images/bharatpe-upi-qr.jpg" alt="BharatPe UPI QR Code - Anshu Kumari" id="official-qr-img">
+                  <p style="font-size:0.82rem;font-weight:700;color:var(--primary);margin-top:0.6rem;" id="qr-amount-label">Payable: &#8377;0</p>
+                  <p style="font-size:0.72rem;color:var(--text-muted);">Verified: ANSHU KUMARI</p>
+                </div>
+
+                <div class="vpa-copy-box" style="max-width:360px;margin:1rem auto 0;">
+                  <span style="font-size:0.78rem;font-weight:700;color:var(--primary);letter-spacing:0.5px;word-break:break-all;" id="upi-vpa-text">BHARATPE.8E0Q0V9A0U38126@fbpe</span>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="copyUpiVpa()" id="btn-copy-vpa" style="padding:0.25rem 0.65rem;font-size:0.75rem;white-space:nowrap;">&#128203; Copy</button>
+                </div>
+
+                <div class="form-group" style="max-width:360px;margin:1rem auto 0;text-align:left;">
+                  <label class="form-label" style="font-size:0.78rem;">UPI Ref / UTR No. (Optional after paying):</label>
+                  <input type="text" class="form-control" id="upi-utr" placeholder="12-digit UTR (e.g. 423456789012)" maxlength="16">
+                </div>
+              </div>
+
+              <!-- UPI Tab 2: Mobile 1-Click Pay Intent -->
+              <div id="upi-tab-apps" style="display:none;text-align:center;">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">Tap to open your installed UPI payment app:</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;max-width:380px;margin:0 auto;">
+                  <a id="gpay-intent-link" href="#" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+                    Google Pay
+                  </a>
+                  <a id="phonepe-intent-link" href="#" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+                    PhonePe
+                  </a>
+                  <a id="paytm-intent-link" href="#" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+                    Paytm
+                  </a>
+                  <a id="generic-intent-link" href="#" class="btn btn-primary btn-sm" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+                    Any UPI App
+                  </a>
+                </div>
+                <div class="form-group" style="max-width:380px;margin:1.25rem auto 0;text-align:left;">
+                  <label class="form-label" style="font-size:0.78rem;">UPI Ref / UTR No. (Optional):</label>
+                  <input type="text" class="form-control" id="upi-utr-app" placeholder="12-digit UTR number" maxlength="16">
+                </div>
+              </div>
+
+              <!-- UPI Tab 3: Copy UPI ID & Instructions -->
+              <div id="upi-tab-vpa" style="display:none;">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;">Send payment manually to this UPI ID from any banking or UPI app:</p>
+                <div class="vpa-copy-box">
+                  <div>
+                    <span style="font-size:0.72rem;color:var(--text-muted);display:block;">Merchant UPI ID</span>
+                    <strong style="color:var(--primary);font-size:0.88rem;">BHARATPE.8E0Q0V9A0U38126@fbpe</strong>
+                  </div>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="copyUpiVpa()">&#128203; Copy</button>
+                </div>
+                <div style="font-size:0.8rem;color:var(--text-muted);background:var(--cream);padding:0.75rem;border-radius:6px;margin-top:0.75rem;line-height:1.5;">
+                  <strong>Recipient Name:</strong> ANSHU KUMARI<br>
+                  <strong>Banking Partner:</strong> BharatPe / Federal Bank
+                </div>
+              </div>
+            </div>
+
+            <!-- Cash on Delivery -->
+            <label class="payment-method" id="pm-cod" onclick="switchPayment('cod')">
+              <input type="radio" name="payment" value="Cash on Delivery">
+              <div class="payment-method-info">
+                <p class="payment-method-name">Cash on Delivery (COD)</p>
+                <p class="payment-method-desc">Pay in cash when your outfit is delivered</p>
+              </div>
+              <span class="payment-method-icon">&#128181;</span>
+            </label>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Summary -->
+      <div id="checkout-summary-col">
+        <div class="cart-summary" style="position:sticky;top:calc(var(--navbar-h) + 1.5rem)">
+          <h3>Order Summary</h3>
+          <div id="checkout-items" style="max-height:280px;overflow-y:auto;margin-bottom:1rem"></div>
+          
+          <div class="summary-row"><span>Items Subtotal</span><strong id="co-subtotal">&#8377;0</strong></div>
+          <div class="summary-row" id="co-discount-row" style="display:none; color:#2E7D32;">
+            <span>Coupon Discount (<span id="co-discount-label"></span>)</span>
+            <strong id="co-discount" style="color:#2E7D32;">-&#8377;0</strong>
+          </div>
+          <div class="summary-row"><span>Delivery</span><span id="co-shipping">FREE</span></div>
+          <div class="summary-row total"><span>Total Payable</span><span id="co-total" style="color:var(--primary);font-size:1.25rem;">&#8377;0</span></div>
+
+          <button class="btn btn-primary btn-full btn-lg" id="place-order-btn" onclick="placeOrder()" style="margin-top:1.25rem">
+            Confirm & Place Order <span id="btn-total">&#8377;0</span> &rarr;
+          </button>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:1rem;font-size:0.78rem;color:var(--text-muted)">
+            <span>100% Safe & Encrypted Payment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/nari-maps.js?v=1.0"></script>
+    <script>
+    let activePaymentType = "UPI";
+    let activeFulfillment = "delivery";
+    let selectedCoords = null;
+    let mapController = null;
+    const OFFICIAL_UPI_VPA = "BHARATPE.8E0Q0V9A0U38126@fbpe";
+    const OFFICIAL_NAME = "ANSHU KUMARI";
+
+    // ── FULFILLMENT METHOD SWITCHER ────────────────────────────
+    function switchFulfillment(type) {
+      activeFulfillment = type;
+      document.querySelectorAll(".fulfillment-card").forEach(el => el.classList.remove("active"));
+      const card = document.getElementById("card-" + type);
+      if (card) {
+        card.classList.add("active");
+        const rad = card.querySelector("input[type=radio]");
+        if (rad) rad.checked = true;
+      }
+
+      const shipSection = document.getElementById("shipping-address-section");
+      const pickupBox = document.getElementById("store-pickup-info");
+      
+      if (type === "pickup") {
+        if (shipSection) shipSection.style.display = "none";
+        if (pickupBox) pickupBox.style.display = "block";
+      } else {
+        if (shipSection) shipSection.style.display = "block";
+        if (pickupBox) pickupBox.style.display = "none";
+      }
+
+      renderOrderItems();
+    }
+
+    // ── ADDRESS INPUT METHOD TABS ──────────────────────────────
+    function setAddressMethod(method) {
+      document.querySelectorAll(".address-tab-btn").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById("tab-addr-" + method);
+      if (btn) btn.classList.add("active");
+
+      const mapWrap = document.getElementById("delivery-map-wrap");
+      if (mapWrap) {
+        mapWrap.style.display = (method === "map") ? "block" : "none";
+      }
+    }
+
+    // ── GPS CURRENT LOCATION ───────────────────────────────────
+    async function useCurrentLocation() {
+      setAddressMethod("gps");
+      App.toast("📍 Requesting your GPS coordinates...", "info");
+
+      try {
+        const coords = await NariLocation.getCurrentLocation();
+        selectedCoords = {
+          lat: coords.lat,
+          lng: coords.lng,
+          accuracy: coords.accuracy,
+          googleMapsUrl: NariLocation.getMapUrl(coords.lat, coords.lng)
+        };
+
+        const geo = await NariLocation.reverseGeocode(coords.lat, coords.lng);
+        
+        if (geo.addressLine1 && !document.getElementById("address1").value) {
+          document.getElementById("address1").value = geo.addressLine1;
+        }
+        if (geo.landmark && !document.getElementById("address2").value) {
+          document.getElementById("address2").value = geo.landmark;
+        }
+        if (geo.city) document.getElementById("city").value = geo.city;
+        if (geo.state) {
+          const sel = document.getElementById("state");
+          for (let i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].text.toLowerCase().includes(geo.state.toLowerCase())) {
+              sel.selectedIndex = i;
+              break;
+            }
+          }
+        }
+        if (geo.pincode) document.getElementById("pincode").value = geo.pincode;
+
+        // Show confirmed GPS badge
+        const badge = document.getElementById("gps-status-badge");
+        const statusText = document.getElementById("gps-status-text");
+        if (badge && statusText) {
+          statusText.innerHTML = `<strong>📍 GPS Location Set:</strong> ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)} (<a href="${selectedCoords.googleMapsUrl}" target="_blank" style="color:#2E7D32;text-decoration:underline;">View on Map</a>)`;
+          badge.style.display = "flex";
+        }
+
+        App.toast("📍 Location detected and address auto-filled!", "success");
+      } catch (err) {
+        console.warn("GPS error:", err);
+        App.toast(err.message || "Could not detect location. Please enter address manually.", "warning");
+        setAddressMethod("manual");
+      }
+    }
+
+    // ── INTERACTIVE MAP LOCATION PICKER ────────────────────────
+    async function toggleMapPicker() {
+      setAddressMethod("map");
+      const initCoords = selectedCoords || { lat: 24.2046, lng: 82.7845 };
+      
+      mapController = await NariLocation.initMap("delivery-map-viewport", initCoords, (locData) => {
+        selectedCoords = locData;
+        const coordLabel = document.getElementById("map-selected-coords");
+        if (coordLabel) {
+          coordLabel.textContent = `Lat: ${locData.lat.toFixed(5)}, Lng: ${locData.lng.toFixed(5)}`;
+        }
+      });
+    }
+
+    async function searchMapLocation() {
+      const q = document.getElementById("map-search-input")?.value.trim();
+      if (!q) { App.toast("Please enter a location to search.", "warning"); return; }
+
+      App.toast("Searching map location...", "info");
+      const res = await NariLocation.forwardGeocode(q);
+      if (res && mapController) {
+        mapController.updatePosition(res.lat, res.lng);
+        App.toast(`Found: ${res.displayName.split(',')[0]}`, "success");
+      } else {
+        App.toast("Location not found. Move the pin marker manually.", "warning");
+      }
+    }
+
+    async function confirmMapLocation() {
+      if (!selectedCoords) {
+        App.toast("Please drop a pin marker on the map first.", "warning");
+        return;
+      }
+
+      App.toast("Confirming delivery coordinates...", "info");
+      const geo = await NariLocation.reverseGeocode(selectedCoords.lat, selectedCoords.lng);
+      
+      if (geo.addressLine1) document.getElementById("address1").value = geo.addressLine1;
+      if (geo.landmark) document.getElementById("address2").value = geo.landmark;
+      if (geo.city) document.getElementById("city").value = geo.city;
+      if (geo.state) {
+        const sel = document.getElementById("state");
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].text.toLowerCase().includes(geo.state.toLowerCase())) {
+            sel.selectedIndex = i;
+            break;
+          }
+        }
+      }
+      if (geo.pincode) document.getElementById("pincode").value = geo.pincode;
+
+      const badge = document.getElementById("gps-status-badge");
+      const statusText = document.getElementById("gps-status-text");
+      if (badge && statusText) {
+        statusText.innerHTML = `<strong>🗺️ Map Pin Confirmed:</strong> ${selectedCoords.lat.toFixed(4)}, ${selectedCoords.lng.toFixed(4)} (<a href="${NariLocation.getMapUrl(selectedCoords.lat, selectedCoords.lng)}" target="_blank" style="color:#2E7D32;text-decoration:underline;">View on Google Maps</a>)`;
+        badge.style.display = "flex";
+      }
+
+      document.getElementById("delivery-map-wrap").style.display = "none";
+      setAddressMethod("manual");
+      App.toast("Delivery pin confirmed & address updated!", "success");
+    }
+
+    function clearGpsCoords() {
+      selectedCoords = null;
+      const badge = document.getElementById("gps-status-badge");
+      if (badge) badge.style.display = "none";
+      App.toast("Map coordinates cleared.", "default");
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html?redirect=" + encodeURIComponent("checkout.html");
+        return;
+      }
+      if (user.email) document.getElementById("checkout-email").value = user.email;
+      if (user.phoneNumber) {
+        let p = user.phoneNumber.replace(/\D/g, '');
+        if (p.startsWith('191') && p.length >= 12) p = p.slice(1);
+        if (p.startsWith('91') && p.length === 12) p = p.slice(2);
+        if (p.length === 10) document.getElementById("checkout-phone").value = p;
+      }
+      Store.getUserProfile(user.uid).then(prof => {
+        if (prof && prof.phone && !document.getElementById("checkout-phone").value) {
+          let p = prof.phone.replace(/\D/g, '');
+          if (p.startsWith('191') && p.length >= 12) p = p.slice(1);
+          if (p.startsWith('91') && p.length === 12) p = p.slice(2);
+          if (p.length === 10) document.getElementById("checkout-phone").value = p;
+        }
+      }).catch(() => {});
+      if (user.displayName) {
+        const parts = user.displayName.split(" ");
+        document.getElementById("first-name").value = parts[0] || "";
+        document.getElementById("last-name").value = parts.slice(1).join(" ") || "";
+      }
+    });
+
+    function renderOrderItems() {
+      const items = Cart.get();
+      if (!items.length) { window.location.href = "cart.html"; return; }
+
+      const noImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 60'%3E%3Crect fill='%23F5ECD8' width='48' height='60'/%3E%3C/svg%3E";
+      document.getElementById("checkout-items").innerHTML = items.map(item => `
+        <div class="order-item" style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(139,26,74,.05)">
+          <div class="order-item-img" style="width:48px;height:60px;border-radius:4px;overflow:hidden;flex-shrink:0;">
+            <img src="${item.imageUrl || (item.images && item.images[0]) || noImg}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='${noImg}'">
+          </div>
+          <div style="flex:1;">
+            <p class="order-item-name" style="font-weight:600;font-size:0.85rem;margin-bottom:0.15rem;">${item.name}</p>
+            <p class="order-item-meta" style="font-size:0.75rem;color:var(--text-muted);">Size: ${item.size} x ${item.qty}</p>
+          </div>
+          <span class="order-item-price" style="font-weight:700;color:var(--primary);font-size:0.95rem;">${Cart.formatPrice(item.price * item.qty)}</span>
+        </div>`).join("");
+
+      const sub = Cart.subtotal();
+      const ship = Cart.shipping(activeFulfillment);
+      const disc = Cart.discountAmount();
+      const total = Cart.total(activeFulfillment);
+      const coupon = Cart.getCoupon();
+
+      document.getElementById("co-subtotal").textContent = Cart.formatPrice(sub);
+      document.getElementById("co-shipping").textContent = (activeFulfillment === "pickup" || ship === 0) ? "FREE" : Cart.formatPrice(ship);
+      document.getElementById("co-total").textContent = Cart.formatPrice(total);
+      document.getElementById("btn-total").textContent = Cart.formatPrice(total);
+
+      const discRow = document.getElementById("co-discount-row");
+      if (coupon && disc > 0 && discRow) {
+        discRow.style.display = "flex";
+        document.getElementById("co-discount-label").textContent = coupon.code;
+        document.getElementById("co-discount").textContent = "-" + Cart.formatPrice(disc);
+      } else if (discRow) {
+        discRow.style.display = "none";
+      }
+
+      // Update Dynamic UPI Intent Links with exact Total Amount
+      updateUpiLinks(total);
+    }
+
+    function updateUpiLinks(amount) {
+      const upiUrl = `upi://pay?pa=${OFFICIAL_UPI_VPA}&pn=${encodeURIComponent(OFFICIAL_NAME)}&am=${amount}&cu=INR&tn=Nari%20Niketan%20Order`;
+      
+      const qrLabel = document.getElementById("qr-amount-label");
+      if (qrLabel) qrLabel.textContent = `Payable: ₹${Number(amount).toLocaleString('en-IN')}`;
+
+      // Set Mobile Intent Links
+      const gpayLink = document.getElementById("gpay-intent-link");
+      const phonepeLink = document.getElementById("phonepe-intent-link");
+      const paytmLink = document.getElementById("paytm-intent-link");
+      const genericLink = document.getElementById("generic-intent-link");
+
+      if (gpayLink) gpayLink.href = upiUrl;
+      if (phonepeLink) phonepeLink.href = upiUrl;
+      if (paytmLink) paytmLink.href = upiUrl;
+      if (genericLink) genericLink.href = upiUrl;
+    }
+
+    function switchPayment(type) {
+      activePaymentType = type;
+      document.querySelectorAll(".payment-method").forEach(el => el.classList.remove("active"));
+      
+      const el = document.getElementById("pm-" + type);
+      if (el) {
+        el.classList.add("active");
+        const radio = el.querySelector("input[type=radio]");
+        if (radio) radio.checked = true;
+      }
+
+      const upiPanel = document.getElementById("upi-subpanel");
+      if (upiPanel) {
+        upiPanel.style.display = (type === "upi") ? "block" : "none";
+      }
+    }
+
+    function setUpiTab(tab) {
+      ['qr', 'apps', 'vpa'].forEach(t => {
+        const btn = document.getElementById('tab-btn-' + t);
+        const panel = document.getElementById('upi-tab-' + t);
+        if (btn) btn.classList.toggle('active', t === tab);
+        if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
+      });
+    }
+
+    function copyUpiVpa() {
+      navigator.clipboard.writeText(OFFICIAL_UPI_VPA).then(() => {
+        App.toast("UPI ID copied to clipboard!", "success");
+        const btn = document.getElementById("btn-copy-vpa");
+        if (btn) {
+          btn.textContent = "✓ Copied";
+          setTimeout(() => { btn.innerHTML = "📋 Copy"; }, 2000);
+        }
+      }).catch(() => {
+        App.toast("UPI ID: " + OFFICIAL_UPI_VPA, "default");
+      });
+    }
+
+    async function placeOrder() {
+      const user = auth.currentUser;
+      if (!user) { window.location.href = "login.html?redirect=checkout.html"; return; }
+      
+      const fn = document.getElementById("first-name").value.trim();
+      const ln = document.getElementById("last-name").value.trim();
+      const email = document.getElementById("checkout-email").value.trim();
+      let rawPhone = document.getElementById("checkout-phone").value.trim().replace(/\D/g, '');
+      if (rawPhone.startsWith('191') && rawPhone.length >= 12) rawPhone = rawPhone.slice(1);
+      if (rawPhone.startsWith('91') && rawPhone.length === 12) rawPhone = rawPhone.slice(2);
+      
+      if (!fn || !email || !rawPhone) {
+        App.toast("Please fill in contact information (Name, Email, Mobile).", "warning");
+        return;
+      }
+      if (!/^[6-9]\d{9}$/.test(rawPhone)) {
+        App.toast("Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).", "warning");
+        return;
+      }
+
+      const formattedPhone = "+91 " + rawPhone;
+      const payment = document.querySelector('input[name="payment"]:checked')?.value || "UPI";
+      const utr = (document.getElementById("upi-utr")?.value || document.getElementById("upi-utr-app")?.value || "").trim();
+
+      let a1 = "", a2 = "", city = "", state = "", pin = "";
+
+      if (activeFulfillment === "delivery") {
+        a1 = document.getElementById("address1").value.trim();
+        a2 = document.getElementById("address2").value.trim();
+        city = document.getElementById("city").value.trim();
+        state = document.getElementById("state").value;
+        pin = document.getElementById("pincode").value.trim();
+
+        if (!a1 || !city || !state || !pin) { 
+          App.toast("Please fill in all required delivery address fields.", "warning"); 
+          return; 
+        }
+        if (pin.length !== 6) { 
+          App.toast("Enter a valid 6-digit PIN code.", "warning"); 
+          return; 
+        }
+      }
+
+      const btn = document.getElementById("place-order-btn");
+      btn.disabled = true; 
+      btn.textContent = "Confirming Order...";
+
+      try {
+        const items = Cart.get();
+        if (!items.length) {
+          App.toast("Your bag is empty.", "warning");
+          btn.disabled = false;
+          return;
+        }
+
+        const coupon = Cart.getCoupon();
+
+        const orderData = {
+          userId: user.uid,
+          customerName: fn + " " + ln,
+          email: email || user.email || "",
+          phone: formattedPhone,
+          fulfillmentType: activeFulfillment,
+          deliveryAddress: activeFulfillment === "delivery" ? {
+            line1: a1,
+            line2: a2,
+            landmark: a2,
+            city: city,
+            state: state,
+            pincode: pin,
+            country: "India",
+            latitude: selectedCoords ? selectedCoords.lat : null,
+            longitude: selectedCoords ? selectedCoords.lng : null,
+            googleMapsUrl: selectedCoords ? NariLocation.getMapUrl(selectedCoords.lat, selectedCoords.lng) : null
+          } : null,
+          pickupDetails: activeFulfillment === "pickup" ? {
+            storeName: NariLocation.STORE.name,
+            storeAddress: NariLocation.STORE.address,
+            phone: NariLocation.STORE.phone,
+            status: "pending",
+            instructions: "Please bring your Order ID when collecting your order from our store."
+          } : null,
+          // Legacy address field for backward compatibility
+          address: activeFulfillment === "delivery" ? {
+            line1: a1,
+            line2: a2,
+            city: city,
+            state: state,
+            pincode: pin,
+            country: "India"
+          } : {
+            line1: "STORE PICKUP: " + NariLocation.STORE.name,
+            line2: NariLocation.STORE.address,
+            city: NariLocation.STORE.city,
+            state: NariLocation.STORE.state,
+            pincode: NariLocation.STORE.pincode,
+            country: "India"
+          },
+          items: items.map(i => ({ 
+            productId: i.productId, 
+            name: i.name, 
+            size: i.size, 
+            color: i.color, 
+            qty: i.qty, 
+            price: i.price, 
+            imageUrl: i.imageUrl 
+          })),
+          subtotal: Cart.subtotal(),
+          discountAmount: Cart.discountAmount(),
+          couponApplied: coupon ? coupon.code : null,
+          shipping: Cart.shipping(activeFulfillment),
+          totalAmount: Cart.total(activeFulfillment),
+          paymentMethod: payment === "UPI" ? "BharatPe UPI (Anshu Kumari)" : payment,
+          paymentStatus: payment === "Cash on Delivery" ? "Pending (COD)" : "Paid via UPI",
+          upiVpa: payment === "UPI" ? OFFICIAL_UPI_VPA : null,
+          upiUtr: utr || null,
+          clientCreatedAt: new Date().toISOString()
+        };
+
+        const orderRef = await Store.addOrder(orderData);
+
+        Cart.clear();
+        window.location.href = "confirmation.html?orderId=" + orderRef.id;
+      } catch(e) {
+        console.error("Place order error:", e);
+        App.toast("Error placing order: " + e.message, "error");
+        btn.disabled = false; 
+        btn.innerHTML = "Confirm & Place Order " + Cart.formatPrice(Cart.total(activeFulfillment)) + " &rarr;";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderOrderItems);
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

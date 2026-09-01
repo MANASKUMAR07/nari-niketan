@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product &mdash; Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo"><img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;"><div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div></a>
+      <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html" class="active">Shop</a></li></ul>
+      <div class="nav-actions">
+        <button class="pwa-nav-btn pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none" title="Install Nari Niketan App">
+          <span class="badge-sparkle"></span> Install App
+        </button>
+        <a href="cart.html" class="nav-icon-btn" title="Cart"><span class="cart-badge" id="cart-count" style="display:none">0</span></a>
+        <button class="nav-login-btn" id="nav-login-btn" onclick="window.location.href='login.html'">Login / Register</button>
+        <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+          <button class="nav-avatar" id="nav-avatar" aria-label="User menu">U</button>
+          <div class="dropdown-menu" id="user-dropdown"><div style="padding:.5rem 1rem"><p style="font-size:.88rem;font-weight:600" id="nav-user-name">User</p></div><a href="my-account.html">My Account</a><a href="my-orders.html">My Orders</a><hr class="dropdown-divider"><button onclick="App.signOut()">Sign Out</button></div>
+        </div>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <nav class="mobile-nav" id="mobile-nav" style="top:var(--navbar-h)">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop All</a>
+    <a href="shop.html?cat=Sarees">Sarees</a>
+    <a href="shop.html?cat=Suits">Suits</a>
+    <a href="shop.html?cat=Lehengas">Lehengas</a>
+    <a href="cart.html">Cart</a>
+    <a href="my-orders.html">My Orders</a>
+    <a href="login.html">Login / Register</a>
+    <button class="pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none;background:none;border:none;color:var(--accent,#D4AF37);font-weight:700;padding:0.75rem 1rem;text-align:left;cursor:pointer;font-size:1rem;">
+      Install App
+    </button>
+  </nav>
+
+  <div class="page-content" >
+    <div class="breadcrumb-bar"><div class="container"><div class="breadcrumb"><a href="index.html">Home</a><span></span><a href="shop.html">Shop</a><span></span><span id="bread-name">Product</span></div></div></div>
+
+    <div class="product-detail-layout" id="product-detail">
+      <div style="grid-column:1/-1;text-align:center;padding:3rem"><div class="spinner" style="margin:0 auto 1rem"></div><p style="color:var(--text-muted)">Loading product...</p></div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="container" style="margin:3rem auto">
+      <div class="section-header"><span class="section-label">You May Also Like</span><h2 class="section-title">Related Products</h2></div>
+      <div class="products-grid" id="related-products"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="nav-logo" style="margin-bottom:1rem">
+            <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
+            <div class="nav-logo-text">
+              <span class="brand-name" style="color:var(--white)">Nari Niketan</span>
+              <span class="brand-tagline">Elegance Redefined</span>
+            </div>
+          </div>
+          <p class="footer-brand-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html">All Products</a></li>
+            <li><a href="shop.html?cat=Sarees">Sarees</a></li>
+            <li><a href="shop.html?cat=Suits">Suits</a></li>
+            <li><a href="shop.html?cat=Lehengas">Lehengas</a></li>
+            <li><a href="shop.html?cat=Kurtas">Kurtas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Legal &amp; Support</h4>
+          <ul class="footer-links">
+            <li><a href="grievance-redressal.html" style="color:var(--accent-light);font-weight:600">&#9878; Grievance Redressal</a></li>
+            <li><a href="terms-and-conditions.html">&#x1F4DC; Terms &amp; Conditions</a></li>
+            <li><a href="privacy-policy.html">&#x1F512; Privacy Policy</a></li>
+            <li><a href="return-policy.html">&#8634; Return &amp; Refund Policy</a></li>
+            <li><a href="my-orders.html">Track Orders</a></li>
+            <li><a href="seller/login.html" style="color:var(--accent-dark);font-weight:600">&#x1F3EA; Sell on Nari Niketan</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Contact &amp; Grievance</h4>
+          <div class="footer-contact">
+            <p>&#x1F4CD; <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer">Nari Niketan, Rihand Nagar, UP &rarr;</a></p>
+            <p>&#x1F4DE; <a href="tel:+916307032042">+91 6307032042</a></p>
+            <p>&#x1F4E7; <a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></p>
+            <p>&#9878; <a href="grievance-redressal.html" style="color:var(--accent-light);text-decoration:underline;">Lodge Grievance Ticket &rarr;</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Nari Niketan. All rights reserved.</p>
+        <p><a href="grievance-redressal.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Grievance Redressal</a> &bull; <a href="terms-and-conditions.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Terms</a> &bull; <a href="privacy-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Privacy</a> &bull; <a href="return-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Returns</a></p>
+        <p>Made with &hearts; in India &bull; Created by Manas.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/products.js?v=3.8"></script>
+  <script src="js/nari-ai-ads.js?v=1.0"></script>
+  <script>
+    let currentProduct = null;
+    let selectedSize = null, selectedColor = null, qty = 1;
+
+    async function loadProduct() {
+      const id = new URLSearchParams(window.location.search).get("id");
+      if (!id) { window.location.href = "shop.html"; return; }
+      const product = await Store.getProduct(id);
+      if (!product) { window.location.href = "shop.html"; return; }
+      currentProduct = product;
+      document.title = product.name + " &mdash; Nari Niketan";
+      document.getElementById("bread-name").textContent = product.name;
+      renderProduct(product);
+      const related = await Store.getProducts({ category: product.category });
+      Products.renderGrid(related.filter(p => p.id !== id).slice(0, 4), "related-products");
+    }
+
+        function renderProduct(p) {
+      // Seller saves: price = MRP, salePrice = discounted selling price
+      const hasSale     = p.salePrice && Number(p.salePrice) < Number(p.price);
+      const displayPrice = hasSale ? Number(p.salePrice) : Number(p.price);
+      const discount    = hasSale
+        ? (p.discount || Math.round(((p.price - p.salePrice) / p.price) * 100))
+        : 0;
+      const noImg   = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 520'%3E%3Crect fill='%23F5ECD8' width='400' height='520'/%3E%3Ctext x='200' y='240' font-family='Georgia%2Cserif' font-size='16' fill='%238B1A4A' text-anchor='middle'%3E%F0%9F%9B%8D%EF%B8%8F%3C/text%3E%3Ctext x='200' y='270' font-family='Georgia%2Cserif' font-size='14' fill='%238B1A4A' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
+      const mainImg = (p.images && p.images[0]) || p.imageUrl || noImg;
+      const images  = (p.images && p.images.length > 0) ? p.images : (p.imageUrl ? [p.imageUrl] : [mainImg]);
+
+      document.getElementById("product-detail").innerHTML = `
+        <div class="product-gallery">
+          <div class="gallery-main"><img src="${mainImg}" alt="${p.name}" id="main-img" onerror="this.onerror=null;this.src='${noImg}'"></div>
+          <div class="gallery-thumbs">
+            ${images.map((img,i) => `<div class="gallery-thumb ${i===0?'active':''}" onclick="switchImg('${img}',this)"><img src="${img}" alt="" onerror="this.onerror=null;this.src='${noImg}'"></div>`).join("")}
+          </div>
+        </div>
+        <div class="product-info">
+          <p class="product-category">${p.category}</p>
+          <h1>${p.name}</h1>
+          <div class="product-rating-row">
+            <span class="stars" style="font-size:1rem">${App.getStars(p.rating||4)}</span>
+            <span style="font-size:0.9rem;color:var(--text-light)">${(p.rating||4).toFixed(1)} (${p.reviews||0} reviews)</span>
+            <span style="margin-left:auto;font-size:0.82rem;color:${p.stock>0?'var(--success)':'var(--error)'}">
+              ${p.stock>10?'&#9989; In Stock':p.stock>0?`&#9888; Only ${p.stock} left`:'&#10060; Out of Stock'}
+            </span>
+          </div>
+          <div class="product-big-price" style="display:flex;align-items:baseline;gap:0.6rem;margin:1rem 0;">
+            <span style="font-size:1.6rem;font-weight:700;color:var(--primary);">&#8377;${displayPrice.toLocaleString('en-IN')}</span>
+            ${hasSale ? `<span class="original" style="font-size:1rem;color:#88707A;text-decoration:line-through;">&#8377;${Number(p.price).toLocaleString('en-IN')}</span>` : ''}
+            ${hasSale ? `<span class="save-tag" style="font-size:0.8rem;color:#2E7D32;font-weight:700;background:rgba(46,125,50,0.1);padding:2px 8px;border-radius:4px;">${discount}% OFF</span>` : ''}
+          </div>
+
+          ${p.sizes&&p.sizes.length?`
+          <div class="product-option-section">
+            <p class="product-option-label">Size <span id="selected-size-label">${selectedSize?'&mdash; '+selectedSize:''}</span></p>
+            <div class="size-selector">
+              ${p.sizes.map(s=>`<button class="size-option" onclick="selectSize('${s}',this)">${s}</button>`).join("")}
+            </div>
+          </div>`:''}
+
+          ${p.colors&&p.colors.length?`
+          <div class="product-option-section">
+            <p class="product-option-label">Color <span id="selected-color-label">${selectedColor?'&mdash; '+selectedColor:''}</span></p>
+            <div class="color-selector">
+              ${p.colors.map((c,i)=>{
+                const colorMap={'Red':'#D32F2F','Blue':'#1976D2','Green':'#388E3C','Navy Blue':'#1A237E','Bottle Green':'#1B5E20','Peach':'#FFAB91','Sky Blue':'#81D4FA','Mint':'#80CBC4','Maroon':'#880E4F','Pink':'#F48FB1','Gold':'#FFD700','Wine':'#7B0D1E','Black':'#212121','Royal Blue':'#1565C0','Teal':'#00695C','Coral':'#FF5252','Lavender':'#CE93D8','Yellow':'#FBC02D','Orange':'#F57C00','Purple':'#7B1FA2','Beige':'#D7CCC8','Silver':'#9E9E9E','Multicolor':'linear-gradient(135deg,#f00,#ff0,#0f0,#00f)'};
+                const bg=colorMap[c]||'var(--primary)';
+                return `<button class="color-option" title="${c}" style="background:${bg};border:3px solid rgba(255,255,255,0.5)" onclick="selectColor('${c}',this)"></button>`;
+              }).join("")}
+            </div>
+          </div>`:''}
+
+          <div class="product-option-section">
+            <p class="product-option-label">Quantity</p>
+            <div class="qty-selector">
+              <button class="qty-btn" onclick="changeQty(-1)">&minus;</button>
+              <input class="qty-num" type="text" value="1" id="qty-display" readonly>
+              <button class="qty-btn" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+
+          <div class="add-to-cart-row">
+            <button class="btn btn-primary btn-lg" onclick="addToCart()" ${p.stock<=0?'disabled':''}>
+              Add to Cart
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="buyNow()" ${p.stock<=0?'disabled':''}>
+              &#9889; Buy Now
+            </button>
+          </div>
+
+          <button class="btn-tryon-launch" onclick="if(window.VirtualTryOn) VirtualTryOn.open(currentProduct)" title="Try this outfit on your photo or model avatar">
+            👗 ✨ AI Virtual Try-On (Try It On Me)
+          </button>
+
+          <div class="product-meta">
+            ${p.fabric?`<div class="product-meta-item"><strong>Fabric:</strong>${p.fabric}</div>`:''}
+            ${p.care?`<div class="product-meta-item"><strong>Care:</strong>${p.care}</div>`:''}
+            <div class="product-meta-item">&#x1F69A; <strong>Delivery:</strong>3&ndash;7 business days</div>
+            <div class="product-meta-item">&#8634; <strong>Returns:</strong>7-day easy return</div>
+          </div>
+
+          <!-- ✨ Complete The Look (Nari AI Ads) -->
+          <div id="nari-ai-pair-container"></div>
+
+          <div class="product-tabs">
+            <div class="tab-headers">
+              <button class="tab-header active" onclick="switchTab(this,'desc')">Description</button>
+              <button class="tab-header" onclick="switchTab(this,'care')">Care & Fabric</button>
+              <button class="tab-header" onclick="switchTab(this,'ship')">Shipping</button>
+            </div>
+            <div class="tab-content active" id="tab-desc"><p>${p.description||'Premium quality product from Nari Niketan.'}</p></div>
+            <div class="tab-content" id="tab-care"><p><strong>Fabric:</strong> ${p.fabric||'Premium quality fabric'}<br><strong>Care:</strong> ${p.care||'Handle with care. Follow label instructions.'}</p></div>
+            <div class="tab-content" id="tab-ship"><p>&#x1F69A; <strong>Standard Delivery:</strong> 3&ndash;7 business days<br><strong>Free Shipping</strong> on orders above &#8377;999<br>&#8634; <strong>7-day Returns:</strong> Hassle-free return policy</p></div>
+          </div>
+        </div>`;
+
+      selectedSize = p.sizes && p.sizes.length === 1 ? p.sizes[0] : null;
+      selectedColor = p.colors && p.colors.length === 1 ? p.colors[0] : null;
+      if (window.NariAIAds) NariAIAds.renderCompleteTheLook(p, "nari-ai-pair-container");
+    }
+
+    function switchImg(src, thumb) {
+      document.getElementById("main-img").src = src;
+      document.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("active"));
+      thumb.classList.add("active");
+    }
+
+    function selectSize(size, btn) {
+      document.querySelectorAll(".size-option").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedSize = size;
+      const lbl = document.getElementById("selected-size-label");
+      if (lbl) lbl.textContent = "&mdash; " + size;
+    }
+
+    function selectColor(color, btn) {
+      document.querySelectorAll(".color-option").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedColor = color;
+      const lbl = document.getElementById("selected-color-label");
+      if (lbl) lbl.textContent = "&mdash; " + color;
+    }
+
+    function changeQty(delta) {
+      qty = Math.max(1, Math.min(qty + delta, currentProduct?.stock || 99));
+      document.getElementById("qty-display").value = qty;
+    }
+
+    function addToCart() {
+      if (!currentProduct) return false;
+      const sizesReq = currentProduct.sizes && currentProduct.sizes.length > 0 && !currentProduct.sizes.includes("Free Size");
+      if (sizesReq && !selectedSize) { App.toast("Please select a size.", "warning"); return false; }
+      Cart.add(currentProduct, selectedSize || "Free Size", selectedColor || "Default", qty);
+      App.toast("Added to cart! ", "success");
+      return true;
+    }
+
+    function buyNow() {
+      if (addToCart()) {
+        window.location.href = "cart.html";
+      }
+    }
+
+    function switchTab(btn, tab) {
+      document.querySelectorAll(".tab-header").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("tab-" + tab)?.classList.add("active");
+    }
+
+    document.addEventListener("DOMContentLoaded", loadProduct);
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms & Conditions &mdash; Nari Niketan</title>
+  <meta name="description" content="Official Terms & Conditions for Nari Niketan. Formulated under the Indian Contract Act 1872, IT Act 2000, and Consumer Protection (E-Commerce) Rules 2020.">
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <style>
+    .policy-page { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .policy-hero { text-align: center; padding: 3.2rem 1.2rem 2.8rem; background: linear-gradient(135deg, var(--primary) 0%, #5A0D2F 100%); color: #fff; border-radius: var(--radius-lg); margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(139,26,74,0.18); position: relative; overflow: hidden; }
+    .policy-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #D4AF37, #F3E5AB, #D4AF37); }
+    .policy-hero-icon { font-size: 3.5rem; margin-bottom: 0.8rem; }
+    .policy-hero h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 5vw, 2.5rem); margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+    .policy-hero p { font-size: 0.95rem; opacity: 0.92; max-width: 620px; margin: 0 auto; line-height: 1.6; }
+    .policy-badges { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+    .policy-badge { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 0.35rem 0.9rem; font-size: 0.78rem; font-weight: 600; backdrop-filter: blur(4px); }
+    
+    .policy-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2.2rem; background: #fff; padding: 1rem; border-radius: var(--radius); border: 1px solid rgba(139,26,74,0.1); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+    .policy-nav a { font-size: 0.8rem; color: var(--primary); text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid rgba(139,26,74,0.2); border-radius: 50px; transition: all .2s; font-weight: 500; }
+    .policy-nav a:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-1px); }
+    
+    .policy-section { margin-bottom: 2.5rem; scroll-margin-top: 90px; }
+    .policy-section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid rgba(139,26,74,.15); }
+    .policy-section-icon { font-size: 1.5rem; }
+    .policy-section h2 { font-family: var(--font-display); color: var(--primary); font-size: 1.25rem; margin: 0; }
+    
+    .policy-card { background: var(--white); border: 1px solid rgba(139,26,74,.12); border-radius: var(--radius); padding: 1.35rem 1.6rem; margin-bottom: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .policy-card-title { font-weight: 700; color: var(--text); margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .policy-card p, .policy-card li { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+    .policy-card ul, .policy-card ol { padding-left: 1.3rem; margin-top: 0.5rem; }
+    .policy-card li { margin-bottom: 0.45rem; }
+    
+    .policy-highlight { background: linear-gradient(135deg, rgba(139,26,74,.05) 0%, rgba(212,175,55,.05) 100%); border-left: 4px solid var(--primary); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.2rem 0; }
+    .policy-highlight.green { border-left-color: #1E6B3A; background: rgba(30,107,58,0.05); }
+    .policy-highlight.gold { border-left-color: #D4AF37; background: rgba(212,175,55,0.08); }
+    .policy-highlight.warning { border-left-color: #B84A07; background: rgba(184,74,7,0.06); }
+    .policy-highlight-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 0.4rem; color: var(--text); }
+    .policy-highlight p, .policy-highlight li { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; }
+    
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .category-item { background: var(--cream, #FDFAF8); border: 1px solid rgba(139,26,74,0.12); border-radius: 10px; padding: 1.1rem; }
+    .category-item h4 { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem; }
+    .category-item p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+    
+    .law-chip { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(139,26,74,.07); border: 1px solid rgba(139,26,74,.18); border-radius: 50px; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; color: var(--primary); margin: 0.2rem 0.2rem 0.2rem 0; }
+    
+    table.policy-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.75rem; }
+    table.policy-table th { background: rgba(139,26,74,.08); color: var(--primary); font-weight: 700; padding: 0.75rem 1rem; text-align: left; border-bottom: 2px solid rgba(139,26,74,0.15); }
+    table.policy-table td { padding: 0.7rem 1rem; border-bottom: 1px solid rgba(139,26,74,.08); color: var(--text-muted); vertical-align: top; }
+    table.policy-table tr:last-child td { border-bottom: none; }
+    
+    .grievance-box { background: linear-gradient(135deg, #1A0A0F 0%, #30101C 100%); color: #fff; border-radius: var(--radius-lg); padding: 2.2rem; margin-top: 2rem; border: 1px solid rgba(212,175,55,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .grievance-box h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.4rem; color: #D4AF37; }
+    .grievance-box p { font-size: 0.88rem; color: #E5D0C0; line-height: 1.6; margin-bottom: 1.25rem; }
+    .grievance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .grievance-item { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 0.9rem 1.1rem; }
+    .grievance-item-label { font-size: 0.72rem; color: #D4AF37; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+    .grievance-item-val { font-size: 0.9rem; color: #fff; font-weight: 600; word-break: break-word; }
+    .grievance-item-val a { color: #fff; text-decoration: underline; }
+    
+    .print-btn-bar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+    .print-btn { background: #fff; border: 1px solid rgba(139,26,74,0.25); color: var(--primary); padding: 0.45rem 1rem; border-radius: 50px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all .2s; }
+    .print-btn:hover { background: var(--primary); color: #fff; }
+    
+    @media (max-width: 650px) {
+      .policy-hero { padding: 2.2rem 1rem 2rem; }
+      .policy-card { padding: 1.1rem 1.2rem; }
+      .grievance-box { padding: 1.5rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <div class="nav-logo-text">
+          <span class="brand-name">Nari Niketan</span>
+          <span class="brand-tagline">Elegance Redefined</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="return-policy.html">Returns</a></li>
+        <li><a href="privacy-policy.html">Privacy</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="cart.html" class="nav-icon-btn" title="Cart">&rsquo;</a>
+        <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+          <button class="nav-avatar" id="nav-avatar">U</button>
+          <div class="dropdown-menu" id="user-dropdown">
+            <div style="padding:.5rem 1rem"><p style="font-size:.88rem;font-weight:600" id="nav-user-name">User</p></div>
+            <a href="my-account.html">My Account</a>
+            <a href="my-orders.html">My Orders</a>
+            <hr class="dropdown-divider">
+            <button onclick="App.signOut()">Sign Out</button>
+          </div>
+        </div>
+        <button class="nav-login-btn" id="nav-login-btn" onclick="window.location.href='login.html'">Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="policy-page">
+    
+    <div class="print-btn-bar">
+      <button class="print-btn" onclick="window.print()">
+        Print / Save as PDF
+      </button>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="policy-hero">
+      <div class="policy-hero-icon"></div>
+      <h1>Terms &amp; Conditions</h1>
+      <p>Please read these Terms and Conditions carefully. They constitute a legally binding electronic agreement between you and Nari Niketan under the laws of the Republic of India governing your access to and purchases on our platform.</p>
+      
+      <div class="policy-badges">
+        <span class="policy-badge"> Indian Contract Act, 1872</span>
+        <span class="policy-badge">Information Technology Act, 2000 (Section 10A)</span>
+        <span class="policy-badge">Consumer Protection (E-Commerce) Rules, 2020</span>
+        <span class="policy-badge">Digital Personal Data Protection Act, 2023</span>
+      </div>
+    </div>
+
+    <!-- Quick Jump Navigation -->
+    <div class="policy-nav">
+      <a href="#introduction">1. General Overview</a>
+      <a href="#eligibility">2. User Eligibility</a>
+      <a href="#electronic-contract">3. Electronic Agreement</a>
+      <a href="#pricing-products">4. Products &amp; Pricing</a>
+      <a href="#orders-payments">5. Orders &amp; Payments</a>
+      <a href="#shipping-delivery">6. Shipping &amp; Delivery</a>
+      <a href="#returns-refunds">7. Returns &amp; Refunds</a>
+      <a href="#ip-rights">8. Intellectual Property</a>
+      <a href="#prohibited-use">9. Prohibited Conduct</a>
+      <a href="#seller-terms">10. Multi-Vendor Terms</a>
+      <a href="#liability">11. Limitation of Liability</a>
+      <a href="#grievance">12. Grievance Redressal</a>
+    </div>
+
+    <!-- 1. INTRODUCTION -->
+    <section id="introduction" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>1. General Overview &amp; Platform Information</h2>
+      </div>
+      <div class="policy-card">
+        <p class="policy-card-title">Welcome to Nari Niketan</p>
+        <p>This electronic document is published in accordance with the provisions of <strong>Rule 3(1) of the Information Technology (Intermediaries Guidelines and Digital Media Ethics Code) Rules, 2021</strong> and the <strong>Consumer Protection (E-Commerce) Rules, 2020</strong> that require publishing the rules and regulations, privacy policy, and terms of use for access or usage of the website <strong>https://www.nariniketan.shop</strong> (and <code>nariniketan.shop</code>).</p>
+        <p>The platform is owned and operated by <strong>Nari Niketan</strong>, having its principal place of business located at <strong>Rihand Nagar, District Sonbhadra, Uttar Pradesh &ndash; 231223, India</strong>.</p>
+        <div class="policy-highlight gold">
+          <div class="policy-highlight-title">Binding Legal Agreement</div>
+          <p>By accessing, browsing, registering, or purchasing products on Nari Niketan, you agree to be legally bound by these Terms &amp; Conditions, together with our <a href="privacy-policy.html" style="color:var(--primary);font-weight:700;">Privacy Policy</a> and <a href="return-policy.html" style="color:var(--primary);font-weight:700;">Return &amp; Refund Policy</a>. If you do not agree, you must refrain from using the platform.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ELIGIBILITY -->
+    <section id="eligibility" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>2. User Eligibility &amp; Account Responsibility</h2>
+      </div>
+      <div class="policy-card">
+        <p>In accordance with the <strong>Indian Contract Act, 1872 (Section 11)</strong>:</p>
+        <ul>
+          <li><strong>Age Requirement:</strong> You must be at least <strong>18 years of age</strong> and legally competent to enter into a binding contract. Persons who are "incompetent to contract" within the meaning of the Indian Contract Act, 1872 are not eligible to transact directly on the platform.</li>
+          <li><strong>Minors:</strong> If you are a minor (under 18 years), you may transact only through your legal parent or guardian who registers and undertakes the contract on your behalf.</li>
+          <li><strong>Account Integrity:</strong> You are responsible for maintaining the confidentiality of your login credentials, password, and OTPs. You agree to accept responsibility for all transactions occurring under your authenticated account.</li>
+          <li><strong>Accurate Details:</strong> You agree to provide true, current, and complete delivery and identity details. Nari Niketan reserves the right to suspend or terminate accounts providing inaccurate or fictitious information.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. ELECTRONIC CONTRACT -->
+    <section id="electronic-contract" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>3. Electronic Contracts &amp; Communication</h2>
+      </div>
+      <div class="policy-card">
+        <p>Under <strong>Section 10A of the Information Technology Act, 2000</strong>, contracts formed through electronic means, electronic records, and digital communications are legally valid and enforceable in courts across India:</p>
+        <ul>
+          <li>When you browse products, add items to your cart, and place an order, you make an <strong>electronic offer</strong> to purchase the selected merchandise.</li>
+          <li>Our automated order confirmation (displayed on screen, generated via invoice receipt, or dispatched via SMS/Email) constitutes electronic acknowledgment of your order.</li>
+          <li>You consent to receive order updates, delivery dispatch tracking, invoices, and policy updates electronically via SMS, WhatsApp, Email, or website notifications.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. PRICING & PRODUCTS -->
+    <section id="pricing-products" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon">&middot;</span>
+        <h2>4. Product Descriptions, Dual-Pricing &amp; Handloom Artisanship</h2>
+      </div>
+      <div class="policy-card">
+        <p class="policy-card-title">Pricing Transparency &amp; GST Compliance</p>
+        <p>In compliance with the <strong>Consumer Protection (E-Commerce) Rules, 2020</strong> and the <strong>Legal Metrology (Packaged Commodities) Rules, 2011</strong>:</p>
+        <ul>
+          <li><strong>Dual-Pricing Display:</strong> Products clearly display the Maximum Retail Price (MRP) and the discounted Selling Price (Sale Price) in Indian Rupees (INR &#8377;).</li>
+          <li><strong>All-Inclusive Prices:</strong> Prices stated on the platform are inclusive of all applicable Goods and Services Tax (GST) as mandated by the CGST/SGST Acts.</li>
+          <li><strong>Handcrafted / Artisanal Textiles:</strong> Our apparel (Sarees, Suits, Lehengas, Kurtas) involves authentic Indian weaves, handlooms, zardozi, and embroidery. Subtle variations in texture, color tones due to studio lighting, thread slubs, and hand-block printing nuances are inherent characteristics of artisanal craftsmanship and are not considered defects.</li>
+          <li><strong>Pricing Errors:</strong> In the rare event of an inadvertent technical typographical error in pricing or product stock, we reserve the right to decline or cancel the affected order and issue an immediate 100% full refund.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5. ORDERS & PAYMENTS -->
+    <section id="orders-payments" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>5. Orders, Payments &amp; Invoicing</h2>
+      </div>
+      <div class="policy-card">
+        <p>We provide secure, convenient payment options for shoppers across India:</p>
+        <table class="policy-table">
+          <thead>
+            <tr>
+              <th>Payment Mode</th>
+              <th>Details &amp; Terms</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cash on Delivery (COD)</strong></td>
+              <td>Available for serviceable PIN codes across India. Payment in cash is due to the delivery courier agent upon physical parcel receipt.</td>
+            </tr>
+            <tr>
+              <td><strong>UPI / Instant Payments</strong></td>
+              <td>Instant payment via Google Pay, PhonePe, Paytm, BHIM UPI, or any authorized banking UPI application.</td>
+            </tr>
+            <tr>
+              <td><strong>Debit / Credit Cards &amp; Net Banking</strong></td>
+              <td>Processed securely via RBI-regulated payment aggregators with 3D Secure / OTP 2-factor authentication.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="policy-highlight green">
+          <div class="policy-highlight-title">Payment Security Guarantee</div>
+          <p>Nari Niketan does <u>NOT</u> store sensitive bank passwords, CVVs, or full credit/debit card numbers on its servers. All payment transactions are encrypted and processed through RBI-authorized payment gateways.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SHIPPING & DELIVERY -->
+    <section id="shipping-delivery" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>6. Shipping, Logistics &amp; Delivery Timelines</h2>
+      </div>
+      <div class="policy-card">
+        <ul>
+          <li><strong>Delivery Timelines:</strong> Standard order deliveries typically take between <strong>3 to 7 business days</strong> across India, depending on customer PIN code accessibility and logistics network conditions.</li>
+          <li><strong>Logistics Partners:</strong> Parcels are shipped through leading national logistics carriers (e.g. Delhivery, BlueDart, Shiprocket, India Post).</li>
+          <li><strong>Tracking:</strong> Once dispatched, a live tracking link is provided in the <a href="my-orders.html" style="color:var(--primary);font-weight:600;">My Orders</a> section and sent via SMS/Email.</li>
+          <li><strong>Inspection on Delivery:</strong> Customers are advised to inspect external parcel packaging for severe physical tampering before accepting delivery.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. RETURNS & REFUNDS -->
+    <section id="returns-refunds" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon">&#8634;</span>
+        <h2>7. Returns, Replacements &amp; Refund Policy</h2>
+      </div>
+      <div class="policy-card">
+        <p>In accordance with our <a href="return-policy.html" style="color:var(--primary);font-weight:700;">Return &amp; Refund Policy</a> and the Consumer Protection (E-Commerce) Rules, 2020:</p>
+        <ul>
+          <li><strong>7-Day Return Window:</strong> You may request a return within <strong>7 days from the date of delivery</strong> for eligible items.</li>
+          <li><strong>Eligibility Criteria:</strong> Products must be unused, unwashed, with all original tags, packaging, and invoices intact.</li>
+          <li><strong>Free Reverse Pickup:</strong> Reverse courier pickup is scheduled directly from the original delivery address at no extra cost.</li>
+          <li><strong>Refund Processing:</strong> Approved refunds are credited within <strong>5 to 7 business days</strong> to the original payment source (or via secure NEFT/UPI for COD orders).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. INTELLECTUAL PROPERTY -->
+    <section id="ip-rights" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>8. Intellectual Property Rights &amp; Trademarks</h2>
+      </div>
+      <div class="policy-card">
+        <p>All content hosted on this platform, including but not limited to the brand name <strong>"Nari Niketan"</strong>, logos, brand trademarks, website user interface design, graphic icons, digital illustrations, product photographs, styling designs, and software source code, is the exclusive intellectual property of Nari Niketan and protected under the <strong>Copyright Act, 1957</strong> and the <strong>Trade Marks Act, 1999</strong> of India.</p>
+        <p>No user or third party may copy, reproduce, scrape, modify, distribute, or create derivative works without prior written authorization from Nari Niketan.</p>
+      </div>
+    </section>
+
+    <!-- 9. PROHIBITED CONDUCT -->
+    <section id="prohibited-use" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>9. User Conduct &amp; Prohibited Activities</h2>
+      </div>
+      <div class="policy-card">
+        <p>Under <strong>Rule 3(1)(b) of the Information Technology Rules, 2021</strong>, users are strictly prohibited from hosting, displaying, uploading, modifying, transmitting, or sharing any information that:</p>
+        <ul>
+          <li>Belongs to another person and to which the user does not have any legal right;</li>
+          <li>Is defamatory, obscene, pornographic, pedophilic, invasive of another's privacy, or racially/ethnically objectionable;</li>
+          <li>Infringes any patent, trademark, copyright, or proprietary rights;</li>
+          <li>Deceives or misleads the addressee about the origin of the message or contains software viruses, malware, or destructive code;</li>
+          <li>Threatens the unity, integrity, defense, security, or sovereignty of India, friendly relations with foreign states, or public order.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. MULTI-VENDOR TERMS -->
+    <section id="seller-terms" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon">&#127978;</span>
+        <h2>10. Multi-Vendor Marketplace Terms (Seller Portal)</h2>
+      </div>
+      <div class="policy-card">
+        <p>For independent vendors, artisans, and sellers registered on our <a href="seller/login.html" style="color:var(--primary);font-weight:600;">Seller Portal</a>:</p>
+        <ul>
+          <li><strong>Authenticity &amp; Quality:</strong> Sellers warrant that all ethnic products uploaded are 100% genuine, new, and compliant with Indian Legal Metrology and BIS quality standards. Counterfeiting is strictly prohibited.</li>
+          <li><strong>Order Dispatch SLA:</strong> Sellers must pack and dispatch assigned orders within the prescribed fulfillment timeline (typically 24&ndash;48 hours).</li>
+          <li><strong>Independent Accountability:</strong> Sellers must honor return requests approved under the platform's return policy.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 11. LIMITATION OF LIABILITY -->
+    <section id="liability" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>11. Limitation of Liability &amp; Disclaimers</h2>
+      </div>
+      <div class="policy-card">
+        <ul>
+          <li><strong>Service Availability:</strong> While we strive for 99.99% uptime, we do not guarantee uninterrupted or error-free access during scheduled server maintenance or force majeure events.</li>
+          <li><strong>Cap on Liability:</strong> To the maximum extent permitted under applicable Indian laws, the total aggregate liability of Nari Niketan for any claim arising out of your purchase shall be limited to the actual amount paid by you for the specific product order in dispute.</li>
+          <li><strong>Force Majeure:</strong> Nari Niketan shall not be held liable for failure or delay in delivery resulting from events beyond reasonable control, including natural disasters, governmental restrictions, severe weather, strikes, or transport disruptions.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 12. GRIEVANCE REDRESSAL -->
+    <section id="grievance" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>12. Statutory Grievance Redressal &amp; Nodal Officer</h2>
+      </div>
+      <div class="policy-card">
+        <p>In accordance with <strong>Rule 4 of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021</strong> and <strong>Rule 5(1)(v) of the Consumer Protection (E-Commerce) Rules, 2020</strong>, the contact details of the designated Grievance Officer are provided below:</p>
+        
+        <div class="grievance-box">
+          <h3> Designated Grievance &amp; Nodal Officer</h3>
+          <p>For any complaints, consumer disputes, or legal notices concerning these Terms &amp; Conditions or our platform operations, please contact:</p>
+          
+          <div class="grievance-grid">
+            <div class="grievance-item">
+              <div class="grievance-item-label">Designated Officer</div>
+              <div class="grievance-item-val">Grievance Officer, Nari Niketan</div>
+            </div>
+            <div class="grievance-item">
+              <div class="grievance-item-label">Email Address</div>
+              <div class="grievance-item-val"><a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></div>
+            </div>
+            <div class="grievance-item">
+              <div class="grievance-item-label">Contact Phone</div>
+              <div class="grievance-item-val"><a href="tel:+916307032042">+91 6307032042</a></div>
+            </div>
+            <div class="grievance-item">
+              <div class="grievance-item-label">Postal / Official Address</div>
+              <div class="grievance-item-val">Nari Niketan, Rihand Nagar, District Sonbhadra, Uttar Pradesh &ndash; 231223, India</div>
+            </div>
+          </div>
+
+          <div style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.25);border-radius:8px;padding:1rem;font-size:0.85rem;line-height:1.6;color:#F3E5AB;">
+            <strong> Statutory Redressal Timelines:</strong>
+            <ul style="margin:0.4rem 0 0 1.2rem;color:#F3E5AB;">
+              <li><strong>Acknowledgement:</strong> Receipt of grievance will be acknowledged within <strong>48 hours</strong>.</li>
+              <li><strong>Resolution:</strong> The grievance will be redressed within <strong>15 to 30 days</strong> from the date of its receipt.</li>
+              <li><strong>Consumer Forum &amp; Helpline:</strong> In case of unresolved consumer disputes, you may file a complaint at <strong>consumerhelpline.gov.in</strong> or call the National Consumer Helpline at <strong>1915</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. JURISDICTION -->
+    <section class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>13. Governing Law &amp; Judicial Jurisdiction</h2>
+      </div>
+      <div class="policy-card">
+        <p>These Terms &amp; Conditions shall be governed by, interpreted, and construed in accordance with the substantive laws of the <strong>Republic of India</strong>.</p>
+        <p>Any dispute, controversy, or claim arising out of or relating to these terms, or the breach, termination, or invalidity thereof, shall be subject to the exclusive jurisdiction of the competent courts in <strong>Sonbhadra, Uttar Pradesh, India</strong>.</p>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:1rem;">Last Updated: August 31, 2026 &middot; Effective Date: August 31, 2026</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Main Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="nav-logo" style="margin-bottom:1rem">
+            <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
+            <div class="nav-logo-text">
+              <span class="brand-name" style="color:var(--white)">Nari Niketan</span>
+              <span class="brand-tagline">Elegance Redefined</span>
+            </div>
+          </div>
+          <p class="footer-brand-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html">All Products</a></li>
+            <li><a href="shop.html?cat=Sarees">Sarees</a></li>
+            <li><a href="shop.html?cat=Suits">Suits</a></li>
+            <li><a href="shop.html?cat=Lehengas">Lehengas</a></li>
+            <li><a href="shop.html?cat=Kurtas">Kurtas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Legal &amp; Support</h4>
+          <ul class="footer-links">
+            <li><a href="terms-and-conditions.html" style="color:var(--accent-light);font-weight:600">Terms &amp; Conditions</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="return-policy.html">&#8634; Return &amp; Refund Policy</a></li>
+            <li><a href="my-orders.html">Track Orders</a></li>
+            <li><a href="my-account.html">My Account</a></li>
+            <li><a href="seller/login.html" style="color:var(--accent-dark);font-weight:600">&#127978; Sell on Nari Niketan</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Contact &amp; Grievance</h4>
+          <div class="footer-contact">
+            <p><a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer">Nari Niketan, Rihand Nagar, UP &rarr;</a></p>
+            <p>&#128222; <a href="tel:+916307032042">+91 6307032042</a></p>
+            <p>&#9993; <a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Nari Niketan. All rights reserved.</p>
+        <p><a href="terms-and-conditions.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Terms &amp; Conditions</a> &bull; <a href="privacy-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Privacy Policy</a> &bull; <a href="return-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Return Policy</a></p>
+        <p>Made with &hearts; in India</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

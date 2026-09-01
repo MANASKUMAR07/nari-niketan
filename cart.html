@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart &mdash; Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div>
+      </a>
+      <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li></ul>
+      <div class="nav-actions">
+        <button class="pwa-nav-btn pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none" title="Install Nari Niketan App">
+          <span class="badge-sparkle"></span> Install App
+        </button>
+        <a href="cart.html" class="nav-icon-btn active" title="Cart"><span class="cart-badge" id="cart-count" style="display:none">0</span></a>
+        <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+          <button class="nav-avatar" id="nav-avatar" aria-label="User menu">U</button>
+          <div class="dropdown-menu" id="user-dropdown">
+            <div style="padding:.5rem 1rem"><p style="font-size:.88rem;font-weight:600" id="nav-user-name">User</p></div>
+            <a href="my-account.html">My Account</a>
+            <a href="my-orders.html">My Orders</a>
+            <hr class="dropdown-divider">
+            <button onclick="App.signOut()">Sign Out</button>
+          </div>
+        </div>
+        <button class="nav-login-btn" id="nav-login-btn" onclick="window.location.href='login.html'">Login / Register</button>
+        <button class="hamburger" id="hamburger" aria-label="Toggle Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <nav class="mobile-nav" id="mobile-nav" style="top:var(--navbar-h)">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop All</a>
+    <a href="shop.html?cat=Sarees">Sarees</a>
+    <a href="shop.html?cat=Suits">Suits</a>
+    <a href="shop.html?cat=Lehengas">Lehengas</a>
+    <a href="cart.html" class="active">Cart</a>
+    <a href="my-orders.html">My Orders</a>
+    <a href="login.html">Login / Register</a>
+    <button class="pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none;background:none;border:none;color:var(--accent,#D4AF37);font-weight:700;padding:0.75rem 1rem;text-align:left;cursor:pointer;font-size:1rem;">
+      Install App
+    </button>
+  </nav>
+
+  <div class="page-content" >
+    <div style="max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem 0.5rem">
+      <h1 style="font-family:var(--font-display);font-size:1.75rem;color:var(--primary)">Shopping Bag (<span id="cart-item-count">0</span>)</h1>
+    </div>
+
+    <div class="cart-layout" id="cart-content">
+      <div id="cart-items-container">
+        <div style="text-align:center;padding:3rem"><div class="spinner" style="margin:0 auto"></div></div>
+      </div>
+
+      <div class="cart-summary" id="cart-summary" style="display:none">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span>Bag Subtotal</span><strong id="summary-subtotal">&#8377;0</strong></div>
+        
+        <!-- Discount Row -->
+        <div class="summary-row" id="discount-row" style="display:none; color:#2E7D32;">
+          <span>Coupon Discount (<span id="discount-code-label"></span>)</span>
+          <strong id="summary-discount" style="color:#2E7D32;">-&#8377;0</strong>
+        </div>
+
+        <div class="summary-row"><span>Estimated Shipping</span><span id="summary-shipping">FREE</span></div>
+        <div class="summary-row total"><span>Total Payable</span><span id="summary-total" style="color:var(--primary);font-size:1.25rem;">&#8377;0</span></div>
+
+        <!-- Coupon Input Area -->
+        <div id="coupon-input-area" style="margin: 1.25rem 0;">
+          <label style="font-size:0.82rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Have a Promo Code?</label>
+          <div style="display:flex;gap:0.5rem;">
+            <input type="text" class="form-control" id="coupon-code" placeholder="Enter NARI20" style="text-transform:uppercase;font-weight:700;">
+            <button class="btn btn-outline btn-sm" onclick="applyCouponCode()" style="padding:0.5rem 1rem;white-space:nowrap;">Apply</button>
+          </div>
+          <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
+            <button onclick="document.getElementById('coupon-code').value='NARI20';applyCouponCode();" style="background:rgba(212,175,55,.15);border:1px dashed var(--accent-dark);padding:2px 8px;border-radius:4px;font-size:0.75rem;cursor:pointer;color:var(--accent-dark);font-weight:700;">Use NARI20 (20% OFF)</button>
+          </div>
+        </div>
+
+        <!-- Active Coupon Tag -->
+        <div id="active-coupon-tag" style="display:none; background:rgba(46,125,50,0.1); border:1px solid rgba(46,125,50,0.3); padding:0.6rem 0.85rem; border-radius:6px; margin-bottom:1rem; align-items:center; justify-content:space-between;">
+          <div>
+            <strong style="color:#2E7D32; font-size:0.85rem;" id="active-coupon-name">NARI20</strong>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;" id="active-coupon-desc">20% OFF Applied</p>
+          </div>
+          <button onclick="removeCouponCode()" style="background:none;border:none;color:var(--error);font-weight:700;font-size:0.82rem;cursor:pointer;">&#10005; Remove</button>
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" onclick="goToCheckout()" style="margin-top:0.75rem">
+          Proceed to Checkout &rarr;
+        </button>
+
+        <div class="cart-secure-badges">
+          <div class="secure-badge">Secure Checkout</div>
+          <div class="secure-badge">&#8617; 7-Day Returns</div>
+          <div class="secure-badge">&#9989; 100% Authentic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script>
+    function renderCart() {
+      const items = Cart.get();
+      const count = Cart.count();
+      document.getElementById("cart-item-count").textContent = count;
+      const container = document.getElementById("cart-items-container");
+      const summary = document.getElementById("cart-summary");
+
+      if (!items.length) {
+        summary.style.display = "none";
+        container.innerHTML = `
+          <div class="empty-state" style="padding:4rem 2rem;grid-column:1/-1">
+            <div class="empty-state-icon" style="font-size:3.5rem;margin-bottom:1rem"></div>
+            <h3 style="font-family:var(--font-display);color:var(--primary);font-size:1.5rem;margin-bottom:0.5rem">Your shopping bag is empty</h3>
+            <p style="color:var(--text-muted);margin-bottom:1.5rem">Explore our handcrafted ethnic collection and find your perfect outfit.</p>
+            <a href="shop.html" class="btn btn-primary btn-lg">Explore Collection</a>
+          </div>`;
+        return;
+      }
+
+      summary.style.display = "block";
+      const noImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 110'%3E%3Crect fill='%23F5ECD8' width='90' height='110'/%3E%3Ctext x='45' y='58' font-family='sans-serif' font-size='11' fill='%238B1A4A' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
+      container.innerHTML = items.map(item => `
+        <div class="cart-item">
+          <div class="cart-item-img">
+            <img src="${item.imageUrl || (item.images && item.images[0]) || noImg}" alt="${item.name}" onerror="this.onerror=null;this.src='${noImg}'">
+          </div>
+          <div class="cart-item-info">
+            <h4 class="cart-item-name">${item.name}</h4>
+            <p class="cart-item-variant">Category: ${item.category} | Size: ${item.size} | Color: ${item.color}</p>
+            <p class="cart-item-price">
+              ${Cart.formatPrice(item.price)} each
+              ${item.mrp && item.mrp > item.price ? `<span style="font-size:0.78rem;color:#88707A;text-decoration:line-through;margin-left:4px;">${Cart.formatPrice(item.mrp)}</span>` : ''}
+            </p>
+            <div class="cart-item-controls">
+              <div class="qty-selector">
+                <button class="qty-btn" onclick="updateQty('${item.key}', ${item.qty - 1})">-</button>
+                <span class="qty-num" style="display:flex;align-items:center;justify-content:center">${item.qty}</span>
+                <button class="qty-btn" onclick="updateQty('${item.key}', ${item.qty + 1})">+</button>
+              </div>
+              <strong style="color:var(--primary);font-size:1rem;">${Cart.formatPrice(item.price * item.qty)}</strong>
+              <button class="remove-btn" onclick="removeItem('${item.key}')" style="margin-left:auto;">&#128465; Remove</button>
+            </div>
+          </div>
+        </div>`).join("");
+
+      // Update Summary
+      const sub = Cart.subtotal();
+      const ship = Cart.shipping();
+      const disc = Cart.discountAmount();
+      const coupon = Cart.getCoupon();
+
+      document.getElementById("summary-subtotal").textContent = Cart.formatPrice(sub);
+      document.getElementById("summary-shipping").textContent = ship === 0 ? "FREE" : Cart.formatPrice(ship);
+      document.getElementById("summary-total").textContent = Cart.formatPrice(Cart.total());
+
+      // Update Coupon UI
+      const discRow = document.getElementById("discount-row");
+      const activeTag = document.getElementById("active-coupon-tag");
+      const inputArea = document.getElementById("coupon-input-area");
+
+      if (coupon && disc > 0) {
+        discRow.style.display = "flex";
+        document.getElementById("discount-code-label").textContent = coupon.code;
+        document.getElementById("summary-discount").textContent = "-" + Cart.formatPrice(disc);
+        
+        activeTag.style.display = "flex";
+        document.getElementById("active-coupon-name").textContent = coupon.code;
+        document.getElementById("active-coupon-desc").textContent = coupon.label;
+        inputArea.style.display = "none";
+      } else {
+        discRow.style.display = "none";
+        activeTag.style.display = "none";
+        inputArea.style.display = "block";
+      }
+    }
+
+    function updateQty(key, qty) { Cart.updateQty(key, qty); renderCart(); }
+    function removeItem(key) { Cart.remove(key); renderCart(); App.toast("Item removed.", "warning"); }
+
+        async function applyCouponCode() {
+      const inp = document.getElementById("coupon-code");
+      const res = await Cart.applyCoupon(inp.value);
+      if (res.success) {
+        App.toast(res.message, "success");
+        inp.value = "";
+        renderCart();
+      } else {
+        App.toast(res.message, "error");
+      }
+    }
+
+    function removeCouponCode() {
+      Cart.removeCoupon();
+      App.toast("Coupon removed successfully.", "default");
+      renderCart();
+    }
+
+    function goToCheckout() {
+      if (!Cart.count()) { App.toast("Your cart is empty.", "warning"); return; }
+      const user = auth.currentUser;
+      if (!user) { window.location.href = "login.html?redirect=" + encodeURIComponent("checkout.html"); return; }
+      window.location.href = "checkout.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", renderCart);
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nari Niketan | Premium Indian Ethnic Wear</title>
+  <meta name="description" content="Nari Niketan - Shop the finest Indian ethnic wear: Sarees, Lehengas, Suits, Kurtas and more. Free delivery on orders above &#8377;999.">
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=5.0">
+  <link rel="stylesheet" href="css/pwa.css?v=2.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/nari-ai-ads.css?v=1.1">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+  <link rel="stylesheet" href="css/nari-ai-search.css?v=1.1">
+</head>
+<body>
+
+  <!-- ============ TOP NAVBAR ============ -->
+  <header class="amz-header" id="amz-header">
+
+    <!-- ROW 1: Logo | Location | Search | Account | Returns | Cart -->
+    <div class="amz-navbar">
+
+      <!-- Logo -->
+      <a href="index.html" class="amz-logo" title="Nari Niketan Home">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan" class="amz-logo-img">
+        <div class="amz-logo-text">
+          <span class="amz-brand-name">Nari Niketan</span>
+          <span class="amz-brand-tag">Elegance Redefined</span>
+        </div>
+      </a>
+
+      <!-- Deliver to -->
+      <div class="amz-deliver">
+        <span class="amz-small">Deliver to</span>
+        <strong>India</strong>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="amz-search-wrap">
+        <select class="amz-search-cat" id="searchCategory" onchange="amzSearch()">
+          <option value="">All</option>
+          <option value="Sarees">Sarees</option>
+          <option value="Suits">Suits</option>
+          <option value="Lehengas">Lehengas</option>
+          <option value="Kurtas">Kurtas</option>
+          <option value="Dupattas">Dupattas</option>
+        </select>
+        <input type="text" class="amz-search-input" id="searchInput" placeholder="What are you looking for? (e.g. 'Cotton kurti under ₹800')" onkeydown="if(event.key==='Enter') amzSearch()">
+        <button class="amz-search-btn" onclick="amzSearch()" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+
+      <!-- Account & Lists -->
+      <div class="amz-nav-item" id="amz-account-btn" onclick="handleAccountClick()">
+        <span class="amz-small">Hello, <span id="amz-user-greeting">Sign in</span></span>
+        <strong>Account &amp; Lists &#9660;</strong>
+        <!-- Dropdown -->
+        <div class="amz-dropdown" id="amz-account-dropdown">
+          <div id="amz-dropdown-signed-out">
+            <div class="amz-dropdown-header">
+              <a href="login.html" class="amz-dropdown-signin-btn">Sign In</a>
+              <p>New customer? <a href="register.html">Start here.</a></p>
+            </div>
+            <div class="amz-dropdown-body">
+              <h4>Your Lists</h4>
+              <a href="my-orders.html">My Orders</a>
+              <a href="cart.html">Shopping Cart</a>
+            </div>
+          </div>
+          <div id="amz-dropdown-signed-in" style="display:none">
+            <div class="amz-dropdown-header">
+              <p class="amz-dropdown-username">Signed in as <strong id="amz-dropdown-name">User</strong></p>
+            </div>
+            <div class="amz-dropdown-body">
+              <h4>Your Account</h4>
+              <a href="my-account.html">My Account</a>
+              <a href="my-orders.html">My Orders</a>
+              <hr class="amz-dropdown-divider">
+              <button onclick="App.signOut()" class="amz-dropdown-signout">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Returns & Orders -->
+      <div class="amz-nav-item" onclick="window.location.href='my-orders.html'" style="cursor:pointer">
+        <span class="amz-small">Returns</span>
+        <strong>&amp; Orders</strong>
+      </div>
+
+      <!-- Cart -->
+      <a href="cart.html" class="amz-cart-btn" title="Shopping Cart">
+        <div class="amz-cart-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="amz-cart-count" id="cart-count" style="display:none">0</span>
+        </div>
+        <strong>Cart</strong>
+      </a>
+
+      <!-- Install App Button -->
+      <button class="amz-install-btn pwa-install-trigger" id="navbar-install-btn" onclick="window.triggerPWAInstall()" title="Install App">
+        &#10024; Install App
+      </button>
+
+      <!-- Hamburger (mobile) -->
+      <button class="amz-hamburger" id="amz-hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- ROW 2: Category Menu Bar -->
+    <nav class="amz-menu" id="amz-menu">
+      <a href="shop.html">&#9776; All Categories</a>
+      <a href="shop.html?cat=Sarees">Sarees</a>
+      <a href="shop.html?cat=Suits">Suits</a>
+      <a href="shop.html?cat=Lehengas">Lehengas</a>
+      <a href="shop.html?cat=Kurtas">Kurtas</a>
+      <a href="shop.html?cat=Dupattas">Dupattas</a>
+      <a href="shop.html" class="amz-menu-highlight">New Arrivals</a>
+      <a href="shop.html" class="amz-menu-highlight">Best Deals</a>
+      <a href="seller/index.html" class="amz-menu-highlight" style="color:#FFE082;font-weight:600">&#127978; Sell on Nari Niketan</a>
+      <a href="javascript:void(0)" onclick="if(window.VirtualTryOn) VirtualTryOn.open();" style="color:#FFE082;font-weight:700;margin-left:auto">&#128087; AI Virtual Try-On</a>
+      <a href="javascript:void(0)" onclick="if(window.NariAI) NariAI.openPhotoUpload();" style="color:#FFE082;font-weight:700;margin-left:12px">&#128247; Snap &amp; Match</a>
+    </nav>
+
+  </header>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="amz-mobile-nav" id="amz-mobile-nav">
+    <div class="amz-drawer-header">
+      <div class="amz-drawer-user">
+        <span class="amz-drawer-user-icon">&#128100;</span>
+        <span>Hello, <span id="amz-mobile-greeting" class="amz-drawer-greeting">Sign in</span></span>
+      </div>
+      <button class="amz-drawer-close" id="amz-drawer-close" aria-label="Close menu">&times;</button>
+    </div>
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop All</a>
+    <a href="shop.html?cat=Sarees">Sarees</a>
+    <a href="shop.html?cat=Suits">Suits</a>
+    <a href="shop.html?cat=Lehengas">Lehengas</a>
+    <a href="shop.html?cat=Kurtas">Kurtas</a>
+    <a href="seller/index.html" style="color:#FFE082;font-weight:700">&#127978; Sell on Nari Niketan</a>
+    <a href="javascript:void(0)" onclick="if(window.NariAI) { NariAI.openPhotoUpload(); closeMenus(); }" style="color:#D4AF37;font-weight:700">&#128247; AI Visual Search</a>
+    <hr style="border-color:rgba(255,255,255,0.15);margin:0.5rem 0">
+    <a href="cart.html">Cart</a>
+    <a href="my-orders.html">My Orders</a>
+    <a href="login.html">Login / Register</a>
+    <button class="pwa-install-trigger" onclick="window.triggerPWAInstall()" style="background:none;border:none;color:#D4AF37;font-weight:700;padding:0.75rem 1rem;text-align:left;cursor:pointer;font-size:0.95rem;width:100%;">&#10024; Install App</button>
+  </div>
+  <div class="amz-mobile-overlay" id="amz-mobile-overlay" onclick="closeMenus()"></div>
+
+  <!-- ============ HERO BANNER ============ -->
+  <section class="amz-hero">
+    <div class="amz-hero-content">
+      <p class="amz-hero-badge">New Collection 2026 &nbsp;|&nbsp; Authentic Indian Ethnic Wear</p>
+      <h1 class="amz-hero-title">Discover Your<br><span class="amz-hero-highlight">True Elegance</span></h1>
+      <p class="amz-hero-sub">Handcrafted Indian ethnic wear &mdash; Sarees, Lehengas, Suits &amp; more.<br>Where tradition meets modern grace.</p>
+      <div class="amz-hero-cta">
+        <a href="shop.html" class="amz-btn-primary">Shop Now</a>
+        <a href="shop.html?cat=Lehengas" class="amz-btn-outline">View Bridal Collection</a>
+        <button onclick="if(window.NariAI) NariAI.openPhotoUpload()" class="amz-btn-outline" style="border-color:#D4AF37;color:#FFE082;background:rgba(212,175,55,0.15);cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+          &#128247; Snap &amp; Match Outfit
+        </button>
+      </div>
+      <div class="amz-hero-stats">
+        <div class="amz-stat"><strong id="stat-products">0</strong><span>Products</span></div>
+        <div class="amz-stat-sep"></div>
+        <div class="amz-stat"><strong id="stat-orders">0</strong><span>Orders Placed</span></div>
+        <div class="amz-stat-sep"></div>
+        <div class="amz-stat"><strong id="stat-rating">&#11088; New</strong><span>Rating</span></div>
+        <div class="amz-stat-sep"></div>
+        <div class="amz-stat"><strong>Free</strong><span>Delivery &#8377;999+</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY TILES ============ -->
+  <section class="amz-section amz-categories-section">
+    <div class="amz-section-inner">
+      <div class="amz-section-head">
+        <h2>Shop by Category</h2>
+        <a href="shop.html" class="amz-see-all">See all &rarr;</a>
+      </div>
+      <div class="amz-cat-grid">
+
+        <a href="shop.html?cat=Sarees" class="amz-cat-card">
+          <div class="amz-cat-img-wrap">
+            <img src="images/categories/sarees.jpg" alt="Sarees" loading="lazy">
+          </div>
+          <h3>Sarees</h3>
+          <p>Shop now</p>
+        </a>
+
+        <a href="shop.html?cat=Suits" class="amz-cat-card">
+          <div class="amz-cat-img-wrap">
+            <img src="images/categories/suits.jpg" alt="Salwar Suits" loading="lazy">
+          </div>
+          <h3>Salwar Suits</h3>
+          <p>Shop now</p>
+        </a>
+
+        <a href="shop.html?cat=Lehengas" class="amz-cat-card">
+          <div class="amz-cat-img-wrap">
+            <img src="images/categories/lehengas.jpg" alt="Lehengas" loading="lazy">
+          </div>
+          <h3>Lehengas</h3>
+          <p>Shop now</p>
+        </a>
+
+        <a href="shop.html?cat=Kurtas" class="amz-cat-card">
+          <div class="amz-cat-img-wrap">
+            <img src="images/categories/kurtas.jpg" alt="Kurtas" loading="lazy">
+          </div>
+          <h3>Kurtas</h3>
+          <p>Shop now</p>
+        </a>
+
+        <a href="shop.html?cat=Dupattas" class="amz-cat-card">
+          <div class="amz-cat-img-wrap">
+            <img src="images/categories/dupattas.jpg" alt="Dupattas" loading="lazy">
+          </div>
+          <h3>Dupattas</h3>
+          <p>Shop now</p>
+        </a>
+
+        <a href="shop.html" class="amz-cat-card">
+          <div class="amz-cat-img-wrap">
+            <img src="images/categories/accessories.jpg" alt="Accessories" loading="lazy">
+          </div>
+          <h3>Accessories</h3>
+          <p>Shop now</p>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+    <!-- ============ ✨ NARI AI PICKS (CONTINUOUS ROTATING AD AREA) ============ -->
+  <section class="amz-section nari-ai-picks-section">
+    <div class="amz-section-inner" id="nari-ai-picks-container"></div>
+  </section>
+
+  <!-- ============ FEATURED PRODUCTS ============ -->
+  <section class="amz-section amz-products-section">
+    <div class="amz-section-inner">
+      <div class="amz-section-head">
+        <h2>&#11088; Featured Products</h2>
+        <a href="shop.html" class="amz-see-all">See all results &rarr;</a>
+      </div>
+      <div class="amz-product-grid" id="featured-products">
+        <!-- Skeleton placeholders &mdash; replaced by JS -->
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROMO BANNER ============ -->
+  <section class="amz-promo">
+    <div class="amz-promo-inner">
+      <div class="amz-promo-text">
+        <span class="amz-promo-badge">Special Offer</span>
+        <h2>Bridal Collection 2026</h2>
+        <p>Explore our exquisite handcrafted bridal lehengas and designer sarees. Every thread tells a story of elegance.</p>
+        <a href="shop.html?cat=Lehengas" class="amz-btn-primary">Explore Bridal Wear</a>
+      </div>
+      <div class="amz-promo-icons">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEW ARRIVALS ============ -->
+  <section class="amz-section amz-products-section">
+    <div class="amz-section-inner">
+      <div class="amz-section-head">
+        <h2>New Arrivals</h2>
+        <a href="shop.html" class="amz-see-all">See all &rarr;</a>
+      </div>
+      <div class="amz-product-grid" id="new-products">
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+        <div class="amz-product-card amz-skeleton"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SELL ON NARI NIKETAN PROMO ============ -->
+  <section class="amz-seller-promo">
+    <div class="amz-seller-inner">
+      <div class="amz-seller-icon"></div>
+      <div class="amz-seller-text">
+        <h2>Sell on Nari Niketan</h2>
+        <p>Join thousands of women artisans and sellers. Reach customers across India. No listing fees to start.</p>
+        <a href="seller/index.html" class="amz-btn-primary">Start Selling Today</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4-FEATURE STRIP ============ -->
+  <section class="amz-features">
+    <div class="amz-feature">
+      <div class="amz-feature-icon"></div>
+      <h3>Fast Delivery</h3>
+      <p>Free delivery on orders above &#8377;999. Delivered in 3&ndash;7 business days.</p>
+    </div>
+    <div class="amz-feature">
+      <div class="amz-feature-icon"></div>
+      <h3>Secure Payments</h3>
+      <p>100% secure checkout. UPI, Cards, Net Banking &amp; COD available.</p>
+    </div>
+    <div class="amz-feature">
+      <div class="amz-feature-icon"></div>
+      <h3>Easy Returns</h3>
+      <p>7-day hassle-free returns. Your satisfaction is our promise.</p>
+    </div>
+    <div class="amz-feature">
+      <div class="amz-feature-icon"></div>
+      <h3>24/7 Support</h3>
+      <p>Reach us via WhatsApp, Email or Call anytime. We're here to help.</p>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER (4-column dark) ============ -->
+  <footer class="amz-footer">
+
+    <!-- Back to Top -->
+    <div class="amz-back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      &uarr; Back to top
+    </div>
+
+    <!-- Footer Columns -->
+    <div class="amz-footer-main">
+
+      <div class="amz-footer-col">
+        <div class="amz-footer-brand">
+          <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" width="42" height="42">
+          <div>
+            <span class="amz-footer-brand-name">Nari Niketan</span>
+            <span class="amz-footer-brand-tag">Elegance Redefined</span>
+          </div>
+        </div>
+        <p class="amz-footer-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>
+        <div class="amz-footer-social">
+          <a href="#" aria-label="Facebook"></a>
+          <a href="#" aria-label="Instagram"></a>
+          <a href="#" aria-label="Twitter"></a>
+        </div>
+      </div>
+
+      <div class="amz-footer-col">
+        <h3>Get to Know Us</h3>
+        <a href="shop.html">All Products</a>
+        <a href="shop.html?cat=Sarees">Sarees</a>
+        <a href="shop.html?cat=Suits">Salwar Suits</a>
+        <a href="shop.html?cat=Lehengas">Lehengas</a>
+        <a href="shop.html?cat=Kurtas">Kurtas</a>
+        <a href="seller/index.html">Sell on Nari Niketan</a>
+      </div>
+
+      <div class="amz-footer-col">
+        <h3>Let Us Help You</h3>
+        <a href="my-account.html">Your Account</a>
+        <a href="my-orders.html">Your Orders</a>
+        <a href="cart.html">Shopping Cart</a>
+        <a href="return-policy.html">Return &amp; Refund Policy</a>
+        <a href="grievance-redressal.html" style="color:#D4AF37;font-weight:600"> Grievance Redressal</a>
+        <a href="login.html">Login / Register</a>
+      </div>
+
+      <div class="amz-footer-col">
+        <h3>Connect With Us</h3>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        <a href="grievance-redressal.html"> Grievance Officer</a>
+        <div class="amz-footer-contact">
+          <p><a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener">Nari Niketan, Rihand Nagar &rarr;</a></p>
+          <p><a href="tel:+916307032042">+91 6307032042</a></p>
+          <p><a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="amz-footer-bottom">
+      <span><strong>Nari Niketan</strong></span>
+      <p>&copy; 2026 Nari Niketan. All rights reserved.</p>
+      <p>
+        <a href="grievance-redressal.html">Grievance Redressal</a> &bull;
+        <a href="terms-and-conditions.html">Terms</a> &bull;
+        <a href="privacy-policy.html">Privacy</a> &bull;
+        <a href="return-policy.html">Returns</a>
+      </p>
+      <p>Made with &hearts; in India &bull; Created by Manas.</p>
+    </div>
+
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/products.js?v=3.8"></script>
+  <script src="js/nari-ai-ads.js?v=1.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+
+  <script>
+    /* =========================================================
+       AMAZON-STYLE NAVBAR INTERACTIONS
+    ========================================================= */
+
+    // Hamburger toggle
+    const hamburger = document.getElementById('amz-hamburger');
+    const mobileNav = document.getElementById('amz-mobile-nav');
+    const overlay   = document.getElementById('amz-mobile-overlay');
+
+    hamburger.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      overlay.classList.toggle('open', open);
+      hamburger.classList.toggle('open', open);
+    });
+
+    const drawerCloseBtn = document.getElementById('amz-drawer-close');
+    if (drawerCloseBtn) {
+      drawerCloseBtn.addEventListener('click', closeMenus);
+    }
+
+    function closeMenus() {
+      mobileNav.classList.remove('open');
+      overlay.classList.remove('open');
+      hamburger.classList.remove('open');
+    }
+
+    // Account dropdown
+    function handleAccountClick() {
+      const dd = document.getElementById('amz-account-dropdown');
+      dd.classList.toggle('open');
+    }
+    document.addEventListener('click', (e) => {
+      const btn = document.getElementById('amz-account-btn');
+      const dd  = document.getElementById('amz-account-dropdown');
+      if (!btn.contains(e.target)) dd.classList.remove('open');
+    });
+
+    // Search navigation
+        /* =========================================================
+       SEARCH SUGGESTIONS & AUTOCOMPLETE
+    ========================================================= */
+    function showSearchSuggestions() {
+      const sug = document.getElementById('amz-search-suggestions');
+      if (sug) sug.style.display = 'block';
+    }
+
+    function hideSearchSuggestions() {
+      setTimeout(() => {
+        const sug = document.getElementById('amz-search-suggestions');
+        if (sug) sug.style.display = 'none';
+      }, 250);
+    }
+
+    function handleSearchInput(val) {
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
+    }
+
+    function clearSearchInput() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      if (clearBtn) clearBtn.style.display = 'none';
+    }
+
+    function applySearchTerm(term) {
+      const input = document.getElementById('searchInput');
+      if (input) input.value = term;
+      hideSearchSuggestions();
+      amzSearch();
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('amz-search-wrap');
+      const sug = document.getElementById('amz-search-suggestions');
+      if (wrap && sug && !wrap.contains(e.target)) {
+        sug.style.display = 'none';
+      }
+    });
+
+    function amzSearch() {
+      const q   = document.getElementById('searchInput').value.trim();
+      const cat = document.getElementById('searchCategory').value;
+      let url = 'shop.html';
+      const params = [];
+      if (cat) params.push('cat=' + encodeURIComponent(cat));
+      if (q)   params.push('search=' + encodeURIComponent(q));
+      if (params.length) url += '?' + params.join('&');
+      window.location.href = url;
+    }
+
+    // Sticky header shadow
+    window.addEventListener('scroll', () => {
+      document.getElementById('amz-header').classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    /* =========================================================
+       PRODUCT RENDERING (Firestore &rarr; card grids)
+    ========================================================= */
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.NariAIAds) NariAIAds.renderPicks('nari-ai-picks-container');
+
+      // Update auth UI in navbar
+      if (window.App && App.onAuthChange) {
+        App.onAuthChange((user) => {
+          const greeting       = document.getElementById('amz-user-greeting');
+          const signedIn       = document.getElementById('amz-dropdown-signed-in');
+          const signedOut      = document.getElementById('amz-dropdown-signed-out');
+          const dropdownName   = document.getElementById('amz-dropdown-name');
+          const cartCount      = document.getElementById('cart-count');
+
+          if (user) {
+            const name = user.displayName || user.email.split('@')[0];
+            greeting.textContent     = name;
+            dropdownName.textContent = name;
+            signedIn.style.display   = '';
+            signedOut.style.display  = 'none';
+          } else {
+            greeting.textContent    = 'Sign in';
+            signedIn.style.display  = 'none';
+            signedOut.style.display = '';
+          }
+        });
+      }
+
+      // Cart count update
+      function updateCartBadge() {
+        const cartCount = document.getElementById('cart-count');
+        if (!cartCount) return;
+        const items = JSON.parse(localStorage.getItem('nn_cart') || '[]');
+        const count = items.reduce((s, i) => s + (i.qty || 1), 0);
+        if (count > 0) {
+          cartCount.textContent = count > 99 ? '99+' : count;
+          cartCount.style.display = '';
+        } else {
+          cartCount.style.display = 'none';
+        }
+      }
+      updateCartBadge();
+      window.addEventListener('storage', updateCartBadge);
+
+      // ---- Product helpers ----
+      const hasImage = (p) => {
+        const img = p.imageUrl || (p.images && p.images[0]) || p.image || '';
+        return img && !img.includes('placehold.co') && img.trim() !== '';
+      };
+
+      function buildAmzCard(p) {
+        const img     = p.imageUrl || (p.images && p.images[0]) || p.image || '';
+        const name    = p.name || 'Product';
+        const cat     = p.category || '';
+        const price   = p.price || p.salePrice || 0;
+        const mrp     = p.mrp || p.originalPrice || 0;
+        const disc    = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+        const stars   = p.rating || (4 + Math.random()).toFixed(1);
+        const reviews = p.reviews || Math.floor(Math.random() * 800 + 50);
+        const id      = p.id || '';
+        const slug    = encodeURIComponent(id);
+
+        const starFill = Math.round(parseFloat(stars));
+        const starHtml = '&#9733;'.repeat(starFill) + '&#9734;'.repeat(5 - starFill);
+
+        const imgHtml = img
+          ? `<img src="${img}" alt="${name}" loading="lazy" onerror="this.src='https://placehold.co/240x300/8B1A4A/D4AF37?text=${encodeURIComponent(name)}'>`
+          : `<img src="https://placehold.co/240x300/8B1A4A/D4AF37?text=${encodeURIComponent(name)}" alt="${name}">`;
+
+        return `
+          <div class="amz-product-card" onclick="window.location.href='product.html?id=${slug}'" style="cursor:pointer">
+            ${disc > 0 ? `<div class="amz-badge-discount">${disc}% OFF</div>` : ''}
+            <div class="amz-product-img">
+              ${imgHtml}
+            </div>
+            <div class="amz-product-body">
+              ${cat ? `<p class="amz-product-cat">${cat}</p>` : ''}
+              <h3 class="amz-product-name">${name}</h3>
+              <div class="amz-product-rating">
+                <span class="amz-stars">${starHtml}</span>
+                <span class="amz-review-count">(${reviews})</span>
+              </div>
+              <div class="amz-product-pricing">
+                <span class="amz-price">&#8377;${Number(price).toLocaleString('en-IN')}</span>
+                ${mrp > price ? `<span class="amz-mrp">&#8377;${Number(mrp).toLocaleString('en-IN')}</span>` : ''}
+                ${disc > 0 ? `<span class="amz-save">Save ${disc}%</span>` : ''}
+              </div>
+              <p class="amz-free-delivery">FREE Delivery on orders above &#8377;999</p>
+              <button class="amz-add-cart-btn" onclick="event.stopPropagation(); Cart.add('${id}', '${name.replace(/'/g,"\\'")}', ${price}); this.textContent='&#10003; Added!'; setTimeout(()=>this.textContent='Add to Cart',1500);">
+                Add to Cart
+              </button>
+            </div>
+          </div>`;
+      }
+
+      function renderSection(products, containerId) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        if (!products || !products.length) {
+          el.innerHTML = `<p style="color:#777;grid-column:1/-1;text-align:center;padding:2rem;">No products found.</p>`;
+          return;
+        }
+        el.innerHTML = products.map(buildAmzCard).join('');
+      }
+
+      // Skeletons
+      const skeletonHtml = '<div class="amz-product-card amz-skeleton"></div>';
+      document.getElementById('featured-products').innerHTML = skeletonHtml.repeat(6);
+      document.getElementById('new-products').innerHTML = skeletonHtml.repeat(6);
+
+      const renderAll = (all) => {
+        const featured   = all.filter(p => p.featured);
+        const notFeatured = all.filter(p => !p.featured);
+        const withImages  = notFeatured.filter(p => hasImage(p));
+        const withoutImg  = notFeatured.filter(p => !hasImage(p));
+        const newArrivals = [...withImages, ...withoutImg];
+
+        renderSection(featured.length > 0 ? featured.slice(0, 6) : all.slice(0, 6), 'featured-products');
+        renderSection(newArrivals.length > 0 ? newArrivals.slice(0, 6) : all.slice(0, 6), 'new-products');
+      };
+
+      Store.getProducts().then(all => { if (all.length) renderAll(all); });
+      if (typeof Store !== 'undefined' && typeof Store.subscribeProducts === 'function') {
+        try { Store.subscribeProducts({}, renderAll); } catch(e) { console.warn('Product live sync:', e); }
+      }
+
+      // REAL & GENUINE STATS from Firestore
+      (async function loadRealStats() {
+        // 1. Exact Live Products Count
+        try {
+          const prods = (typeof Store !== 'undefined' && Store.getProducts) ? await Store.getProducts() : [];
+          const count = (prods && prods.length) ? prods.length : 0;
+          const el1 = document.getElementById('stat-products');
+          if (el1) el1.textContent = count;
+        } catch(e) {
+          console.warn('Products count error:', e);
+        }
+
+        // 2. Exact Live Orders Count (from settings/stats or orders collection)
+        try {
+          const el2 = document.getElementById('stat-orders');
+          if (typeof db !== 'undefined') {
+            try {
+              const statsDoc = await db.collection('settings').doc('stats').get();
+              if (statsDoc.exists && statsDoc.data().totalOrders !== undefined) {
+                if (el2) el2.textContent = statsDoc.data().totalOrders;
+              } else if (typeof auth !== 'undefined' && auth.currentUser) {
+                const ordSnap = await db.collection('orders').get();
+                if (el2) el2.textContent = ordSnap.size;
+              }
+            } catch(e) {}
+          }
+        } catch(e) {
+          console.warn('Orders count error:', e);
+        }
+
+        // 3. Exact Live Reviews & Ratings
+        try {
+          const el3 = document.getElementById('stat-rating');
+          if (typeof db !== 'undefined') {
+            try {
+              const revSnap = await db.collection('reviews').get();
+              if (revSnap.size > 0) {
+                let total = 0;
+                revSnap.forEach(d => { total += (Number(d.data().rating) || 5); });
+                const avg = (total / revSnap.size).toFixed(1);
+                if (el3) el3.textContent = `${avg} ⭐ (${revSnap.size})`;
+              } else {
+                if (el3) el3.textContent = '⭐ New';
+              }
+            } catch(e) {}
+          }
+        } catch(e) {
+          console.warn('Reviews count error:', e);
+        }
+      })();
+
+      // Toast for admin-denied redirect
+      if (new URLSearchParams(window.location.search).has('adminDenied')) {
+        setTimeout(() => App.toast('Access denied. Admin area is restricted.', 'error', 5000), 500);
+        history.replaceState({}, '', window.location.pathname);
+      }
+    });
+  </script>
+
+  <script src="js/nari-ai-search.js?v=1.0"></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

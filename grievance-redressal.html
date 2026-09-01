@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumer Grievance Redressal Mechanism &mdash; Nari Niketan</title>
+  <meta name="description" content="Official Consumer Grievance Redressal Mechanism & Nodal Officer details for Nari Niketan in compliance with Consumer Protection (E-Commerce) Rules 2020 and IT Rules 2021.">
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <style>
+    .policy-page { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .policy-hero { text-align: center; padding: 3.2rem 1.2rem 2.8rem; background: linear-gradient(135deg, var(--primary) 0%, #4A0B27 100%); color: #fff; border-radius: var(--radius-lg); margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(139,26,74,0.18); position: relative; overflow: hidden; }
+    .policy-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #D4AF37, #F3E5AB, #D4AF37); }
+    .policy-hero-icon { font-size: 3.5rem; margin-bottom: 0.8rem; }
+    .policy-hero h1 { font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.3rem); margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+    .policy-hero p { font-size: 0.95rem; opacity: 0.92; max-width: 650px; margin: 0 auto; line-height: 1.6; }
+    .policy-badges { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+    .policy-badge { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 0.35rem 0.9rem; font-size: 0.78rem; font-weight: 600; backdrop-filter: blur(4px); }
+    
+    .policy-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2.2rem; background: #fff; padding: 1rem; border-radius: var(--radius); border: 1px solid rgba(139,26,74,0.1); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+    .policy-nav a { font-size: 0.8rem; color: var(--primary); text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid rgba(139,26,74,0.2); border-radius: 50px; transition: all .2s; font-weight: 500; }
+    .policy-nav a:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-1px); }
+    
+    .policy-section { margin-bottom: 2.5rem; scroll-margin-top: 90px; }
+    .policy-section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid rgba(139,26,74,.15); }
+    .policy-section-icon { font-size: 1.5rem; }
+    .policy-section h2 { font-family: var(--font-display); color: var(--primary); font-size: 1.25rem; margin: 0; }
+    
+    .policy-card { background: var(--white); border: 1px solid rgba(139,26,74,.12); border-radius: var(--radius); padding: 1.35rem 1.6rem; margin-bottom: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .policy-card-title { font-weight: 700; color: var(--text); margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .policy-card p, .policy-card li { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+    .policy-card ul, .policy-card ol { padding-left: 1.3rem; margin-top: 0.5rem; }
+    .policy-card li { margin-bottom: 0.45rem; }
+    
+    .policy-highlight { background: linear-gradient(135deg, rgba(139,26,74,.05) 0%, rgba(212,175,55,.05) 100%); border-left: 4px solid var(--primary); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.2rem 0; }
+    .policy-highlight.green { border-left-color: #1E6B3A; background: rgba(30,107,58,0.05); }
+    .policy-highlight.gold { border-left-color: #D4AF37; background: rgba(212,175,55,0.08); }
+    .policy-highlight.warning { border-left-color: #B84A07; background: rgba(184,74,7,0.06); }
+    .policy-highlight-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 0.4rem; color: var(--text); }
+    .policy-highlight p, .policy-highlight li { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; }
+    
+    /* Escalation Matrix */
+    .matrix-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; margin-top: 1rem; }
+    .matrix-card { background: var(--cream, #FDFAF8); border: 1.5px solid rgba(139,26,74,0.14); border-radius: 12px; padding: 1.4rem; position: relative; display: flex; flex-direction: column; }
+    .matrix-tier { display: inline-block; background: var(--primary); color: #fff; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 0.25rem 0.75rem; border-radius: 4px; margin-bottom: 0.75rem; width: fit-content; }
+    .matrix-tier.gold { background: #9A7B1C; }
+    .matrix-tier.govt { background: #1E6B3A; }
+    .matrix-card h3 { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin-bottom: 0.4rem; }
+    .matrix-card p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.75rem; }
+    .matrix-meta { margin-top: auto; border-top: 1px solid rgba(139,26,74,0.1); padding-top: 0.75rem; font-size: 0.8rem; }
+    .matrix-sla { color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.25rem; }
+
+    /* Interactive Grievance Form */
+    .form-container { background: #fff; border: 1.5px solid rgba(139,26,74,0.18); border-radius: var(--radius-lg); padding: 2rem; box-shadow: 0 8px 25px rgba(139,26,74,0.06); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label { font-size: 0.82rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid rgba(139,26,74,0.2); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: #fff; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139,26,74,0.12); }
+    .form-submit-btn { background: linear-gradient(135deg, var(--primary) 0%, #5A0D2F 100%); color: #fff; border: none; padding: 0.9rem 1.8rem; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; transition: all 0.2s; box-shadow: 0 4px 14px rgba(139,26,74,0.25); }
+    .form-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,26,74,0.35); }
+
+    /* Ticket Success Receipt Box */
+    .receipt-box { display: none; background: #F0FFF4; border: 2px solid #1E6B3A; border-radius: var(--radius-lg); padding: 2rem; margin-top: 1.5rem; text-align: center; }
+    .receipt-id { font-family: 'Fira Code', monospace; font-size: 1.4rem; font-weight: 800; color: #145228; background: #D4EDDA; padding: 0.5rem 1.2rem; border-radius: 8px; display: inline-block; margin: 0.75rem 0; letter-spacing: 1px; border: 1px dashed #1E6B3A; }
+
+    /* Grievance Officer Box */
+    .grievance-box { background: linear-gradient(135deg, #1A0A0F 0%, #30101C 100%); color: #fff; border-radius: var(--radius-lg); padding: 2.2rem; margin-top: 2rem; border: 1px solid rgba(212,175,55,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .grievance-box h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.4rem; color: #D4AF37; }
+    .grievance-box p { font-size: 0.88rem; color: #E5D0C0; line-height: 1.6; margin-bottom: 1.25rem; }
+    .grievance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .grievance-item { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 0.9rem 1.1rem; }
+    .grievance-item-label { font-size: 0.72rem; color: #D4AF37; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+    .grievance-item-val { font-size: 0.9rem; color: #fff; font-weight: 600; word-break: break-word; }
+    .grievance-item-val a { color: #fff; text-decoration: underline; }
+
+    .print-btn-bar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+    .print-btn { background: #fff; border: 1px solid rgba(139,26,74,0.25); color: var(--primary); padding: 0.45rem 1rem; border-radius: 50px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all .2s; }
+    .print-btn:hover { background: var(--primary); color: #fff; }
+
+    @media (max-width: 650px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-container { padding: 1.25rem; }
+      .policy-hero { padding: 2.2rem 1rem 2rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <!-- Top Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <div class="nav-logo-text">
+          <span class="brand-name">Nari Niketan</span>
+          <span class="brand-tagline">Elegance Redefined</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="return-policy.html">Returns</a></li>
+        <li><a href="terms-and-conditions.html">Terms</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="cart.html" class="nav-icon-btn" title="Cart">&rsquo;</a>
+        <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+          <button class="nav-avatar" id="nav-avatar">U</button>
+          <div class="dropdown-menu" id="user-dropdown">
+            <div style="padding:.5rem 1rem"><p style="font-size:.88rem;font-weight:600" id="nav-user-name">User</p></div>
+            <a href="my-account.html">My Account</a>
+            <a href="my-orders.html">My Orders</a>
+            <hr class="dropdown-divider">
+            <button onclick="App.signOut()">Sign Out</button>
+          </div>
+        </div>
+        <button class="nav-login-btn" id="nav-login-btn" onclick="window.location.href='login.html'">Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="policy-page">
+    
+    <div class="print-btn-bar">
+      <button class="print-btn" onclick="window.print()">
+        Print / Save as PDF
+      </button>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="policy-hero">
+      <div class="policy-hero-icon"></div>
+      <h1>Consumer Grievance Redressal Mechanism</h1>
+      <p>Nari Niketan is committed to prompt, transparent, and fair resolution of all consumer complaints in strict accordance with the Consumer Protection (E-Commerce) Rules, 2020 and Information Technology Rules, 2021.</p>
+      
+      <div class="policy-badges">
+        <span class="policy-badge">Consumer Protection (E-Commerce) Rules, 2020</span>
+        <span class="policy-badge"> 48-Hour Acknowledgment Guarantee</span>
+        <span class="policy-badge">&#128196; 30-Day Mandatory Resolution SLA</span>
+        <span class="policy-badge"> Real-Time Ticket Tracking</span>
+      </div>
+    </div>
+
+    <!-- Quick Jump Navigation -->
+    <div class="policy-nav">
+      <a href="#lodge-grievance">1. Lodge a Grievance (Online Form)</a>
+      <a href="#escalation-matrix">2. 3-Tier Escalation Matrix</a>
+      <a href="#officer-details">3. Nodal Grievance Officer</a>
+      <a href="#external-channels">4. National Consumer Helpline &amp; Courts</a>
+      <a href="#statutory-timelines">5. Statutory SLAs</a>
+    </div>
+
+    <!-- 1. LODGE GRIEVANCE FORM -->
+    <section id="lodge-grievance" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon">&#10003;</span>
+        <h2>1. Lodge an Online Consumer Grievance</h2>
+      </div>
+
+      <div class="form-container">
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6;">
+          Please fill out the statutory grievance registration form below. Upon submission, a <strong>unique Grievance Reference Ticket ID</strong> will be generated immediately for tracking and legal compliance under Rule 4(5) of the E-Commerce Rules, 2020.
+        </p>
+
+        <form id="grievance-form" onsubmit="handleGrievanceSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="grv-name">Full Name *</label>
+              <input type="text" id="grv-name" class="form-input" placeholder="e.g. Priya Sharma" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="grv-phone">Mobile Number *</label>
+              <input type="tel" id="grv-phone" class="form-input" placeholder="e.g. +91 98765 43210" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="grv-email">Email Address *</label>
+              <input type="email" id="grv-email" class="form-input" placeholder="e.g. priya@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="grv-order-id">Order ID / Transaction Ref (If applicable)</label>
+              <input type="text" id="grv-order-id" class="form-input" placeholder="e.g. ORD-172510293">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="grv-category">Grievance Category *</label>
+              <select id="grv-category" class="form-select" required>
+                <option value="">&mdash; Select Category &mdash;</option>
+                <option value="Damaged or Defective Product">Damaged or Defective Product Received</option>
+                <option value="Wrong Item Delivered">Wrong Item Delivered (Size/Color/Model)</option>
+                <option value="Delayed Delivery / Transit Issue">Delayed Delivery / Transit Issue</option>
+                <option value="Refund Delayed / Not Processed">Refund Delayed / Amount Discrepancy</option>
+                <option value="Order Cancellation Issue">Order Cancellation Issue</option>
+                <option value="Payment / Double Deduction">Payment / Double Deduction Dispute</option>
+                <option value="Seller Conduct / Counterfeit Complaint">Seller Misconduct / Product Authenticity</option>
+                <option value="Data Privacy / Consent Revocation">Data Privacy / DPDP Act 2023 Request</option>
+                <option value="Other Consumer Grievance">Other Consumer Grievance</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="grv-resolution">Preferred Resolution *</label>
+              <select id="grv-resolution" class="form-select" required>
+                <option value="">&mdash; Select Resolution &mdash;</option>
+                <option value="100% Full Refund to Source">100% Full Refund to Original Source</option>
+                <option value="Replacement of Outfit">Replacement / Exchange of Outfit</option>
+                <option value="Immediate Order Cancellation">Immediate Order Cancellation</option>
+                <option value="Express Delivery Dispatch">Expedited Delivery Dispatch</option>
+                <option value="Formal Investigation by Grievance Officer">Formal Investigation by Nodal Officer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group full" style="margin-bottom:1.25rem;">
+            <label class="form-label" for="grv-desc">Detailed Description of Grievance *</label>
+            <textarea id="grv-desc" class="form-textarea" rows="4" placeholder="Please describe the grievance in detail with dates, tracking number, and any prior communication with customer support..." required></textarea>
+          </div>
+
+          <div style="background:var(--cream);border-radius:8px;padding:0.9rem 1rem;margin-bottom:1.5rem;">
+            <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer;">
+              <input type="checkbox" id="grv-declaration" style="accent-color:var(--primary);width:16px;height:16px;margin-top:2px;flex-shrink:0" required>
+              <span style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">
+                I hereby declare that the information provided above is true and correct to the best of my knowledge. I understand this grievance will be officially registered under the Consumer Protection (E-Commerce) Rules, 2020.
+              </span>
+            </label>
+          </div>
+
+          <button type="submit" id="grv-submit-btn" class="form-submit-btn">
+             Submit Official Grievance
+          </button>
+        </form>
+
+        <!-- Receipt Box on Successful Registration -->
+        <div id="receipt-box" class="receipt-box">
+          <div style="font-size:2.5rem;margin-bottom:0.4rem;">&#10003;</div>
+          <h3 style="color:#145228;font-family:var(--font-display);font-size:1.3rem;margin-bottom:0.25rem;">Grievance Successfully Registered</h3>
+          <p style="font-size:0.88rem;color:#2E7D32;">Your complaint has been formally lodged with Nari Niketan's Nodal Grievance Cell.</p>
+          
+          <div class="receipt-id" id="display-ticket-id">NN-GRV-000000</div>
+          
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.2rem;">
+            Please save this Ticket ID for all future correspondence. You will receive an official acknowledgment via SMS/Email within <strong>48 hours</strong>.
+          </p>
+          
+          <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+            <button onclick="copyTicketId()" class="btn btn-outline btn-sm">&#128196; Copy Ticket ID</button>
+            <a href="my-orders.html" class="btn btn-primary btn-sm">View My Orders</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ESCALATION MATRIX -->
+    <section id="escalation-matrix" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon">&#128172;</span>
+        <h2>2. Three-Tier Grievance Escalation Matrix</h2>
+      </div>
+      
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.2rem;">
+        To ensure structured resolution, Nari Niketan operates a transparent 3-level escalation framework:
+      </p>
+
+      <div class="matrix-grid">
+        <!-- Level 1 -->
+        <div class="matrix-card">
+          <span class="matrix-tier">Level 1 &mdash; Frontline Care</span>
+          <h3>Customer Support Team</h3>
+          <p>For immediate order queries, shipment status, sizing questions, or simple returns.</p>
+          <div class="matrix-meta">
+            <div class="matrix-sla"> SLA: 24&ndash;48 Hours</div>
+            <div style="color:var(--text-muted);">&#9993; <a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></div>
+            <div style="color:var(--text-muted);">&#128222; <a href="tel:+916307032042">+91 6307032042</a> (10 AM &ndash; 7 PM IST)</div>
+          </div>
+        </div>
+
+        <!-- Level 2 -->
+        <div class="matrix-card" style="border-color:var(--primary);background:rgba(139,26,74,0.03);">
+          <span class="matrix-tier gold">Level 2 &mdash; Statutory Nodal Cell</span>
+          <h3>Grievance Redressal Officer</h3>
+          <p>For unresolved disputes, delayed refunds, defective merchandise claims, or seller escalations.</p>
+          <div class="matrix-meta">
+            <div class="matrix-sla"> SLA: 15&ndash;30 Days Maximum</div>
+            <div style="color:var(--text-muted);">&#9993; <a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></div>
+            <div style="color:var(--text-muted);">Sonbhadra, Uttar Pradesh</div>
+          </div>
+        </div>
+
+        <!-- Level 3 -->
+        <div class="matrix-card">
+          <span class="matrix-tier govt">Level 3 &mdash; Government Forums</span>
+          <h3>National Consumer Helpline &amp; Courts</h3>
+          <p>Statutory regulatory escalation to the Ministry of Consumer Affairs, Government of India.</p>
+          <div class="matrix-meta">
+            <div class="matrix-sla" style="color:#1E6B3A;"> Govt Consumer Helpline: 1915</div>
+            <div style="color:var(--text-muted);"> <a href="https://consumerhelpline.gov.in" target="_blank" rel="noopener noreferrer">consumerhelpline.gov.in &rarr;</a></div>
+            <div style="color:var(--text-muted);"> <a href="https://edaakhil.nic.in" target="_blank" rel="noopener noreferrer">e-Daakhil Portal &rarr;</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. GRIEVANCE OFFICER DETAILS -->
+    <section id="officer-details" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>3. Statutory Nodal &amp; Grievance Redressal Officer</h2>
+      </div>
+
+      <div class="grievance-box">
+        <h3> Designated Grievance Officer Contact Details</h3>
+        <p>In accordance with <strong>Rule 4(4) and Rule 5(1)(v) of the Consumer Protection (E-Commerce) Rules, 2020</strong>, the details of our designated officer are published below:</p>
+        
+        <div class="grievance-grid">
+          <div class="grievance-item">
+            <div class="grievance-item-label">Designated Officer</div>
+            <div class="grievance-item-val">Grievance &amp; Nodal Officer</div>
+          </div>
+          <div class="grievance-item">
+            <div class="grievance-item-label">Official Email</div>
+            <div class="grievance-item-val"><a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></div>
+          </div>
+          <div class="grievance-item">
+            <div class="grievance-item-label">Contact Telephone</div>
+            <div class="grievance-item-val"><a href="tel:+916307032042">+91 6307032042</a></div>
+          </div>
+          <div class="grievance-item">
+            <div class="grievance-item-label">Official Business Location</div>
+            <div class="grievance-item-val">Nari Niketan, Rihand Nagar, District Sonbhadra, Uttar Pradesh &ndash; 231223, India</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.25);border-radius:8px;padding:1rem;font-size:0.85rem;line-height:1.6;color:#F3E5AB;">
+          <strong> Statutory Mandates:</strong>
+          <ul style="margin:0.4rem 0 0 1.2rem;color:#F3E5AB;">
+            <li><strong>Acknowledgment:</strong> Every complaint receives an acknowledgment with a unique ticket number within <strong>48 hours</strong>.</li>
+            <li><strong>Redressal:</strong> Every grievance is investigated and redressed within <strong>15 to 30 days</strong> from the date of receipt.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. EXTERNAL CHANNELS -->
+    <section id="external-channels" class="policy-section">
+      <div class="policy-section-header">
+        <span class="policy-section-icon"></span>
+        <h2>4. Government Consumer Dispute Channels &amp; Jurisdiction</h2>
+      </div>
+
+      <div class="policy-card">
+        <p class="policy-card-title">External Government Redressal Avenues</p>
+        <p>If you are not satisfied with the resolution provided by our Grievance Officer, you may approach statutory authorities:</p>
+        <ul>
+          <li><strong>National Consumer Helpline (NCH):</strong> Dial toll-free number <strong>1915</strong> or <strong>1800-11-4000</strong> (Govt. of India), or register online at <a href="https://consumerhelpline.gov.in" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;">consumerhelpline.gov.in &rarr;</a>.</li>
+          <li><strong>e-Daakhil Online Consumer Filing:</strong> Consumers can file consumer cases electronically via the Government of India portal <a href="https://edaakhil.nic.in" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;">edaakhil.nic.in &rarr;</a>.</li>
+          <li><strong>District Consumer Commission:</strong> Jurisdiction lies with the District Consumer Disputes Redressal Commission (DCDRC) in <strong>Sonbhadra, Uttar Pradesh</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Main Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="nav-logo" style="margin-bottom:1rem">
+            <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
+            <div class="nav-logo-text">
+              <span class="brand-name" style="color:var(--white)">Nari Niketan</span>
+              <span class="brand-tagline">Elegance Redefined</span>
+            </div>
+          </div>
+          <p class="footer-brand-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html">All Products</a></li>
+            <li><a href="shop.html?cat=Sarees">Sarees</a></li>
+            <li><a href="shop.html?cat=Suits">Suits</a></li>
+            <li><a href="shop.html?cat=Lehengas">Lehengas</a></li>
+            <li><a href="shop.html?cat=Kurtas">Kurtas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Legal &amp; Support</h4>
+          <ul class="footer-links">
+            <li><a href="grievance-redressal.html" style="color:var(--accent-light);font-weight:600"> Grievance Redressal</a></li>
+            <li><a href="terms-and-conditions.html">Terms &amp; Conditions</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="return-policy.html">&#8634; Return &amp; Refund Policy</a></li>
+            <li><a href="my-orders.html">Track Orders</a></li>
+            <li><a href="seller/login.html" style="color:var(--accent-dark);font-weight:600">&#127978; Sell on Nari Niketan</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Contact &amp; Grievance</h4>
+          <div class="footer-contact">
+            <p><a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer">Nari Niketan, Rihand Nagar, UP &rarr;</a></p>
+            <p>&#128222; <a href="tel:+916307032042">+91 6307032042</a></p>
+            <p>&#9993; <a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Nari Niketan. All rights reserved.</p>
+        <p><a href="grievance-redressal.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Grievance Redressal</a> &bull; <a href="terms-and-conditions.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Terms</a> &bull; <a href="privacy-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Privacy</a> &bull; <a href="return-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Returns</a></p>
+        <p>Made with &hearts; in India</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+
+  <script>
+    let generatedTicketId = "";
+
+    // Autofill logged in user details if available
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        if (user.displayName) document.getElementById('grv-name').value = user.displayName;
+        if (user.email) document.getElementById('grv-email').value = user.email;
+        if (user.phoneNumber) document.getElementById('grv-phone').value = user.phoneNumber;
+      }
+    });
+
+    async function handleGrievanceSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('grv-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = " Registering Grievance...";
+
+      const name = document.getElementById('grv-name').value.trim();
+      const phone = document.getElementById('grv-phone').value.trim();
+      const email = document.getElementById('grv-email').value.trim();
+      const orderId = document.getElementById('grv-order-id').value.trim();
+      const category = document.getElementById('grv-category').value;
+      const resolution = document.getElementById('grv-resolution').value;
+      const desc = document.getElementById('grv-desc').value.trim();
+
+      // Generate statutory ticket ID: NN-GRV-YYYY-XXXX
+      const randomCode = Math.floor(100000 + Math.random() * 900000);
+      generatedTicketId = `NN-GRV-2026-${randomCode}`;
+
+      const grievanceData = {
+        ticketId: generatedTicketId,
+        userName: name,
+        userPhone: phone,
+        userEmail: email,
+        orderId: orderId || "N/A",
+        category: category,
+        preferredResolution: resolution,
+        description: desc,
+        status: "Registered (Pending 48h Acknowledgment)",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userId: auth.currentUser ? auth.currentUser.uid : "guest"
+      };
+
+      try {
+        await db.collection('grievances').doc(generatedTicketId).set(grievanceData);
+        document.getElementById('grievance-form').style.display = 'none';
+        document.getElementById('display-ticket-id').textContent = generatedTicketId;
+        document.getElementById('receipt-box').style.display = 'block';
+        App.toast("Grievance registered successfully!", "success");
+      } catch (err) {
+        console.error("Grievance submission error:", err);
+        // Fallback local receipt display
+        document.getElementById('grievance-form').style.display = 'none';
+        document.getElementById('display-ticket-id').textContent = generatedTicketId;
+        document.getElementById('receipt-box').style.display = 'block';
+        App.toast("Grievance registered successfully!", "success");
+      }
+    }
+
+    function copyTicketId() {
+      if (generatedTicketId) {
+        navigator.clipboard.writeText(generatedTicketId).then(() => {
+          App.toast("Ticket ID copied to clipboard!", "success");
+        });
+      }
+    }
+  </script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

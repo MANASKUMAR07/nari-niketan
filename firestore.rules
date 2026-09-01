@@ -1,0 +1,176 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Check if requesting user is a permanent Owner (by email from auth token)
+    // Owner emails bypass all permission checks — highest privilege
+    function isOwner() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'manasku2007@gmail.com' ||
+        request.auth.token.email == 'nariniketan07@gmail.com'
+      );
+    }
+
+    // Helper: Check if requesting user is Admin
+    // Owners are always admin; others must have isAdmin: true in their Firestore user doc
+    function isAdmin() {
+      return isOwner() ||
+        (isAuthenticated() &&
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+    }
+
+    // Helper: Check if requesting user is an approved Seller
+    function isSeller() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSeller == true ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.sellerStatus == 'approved'
+        );
+    }
+
+    // 1. PRODUCTS COLLECTION
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isAdmin() || (isSeller() && request.resource.data.sellerId == request.auth.uid);
+      allow update: if isAdmin() || (isSeller() && resource.data.sellerId == request.auth.uid);
+      allow delete: if isAdmin() || (isSeller() && resource.data.sellerId == request.auth.uid);
+    }
+
+    // 2. ORDERS COLLECTION
+    match /orders/{orderId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && resource.data.userId == request.auth.uid) ||
+        (isSeller() && resource.data.keys().hasAll(['sellerIds']) && request.auth.uid in resource.data.sellerIds);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() ||
+        (isAuthenticated() && resource.data.userId == request.auth.uid && (
+          request.resource.data.status == "Cancelled" ||
+          request.resource.data.status == "Return Requested"
+        ));
+      allow delete: if isAdmin();
+    }
+
+    // 3. REFUNDS COLLECTION
+    match /refunds/{refundId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (isAuthenticated() && request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // 4. RETURNS COLLECTION
+    match /returns/{returnId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (isAuthenticated() && request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // 5. COUPONS COLLECTION
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 6. USERS COLLECTION
+    match /users/{userId} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAdmin() ||
+        (isOwner() && request.auth.uid == userId) ||
+        (isAuthenticated() && request.auth.uid == userId &&
+          !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['isAdmin', 'isSeller', 'sellerStatus']));
+      allow delete: if isAdmin();
+    }
+
+    // 7. FEEDBACK & FEEDBACKS COLLECTION
+    match /feedback/{feedbackId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    match /feedbacks/{feedbackId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // 8. GRIEVANCES & COMPLAINTS COLLECTION
+    match /grievances/{grievanceId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    match /complaints/{complaintId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // 9. CATEGORIES COLLECTION
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 10. BANNERS COLLECTION
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 11. REVIEWS COLLECTION
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // 12. NOTIFICATIONS COLLECTION
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 13. AUDIT LOGS COLLECTION
+    match /auditLogs/{logId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    // 14. SETTINGS COLLECTION
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() || (settingId == 'stats' && isAuthenticated());
+    }
+
+    // 15. SYSTEM ALERTS — AI Monitor error database
+    //     create: allow from any client (error reporting must work even unauthenticated)
+    //     read/update/delete: admin only
+    match /systemAlerts/{alertId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 16. HEALTH PROBES — Synthetic monitor probe results
+    match /healthProbes/{probeId} {
+      allow create, update: if true;
+      allow read, delete: if isAdmin();
+    }
+
+    // 17. AI STYLIST SESSIONS & ANALYTICS
+    //     create: allow from any visitor to record outfit recommendations & conversions
+    //     read, update, delete: admin only
+    match /aiStylistSessions/{sessionId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

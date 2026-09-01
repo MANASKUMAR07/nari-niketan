@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Ethnic Collection &mdash; Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Preconnect to Firebase Storage CDN so product images load faster -->
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com">
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+  <link rel="stylesheet" href="css/nari-ai-search.css?v=1.1">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html" class="active">Shop</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="pwa-nav-btn pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none" title="Install Nari Niketan App">
+          <span class="badge-sparkle"></span> Install App
+        </button>
+        <div class="nav-search-bar">
+          <input type="text" placeholder="What are you looking for? (e.g. 'Cotton kurti under ₹800')" id="nav-search-input" onkeydown="if(event.key==='Enter') searchProducts(this.value)">
+          <button onclick="searchProducts(document.getElementById('nav-search-input').value)" aria-label="Search">✨</button>
+        </div>
+        <a href="cart.html" class="nav-icon-btn" title="Cart"><span class="cart-badge" id="cart-count" style="display:none">0</span></a>
+        <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+          <button class="nav-avatar" id="nav-avatar" aria-label="User menu">U</button>
+          <div class="dropdown-menu" id="user-dropdown">
+            <div style="padding:.5rem 1rem"><p style="font-size:.88rem;font-weight:600" id="nav-user-name">User</p></div>
+            <a href="my-account.html">My Account</a>
+            <a href="my-orders.html">My Orders</a>
+            <hr class="dropdown-divider">
+            <button onclick="App.signOut()">Sign Out</button>
+          </div>
+        </div>
+        <button class="nav-login-btn" id="nav-login-btn" onclick="window.location.href='login.html'">Login / Register</button>
+        <button class="hamburger" id="hamburger" aria-label="Toggle Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <nav class="mobile-nav" id="mobile-nav" style="top:var(--navbar-h)">
+    <a href="index.html">Home</a>
+    <a href="shop.html" class="active">Shop All</a>
+    <a href="shop.html?cat=Sarees">Sarees</a>
+    <a href="shop.html?cat=Suits">Suits</a>
+    <a href="shop.html?cat=Lehengas">Lehengas</a>
+    <a href="cart.html">Cart</a>
+    <a href="my-orders.html">My Orders</a>
+    <a href="login.html">Login / Register</a>
+    <button class="pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none;background:none;border:none;color:var(--accent,#D4AF37);font-weight:700;padding:0.75rem 1rem;text-align:left;cursor:pointer;font-size:1rem;">
+      Install App
+    </button>
+  </nav>
+
+  <div class="page-content" >
+    <!-- Header -->
+    <div class="shop-header" style="background:var(--primary);padding:2.5rem 1.5rem;text-align:center;color:var(--white);position:relative;overflow:hidden">
+      <div style="position:relative;z-index:1;max-width:700px;margin:0 auto">
+        <p class="section-tag" style="color:var(--accent);margin-bottom:0.5rem">&#10047; Curated Elegance</p>
+        <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;margin-bottom:0.5rem;color:var(--white)" id="shop-page-title">All Collections</h1>
+        <p style="color:rgba(255,255,255,.8);font-size:0.95rem">Explore premium Indian ethnic wear crafted for timeless beauty.</p>
+      </div>
+    </div>
+
+    <!-- Shop Content -->
+    <div class="shop-layout">
+      <!-- Sidebar Filters -->
+      <aside class="shop-sidebar" style="overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;border-bottom:1px solid rgba(139,26,74,.1);padding-bottom:1rem">
+          <h3 style="font-family:var(--font-display);font-size:1.1rem;color:var(--text)">Filters</h3>
+          <button onclick="clearFilters()" style="background:none;border:none;font-size:0.82rem;color:var(--primary);cursor:pointer;font-weight:600">Clear All</button>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-section">
+          <div class="filter-title">Category</div>
+          <div class="filter-checkbox-list" id="category-filter">
+            <label class="filter-checkbox"><input type="radio" name="category" value="All" checked onchange="applyFilters()"> All Categories</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Sarees" onchange="applyFilters()"> Sarees</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Suits" onchange="applyFilters()"> Suits</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Lehengas" onchange="applyFilters()"> Lehengas</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Kurtas" onchange="applyFilters()"> Kurtas</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Dupattas" onchange="applyFilters()"> Dupattas</label>
+          </div>
+        </div>
+
+        <!-- Price Range Filter (Fixed No-Overflow Box) -->
+        <div class="filter-section">
+          <div class="filter-title">Price Range</div>
+          <div class="price-range-inputs">
+            <div class="price-input-wrapper">
+              <span>&#8377;</span>
+              <input type="number" id="min-price" placeholder="Min" min="0" oninput="applyFilters()">
+            </div>
+            <span class="price-range-sep">&ndash;</span>
+            <div class="price-input-wrapper">
+              <span>&#8377;</span>
+              <input type="number" id="max-price" placeholder="Max" min="0" oninput="applyFilters()">
+            </div>
+          </div>
+
+          <!-- Quick Price Pills -->
+          <div class="price-quick-pills">
+            <span class="price-pill" onclick="setPriceRange(0, 1999)">Under &#8377;2,000</span>
+            <span class="price-pill" onclick="setPriceRange(2000, 4999)">&#8377;2,000 - &#8377;5,000</span>
+            <span class="price-pill" onclick="setPriceRange(5000, 99999)">&#8377;5,000+</span>
+          </div>
+        </div>
+
+        <!-- Size Filter -->
+        <div class="filter-section">
+          <div class="filter-title">Size</div>
+          <div class="filter-size-grid" id="size-filter">
+            <span class="size-chip" onclick="toggleSize(this,'XS')">XS</span>
+            <span class="size-chip" onclick="toggleSize(this,'S')">S</span>
+            <span class="size-chip" onclick="toggleSize(this,'M')">M</span>
+            <span class="size-chip" onclick="toggleSize(this,'L')">L</span>
+            <span class="size-chip" onclick="toggleSize(this,'XL')">XL</span>
+            <span class="size-chip" onclick="toggleSize(this,'Free Size')">Free Size</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Products Grid -->
+      <main class="shop-main">
+        <div class="shop-toolbar">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <p class="shop-results-info">Showing <strong id="product-count">0</strong> products</p>
+            <button class="btn-visual-search" onclick="if(window.NariAI) NariAI.openPhotoUpload()" title="Upload a photo to find matching ethnic outfits">
+              📷 Visual Search
+            </button>
+          </div>
+          <div class="shop-toolbar-right">
+            <select class="sort-select" id="sort-by" onchange="applyFilters()">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Top Rated</option>
+              <option value="newest">Newest Arrivals</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ai-search-suggestions">
+          <span style="font-size:0.75rem;font-weight:700;color:var(--primary);white-space:nowrap;">💡 Try:</span>
+          <span class="ai-suggestion-chip" onclick="searchProducts('Cotton kurti under ₹800 for summer')">Cotton kurti under ₹800 for summer</span>
+          <span class="ai-suggestion-chip" onclick="searchProducts('Pink wedding outfit under ₹1500')">Pink wedding outfit under ₹1500</span>
+          <span class="ai-suggestion-chip" onclick="searchProducts('Black clothes for party')">Black party wear</span>
+          <span class="ai-suggestion-chip" onclick="searchProducts('Traditional Banarasi saree')">Traditional Banarasi saree</span>
+        </div>
+
+        <div id="ai-search-banner-wrap"></div>
+        <div class="active-filters" id="active-filters"></div>
+
+        <div class="products-grid" id="products-grid" id="products-grid">
+          <!-- Skeleton cards show instantly while data loads -->
+          <div class="product-card skeleton-card" style="min-height:380px"><div class="product-card-img" style="background:linear-gradient(90deg,#f0e6d6 25%,#e8d5be 50%,#f0e6d6 75%);background-size:200%;aspect-ratio:3/4;animation:shimmer 1.4s ease-in-out infinite"></div><div style="padding:1rem"><div style="height:10px;background:#e8d5be;border-radius:4px;margin-bottom:8px;width:55%;animation:shimmer 1.4s infinite"></div><div style="height:14px;background:#e8d5be;border-radius:4px;margin-bottom:8px;animation:shimmer 1.4s infinite"></div><div style="height:12px;background:#e8d5be;border-radius:4px;width:35%;animation:shimmer 1.4s infinite"></div></div></div>
+          <div class="product-card skeleton-card" style="min-height:380px"><div class="product-card-img" style="background:linear-gradient(90deg,#f0e6d6 25%,#e8d5be 50%,#f0e6d6 75%);background-size:200%;aspect-ratio:3/4;animation:shimmer 1.4s ease-in-out infinite"></div><div style="padding:1rem"><div style="height:10px;background:#e8d5be;border-radius:4px;margin-bottom:8px;width:55%;animation:shimmer 1.4s infinite"></div><div style="height:14px;background:#e8d5be;border-radius:4px;margin-bottom:8px;animation:shimmer 1.4s infinite"></div><div style="height:12px;background:#e8d5be;border-radius:4px;width:35%;animation:shimmer 1.4s infinite"></div></div></div>
+          <div class="product-card skeleton-card" style="min-height:380px"><div class="product-card-img" style="background:linear-gradient(90deg,#f0e6d6 25%,#e8d5be 50%,#f0e6d6 75%);background-size:200%;aspect-ratio:3/4;animation:shimmer 1.4s ease-in-out infinite"></div><div style="padding:1rem"><div style="height:10px;background:#e8d5be;border-radius:4px;margin-bottom:8px;width:55%;animation:shimmer 1.4s infinite"></div><div style="height:14px;background:#e8d5be;border-radius:4px;margin-bottom:8px;animation:shimmer 1.4s infinite"></div><div style="height:12px;background:#e8d5be;border-radius:4px;width:35%;animation:shimmer 1.4s infinite"></div></div></div>
+          <div class="product-card skeleton-card" style="min-height:380px"><div class="product-card-img" style="background:linear-gradient(90deg,#f0e6d6 25%,#e8d5be 50%,#f0e6d6 75%);background-size:200%;aspect-ratio:3/4;animation:shimmer 1.4s ease-in-out infinite"></div><div style="padding:1rem"><div style="height:10px;background:#e8d5be;border-radius:4px;margin-bottom:8px;width:55%;animation:shimmer 1.4s infinite"></div><div style="height:14px;background:#e8d5be;border-radius:4px;margin-bottom:8px;animation:shimmer 1.4s infinite"></div><div style="height:12px;background:#e8d5be;border-radius:4px;width:35%;animation:shimmer 1.4s infinite"></div></div></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="nav-logo" style="margin-bottom:1rem">
+            <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
+            <div class="nav-logo-text">
+              <span class="brand-name" style="color:var(--white)">Nari Niketan</span>
+              <span class="brand-tagline">Elegance Redefined</span>
+            </div>
+          </div>
+          <p class="footer-brand-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html">All Products</a></li>
+            <li><a href="shop.html?cat=Sarees">Sarees</a></li>
+            <li><a href="shop.html?cat=Suits">Suits</a></li>
+            <li><a href="shop.html?cat=Lehengas">Lehengas</a></li>
+            <li><a href="shop.html?cat=Kurtas">Kurtas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Legal &amp; Support</h4>
+          <ul class="footer-links">
+            <li><a href="grievance-redressal.html" style="color:var(--accent-light);font-weight:600">&#9878; Grievance Redressal</a></li>
+            <li><a href="terms-and-conditions.html">&#x1F4DC; Terms &amp; Conditions</a></li>
+            <li><a href="privacy-policy.html">&#x1F512; Privacy Policy</a></li>
+            <li><a href="return-policy.html">&#8634; Return &amp; Refund Policy</a></li>
+            <li><a href="my-orders.html">Track Orders</a></li>
+            <li><a href="seller/login.html" style="color:var(--accent-dark);font-weight:600">&#x1F3EA; Sell on Nari Niketan</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Contact &amp; Grievance</h4>
+          <div class="footer-contact">
+            <p>&#x1F4CD; <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer">Nari Niketan, Rihand Nagar, UP &rarr;</a></p>
+            <p>&#x1F4DE; <a href="tel:+916307032042">+91 6307032042</a></p>
+            <p>&#x1F4E7; <a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></p>
+            <p>&#9878; <a href="grievance-redressal.html" style="color:var(--accent-light);text-decoration:underline;">Lodge Grievance Ticket &rarr;</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Nari Niketan. All rights reserved.</p>
+        <p><a href="grievance-redressal.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Grievance Redressal</a> &bull; <a href="terms-and-conditions.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Terms</a> &bull; <a href="privacy-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Privacy</a> &bull; <a href="return-policy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Returns</a></p>
+        <p>Made with &hearts; in India &bull; Created by Manas.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/products.js?v=3.8"></script>
+  <script src="js/nari-ai-ads.js?v=1.0"></script>
+  <script>
+    let allLoadedProducts = [];
+    let selectedSizes = [];
+
+    function getSearchTerm() {
+      const el = document.getElementById("nn-search-input") || document.getElementById("nav-search-input");
+      return (el ? el.value : "").toLowerCase().trim();
+    }
+
+    function setSearchTerm(val) {
+      const el1 = document.getElementById("nn-search-input");
+      if (el1) el1.value = val;
+      const el2 = document.getElementById("nav-search-input");
+      if (el2) el2.value = val;
+    }
+
+    async function initShop() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam  = urlParams.get("cat");
+      const searchParam = urlParams.get("search");
+
+      if (catParam) {
+        const radio = document.querySelector(`input[name="category"][value="${catParam}"]`);
+        if (radio) radio.checked = true;
+        const titleEl = document.getElementById("shop-page-title");
+        if (titleEl) titleEl.textContent = catParam;
+      }
+      if (searchParam) {
+        setSearchTerm(searchParam);
+      }
+
+      // Live filter when typing in search bar
+      const hookSearch = () => {
+        const sInput = document.getElementById("nn-search-input") || document.getElementById("nav-search-input");
+        if (sInput && !sInput.dataset.hooked) {
+          sInput.dataset.hooked = "true";
+          sInput.addEventListener("input", () => applyFilters());
+        }
+      };
+      hookSearch();
+      setTimeout(hookSearch, 500);
+
+      // PHASE 2: Render from Firestore DISK CACHE instantly (0 network wait)
+      try {
+        const cached = await Store.getProducts();
+        if (cached && cached.length) {
+          allLoadedProducts = cached;
+          applyFilters();
+        }
+      } catch (err) {
+        console.warn("Disk cache getProducts error:", err);
+      }
+
+      // PHASE 3: Live sync — updates silently when server responds
+      try {
+        Store.subscribeProducts({}, (products) => {
+          allLoadedProducts = products || [];
+          applyFilters();
+        });
+      } catch (err) {
+        console.error("subscribeProducts setup error:", err);
+      }
+    }
+
+    function toggleSize(el, size) {
+      el.classList.toggle("active");
+      if (selectedSizes.includes(size)) {
+        selectedSizes = selectedSizes.filter(s => s !== size);
+      } else {
+        selectedSizes.push(size);
+      }
+      applyFilters();
+    }
+
+    function setPriceRange(min, max) {
+      const minEl = document.getElementById("min-price");
+      const maxEl = document.getElementById("max-price");
+      if (minEl) minEl.value = min;
+      if (maxEl) maxEl.value = max;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      try {
+        const cat = document.querySelector('input[name="category"]:checked')?.value || "All";
+        const minP = Number(document.getElementById("min-price")?.value) || 0;
+        const maxP = Number(document.getElementById("max-price")?.value) || Infinity;
+        const sortBy = document.getElementById("sort-by")?.value || "featured";
+        const searchQ = getSearchTerm();
+        const bannerWrap = document.getElementById("ai-search-banner-wrap");
+
+        let basePool = allLoadedProducts || [];
+
+        // 1. Natural Language Search with NariAISearch
+        if (searchQ && window.NariAISearch) {
+          const aiRes = NariAISearch.search(searchQ, basePool);
+          basePool = aiRes.products || [];
+
+          if (bannerWrap) {
+            if (aiRes.isAlternative) {
+              bannerWrap.innerHTML = `
+                <div class="ai-alt-banner">
+                  <div class="ai-alt-banner-title">✨ Close Alternatives Found</div>
+                  <div>${aiRes.altMessage}</div>
+                </div>
+              `;
+            } else if (aiRes.explanation) {
+              bannerWrap.innerHTML = `
+                <div class="ai-search-banner">
+                  <div class="ai-search-banner-content">
+                    <span class="ai-search-badge">✨ AI SEARCH</span>
+                    <span>${aiRes.explanation}</span>
+                  </div>
+                  <button class="ai-search-clear-btn" onclick="clearSearchFilter()">✕ Clear</button>
+                </div>
+              `;
+            }
+          }
+        } else {
+          if (bannerWrap) bannerWrap.innerHTML = '';
+        }
+
+        let filtered = basePool.filter(p => {
+          const matchCat = (cat === "All" || p.category === cat);
+          const price = Number(p.salePrice || p.price || 0);
+          const matchPrice = (price >= minP && price <= maxP);
+          const matchSize = (selectedSizes.length === 0 || (p.sizes && p.sizes.some(s => selectedSizes.includes(s))));
+          return matchCat && matchPrice && matchSize;
+        });
+
+        // Sort
+        if (sortBy === "price-asc") filtered.sort((a,b) => (Number(a.salePrice || a.price) || 0) - (Number(b.salePrice || b.price) || 0));
+        else if (sortBy === "price-desc") filtered.sort((a,b) => (Number(b.salePrice || b.price) || 0) - (Number(a.salePrice || a.price) || 0));
+        else if (sortBy === "rating") filtered.sort((a,b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+        else if (sortBy === "newest") filtered.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+        renderProducts(filtered);
+      } catch (err) {
+        console.error("applyFilters error:", err);
+      }
+    }
+
+    function renderProducts(products) {
+      const grid = document.getElementById("products-grid");
+      const countEl = document.getElementById("product-count");
+      if (countEl) countEl.textContent = products ? products.length : 0;
+      if (!grid) return;
+
+      if (!products || !products.length) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-state-icon">&#x1F50D;</span>
+            <h3>No Matches Found</h3>
+            <p>Try adjusting your search keywords, price range, or clearing filters.</p>
+            <button onclick="clearFilters()" class="btn btn-primary btn-sm" style="padding:8px 20px;font-weight:700;">
+              &#x21BB; Reset All Filters
+            </button>
+          </div>`;
+        return;
+      }
+
+      // Instant local SVG fallback
+      const fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 520'%3E%3Crect fill='%23F5ECD8' width='400' height='520'/%3E%3Ctext x='200' y='240' font-family='Georgia%2Cserif' font-size='16' fill='%238B1A4A' text-anchor='middle'%3E%F0%9F%9B%8D%EF%B8%8F%3C/text%3E%3Ctext x='200' y='270' font-family='Georgia%2Cserif' font-size='14' fill='%238B1A4A' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
+      const shopImgStore = {};
+
+      grid.innerHTML = products.map(p => {
+        const hasSale     = p.salePrice && Number(p.salePrice) < Number(p.price);
+        const displayPrice = hasSale ? Number(p.salePrice) : Number(p.price);
+        const discount    = hasSale
+          ? (p.discount || Math.round(((p.price - p.salePrice) / p.price) * 100))
+          : 0;
+
+        const rawImg   = p.imageUrl || (p.images && p.images[0]) || p.image || '';
+        const isBase64 = rawImg.startsWith('data:');
+        const displayImg = isBase64 ? fallback : (rawImg || fallback);
+        if (isBase64) shopImgStore[p.id] = rawImg;
+
+        return `
+          <div class="product-card">
+            <div class="product-card-img-wrap" style="position:relative;overflow:hidden;border-radius:var(--radius-md) var(--radius-md) 0 0;background:var(--cream);aspect-ratio:3/4;">
+              <img src="${displayImg}" alt="${p.name || 'Product'}" class="product-card-img shop-img-el" data-pid="${p.id}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='${fallback}'">
+              ${hasSale ? `<span class="product-badge sale" style="position:absolute;top:0.75rem;left:0.75rem;background:var(--accent);color:var(--dark);padding:0.25rem 0.6rem;border-radius:4px;font-size:0.72rem;font-weight:700;">${discount}% OFF</span>` : ''}
+            </div>
+            <div class="product-card-body" style="padding:1rem;">
+              <p class="product-card-category" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent-dark);font-weight:600;margin-bottom:0.25rem;">${p.category || ''}</p>
+              <h3 class="product-card-title" style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text);"><a href="product.html?id=${p.id}">${p.name || 'Unnamed Product'}</a></h3>
+              <div class="product-card-price-row" style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.75rem;">
+                <span class="product-card-price" style="font-weight:700;color:var(--primary);font-size:1.05rem;">&#8377;${(displayPrice || 0).toLocaleString('en-IN')}</span>
+                ${hasSale ? `<span class="product-card-original-price" style="font-size:0.8rem;color:#88707A;text-decoration:line-through;">&#8377;${Number(p.price).toLocaleString('en-IN')}</span>` : ''}
+                ${hasSale ? `<span class="product-discount" style="font-size:0.72rem;color:#2E7D32;font-weight:700;">${discount}% off</span>` : ''}
+              </div>
+              <div>
+                <a href="product.html?id=${p.id}" class="btn btn-primary btn-sm btn-full" style="display:block;text-align:center;">View Details</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // Assign base64 images if any legacy images exist
+      grid.querySelectorAll('.shop-img-el[data-pid]').forEach(img => {
+        const pid = img.getAttribute('data-pid');
+        if (shopImgStore[pid]) {
+          img.setAttribute('src', shopImgStore[pid]);
+        }
+      });
+    }
+
+    function searchProducts(q) {
+      if (q !== undefined && q !== null) setSearchTerm(q);
+      applyFilters();
+    }
+
+    function clearSearchFilter() {
+      setSearchTerm("");
+      if (window.NariAISearch) NariAISearch.resetContext();
+      applyFilters();
+    }
+
+    function clearFilters() {
+      const allRadio = document.querySelector('input[name="category"][value="All"]');
+      if (allRadio) allRadio.checked = true;
+      const minEl = document.getElementById("min-price");
+      if (minEl) minEl.value = "";
+      const maxEl = document.getElementById("max-price");
+      if (maxEl) maxEl.value = "";
+      setSearchTerm("");
+      if (window.NariAISearch) NariAISearch.resetContext();
+      const sortEl = document.getElementById("sort-by");
+      if (sortEl) sortEl.value = "featured";
+      const titleEl = document.getElementById("shop-page-title");
+      if (titleEl) titleEl.textContent = "All Collections";
+      selectedSizes = [];
+      document.querySelectorAll(".size-chip").forEach(el => el.classList.remove("active"));
+      applyFilters();
+    }
+
+    document.addEventListener("DOMContentLoaded", initShop);
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-search.js?v=1.0"></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

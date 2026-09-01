@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/auth.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <div class="auth-page">
+    <!-- Brand Panel -->
+    <div class="auth-brand-panel">
+      <div class="auth-brand-content">
+        <div class="auth-brand-logo">
+          <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="auth-logo-img" width="90" height="90" style="width:90px;height:90px;max-width:90px;max-height:90px;border-radius:50%;object-fit:cover;">
+          <div class="auth-logo-text">
+            <span class="brand-name">Nari Niketan</span>
+            <span class="brand-tagline">Elegance Redefined</span>
+          </div>
+        </div>
+        <h2 class="auth-brand-title">Welcome Back to <span>Nari Niketan</span></h2>
+        <p class="auth-brand-desc">Sign in to access your orders, wishlist, and exclusive member deals.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-feature-icon"></div> Track your orders in real-time</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#9825;</div> Save items to your wishlist</div>
+          <div class="auth-feature"><div class="auth-feature-icon"></div> Get exclusive member offers</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#9889;</div> Faster checkout every time</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-box">
+
+        <!-- When User is Already Logged In -->
+        <div id="already-logged-in-box" style="display:none; text-align:center; padding:1rem 0;">
+          <div style="font-size:3rem; margin-bottom:0.75rem;"></div>
+          <h2 style="font-family:var(--font-display); color:var(--primary); margin-bottom:0.5rem;">Already Signed In</h2>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.25rem;">You are currently logged in as:</p>
+          <p style="font-size:1rem; font-weight:700; color:var(--text); margin-bottom:1.5rem;" id="logged-in-user-name">user@email.com</p>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <a href="index.html" class="btn btn-primary btn-full">Continue to Store</a>
+            <a href="my-orders.html" class="btn btn-outline btn-full">View My Orders</a>
+            <button class="btn btn-ghost btn-full" onclick="signOutAndStay()" style="color:var(--error);">Sign Out / Switch Account</button>
+          </div>
+        </div>
+
+        <!-- Normal Login Form Wrapper -->
+        <div id="main-login-wrapper">
+          <!-- Top Mode Switcher (Sign In vs Register) -->
+          <div class="auth-mode-switch">
+            <a href="login.html" class="auth-mode-btn active">Sign In</a>
+            <a href="register.html" class="auth-mode-btn">&#10024; Create Account</a>
+          </div>
+
+          <div class="auth-box-header">
+            <h2>Welcome Back</h2>
+            <p>Sign in to your Nari Niketan account</p>
+          </div>
+
+          <!-- Auth Method Tabs -->
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-email" onclick="switchTab('email')">&#9993; Email</button>
+            <button class="auth-tab" id="tab-phone" onclick="switchTab('phone')">Phone OTP</button>
+          </div>
+
+          <!-- Error Banner -->
+          <div class="auth-error-banner" id="error-banner" style="display:none">
+            <span>&#10007;</span><span id="error-msg">Error message</span>
+          </div>
+
+          <!-- Email Login Form -->
+          <div id="email-form">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="email" placeholder="your@email.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="input-relative">
+                <input type="password" class="form-control" id="password" placeholder="Enter your password" autocomplete="current-password" style="padding-right:2.5rem">
+                <button class="pw-toggle-btn" onclick="togglePw('password', this)" type="button">&#128065;</button>
+              </div>
+              <p class="form-hint" style="margin-top:0.4rem"><a href="#" onclick="forgotPassword(event)" style="color:var(--primary);font-weight:600">Forgot password?</a></p>
+            </div>
+            <button class="btn btn-primary btn-full" id="email-login-btn" onclick="loginEmail()">
+              Sign In
+            </button>
+
+            <div class="auth-divider">or continue with</div>
+
+            <button class="social-auth-btn" onclick="loginGoogle()">
+              <span>&#128309;</span> Continue with Google
+            </button>
+          </div>
+
+          <!-- Phone Login Form -->
+          <div id="phone-form" style="display:none">
+            <div id="phone-step-1">
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <div class="phone-input-row">
+                  <select class="form-control country-code" id="country-code">
+                    <option value="+91">+91 (IN)</option>
+                    <option value="+1">+1 (US)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+971">+971 (UAE)</option>
+                  </select>
+                  <input type="tel" class="form-control" id="phone-number" placeholder="9876543210" maxlength="10">
+                </div>
+              </div>
+              <!-- reCAPTCHA widget -->
+              <div id="recaptcha-container" style="margin:0.75rem 0;display:flex;justify-content:center"></div>
+              <p style="font-size:.78rem;color:var(--text-muted);text-align:center;margin-bottom:.6rem">&#10003; Solve the captcha above, then click Send OTP</p>
+              <button class="btn btn-primary btn-full" id="send-otp-btn" onclick="sendOTP()" disabled>
+                Send OTP
+              </button>
+            </div>
+
+            <div id="phone-step-2" style="display:none">
+              <p style="text-align:center;font-size:0.88rem;color:var(--text-light);margin-bottom:1rem">
+                Enter the 6-digit OTP sent to <strong id="phone-display"></strong>
+              </p>
+              <div class="otp-inputs" id="otp-inputs">
+                <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+              </div>
+              <button class="btn btn-primary btn-full" onclick="verifyOTP()">Verify OTP</button>
+              <p style="text-align:center;margin-top:0.75rem;font-size:0.85rem;color:var(--text-muted)">
+                Didn't receive? <button class="resend-btn" id="resend-btn" onclick="resendOTP()">Resend</button>
+              </p>
+              <button style="display:block;margin:0.5rem auto 0;background:none;border:none;cursor:pointer;font-size:0.85rem;color:var(--text-muted)" onclick="document.getElementById('phone-step-1').style.display='block';document.getElementById('phone-step-2').style.display='none'">Change Number</button>
+            </div>
+          </div>
+
+          <!-- Prominent New User Registration CTA Box -->
+          <div class="auth-footer-box">
+            <p>Don't have an account yet?</p>
+            <a href="register.html" class="btn btn-outline btn-full">
+              &#10024; Register New Account
+            </a>
+          </div>
+
+          <div class="auth-switch" style="text-align:center;margin-top:1.5rem">
+            <a href="index.html">&larr; Back to Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const redirect = new URLSearchParams(window.location.search).get("redirect") || "index.html";
+    const redirectQuery = redirect && redirect !== "index.html" ? `?redirect=${encodeURIComponent(redirect)}` : "";
+    
+    // Update register links to preserve redirect
+    const regLink = document.querySelector('.auth-mode-switch a[href="register.html"]');
+    if (regLink) regLink.href = "register.html" + redirectQuery;
+    const footerRegLink = document.querySelector('.auth-footer-box a[href="register.html"]');
+    if (footerRegLink) footerRegLink.href = "register.html" + redirectQuery;
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const hasExplicitRedirect = new URLSearchParams(window.location.search).has("redirect");
+        if (hasExplicitRedirect) {
+          window.location.href = redirect;
+        } else {
+          document.getElementById("main-login-wrapper").style.display = "none";
+          document.getElementById("already-logged-in-box").style.display = "block";
+          document.getElementById("logged-in-user-name").textContent = user.displayName || user.email || user.phoneNumber || "User";
+        }
+      } else {
+        document.getElementById("main-login-wrapper").style.display = "block";
+        document.getElementById("already-logged-in-box").style.display = "none";
+      }
+    });
+
+    async function signOutAndStay() {
+      try {
+        await auth.signOut();
+        document.getElementById("already-logged-in-box").style.display = "none";
+        document.getElementById("main-login-wrapper").style.display = "block";
+        App.toast("Signed out. You can now login.", "default");
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById("error-banner").style.display = "flex";
+      document.getElementById("error-msg").textContent = msg;
+    }
+    function hideError() { document.getElementById("error-banner").style.display = "none"; }
+
+    function switchTab(tab) {
+      document.getElementById("email-form").style.display = tab === "email" ? "block" : "none";
+      document.getElementById("phone-form").style.display = tab === "phone" ? "block" : "none";
+      document.getElementById("tab-email").classList.toggle("active", tab === "email");
+      document.getElementById("tab-phone").classList.toggle("active", tab === "phone");
+      hideError();
+      if (tab === 'phone' && !Auth.recaptchaVerifier) {
+        Auth.initRecaptcha('recaptcha-container');
+      }
+    }
+
+    async function loginEmail() {
+      hideError();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if (!email || !password) { showError("Please fill in all fields."); return; }
+      const btn = document.getElementById("email-login-btn");
+      btn.disabled = true; btn.textContent = "Signing in...";
+      try {
+        await Auth.loginWithEmail(email, password);
+        App.toast("Welcome back!", "success");
+        setTimeout(() => { window.location.href = redirect; }, 500);
+      } catch (e) {
+        showError(Auth.getErrorMessage(e));
+      } finally {
+        btn.disabled = false; btn.innerHTML = "Sign In";
+      }
+    }
+
+    async function loginGoogle() {
+      hideError();
+      try {
+        await Auth.loginWithGoogle();
+        App.toast("Signed in with Google!", "success");
+        setTimeout(() => { window.location.href = redirect; }, 500);
+      } catch (e) { showError(Auth.getErrorMessage(e)); }
+    }
+
+    async function forgotPassword(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        showError("Please enter your email address above to reset password.");
+        return;
+      }
+      try {
+        await auth.sendPasswordResetEmail(email);
+        App.toast("Password reset email sent! Check your inbox", "success");
+      } catch (err) {
+        showError(Auth.getErrorMessage(err));
+      }
+    }
+
+    async function sendOTP() {
+      hideError();
+      const phone = document.getElementById("phone-number").value.trim();
+      const code = document.getElementById("country-code").value;
+      if (!phone || phone.length < 10) { showError("Enter a valid 10-digit phone number."); return; }
+      const fullPhone = code + phone;
+      const btn = document.getElementById("send-otp-btn");
+      btn.disabled = true; btn.textContent = "Sending...";
+      try {
+        await Auth.sendPhoneOTP(fullPhone);
+        document.getElementById("phone-step-1").style.display = "none";
+        document.getElementById("phone-step-2").style.display = "block";
+        document.getElementById("phone-display").textContent = fullPhone;
+        setupOTPInputs();
+      } catch (e) {
+        showError(Auth.getErrorMessage(e));
+        try { if(window.grecaptcha) grecaptcha.reset(); } catch(err){}
+      } finally {
+        btn.disabled = false; btn.textContent = "Send OTP";
+      }
+    }
+
+    function setupOTPInputs() {
+      const inputs = document.querySelectorAll(".otp-digit");
+      inputs.forEach((inp, i) => {
+        inp.value = "";
+        inp.addEventListener("input", () => {
+          if (inp.value && i < inputs.length - 1) inputs[i + 1].focus();
+        });
+        inp.addEventListener("keydown", e => {
+          if (e.key === "Backspace" && !inp.value && i > 0) inputs[i - 1].focus();
+        });
+      });
+      inputs[0].focus();
+    }
+
+    async function verifyOTP() {
+      const otp = [...document.querySelectorAll(".otp-digit")].map(i => i.value).join("");
+      if (otp.length !== 6) { showError("Please enter the complete 6-digit OTP."); return; }
+      try {
+        await Auth.verifyPhoneOTP(otp);
+        App.toast("Phone verified successfully!", "success");
+        setTimeout(() => { window.location.href = redirect; }, 500);
+      } catch (e) { showError(Auth.getErrorMessage(e)); }
+    }
+
+    async function resendOTP() {
+      // Clear old verifier and re-render captcha
+      try { if (Auth.recaptchaVerifier) { Auth.recaptchaVerifier.clear(); Auth.recaptchaVerifier = null; } } catch(e){}
+      // Go back to step 1
+      document.getElementById('phone-step-1').style.display = 'block';
+      document.getElementById('phone-step-2').style.display = 'none';
+      // Re-init captcha in the container
+      Auth.initRecaptcha('recaptcha-container');
+    }
+
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id);
+      if (inp.type === "password") { inp.type = "text"; btn.textContent = "Hide"; }
+      else { inp.type = "password"; btn.innerHTML = "&#128065;"; }
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        if (document.getElementById("email-form").style.display !== "none") loginEmail();
+      }
+    });
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

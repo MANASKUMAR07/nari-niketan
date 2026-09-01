@@ -1,0 +1,318 @@
+/* ==========================================================
+   NARI NIKETAN — Store Pickup & Google Maps Delivery CSS
+   Theme: Royal Maroon (#8B1A4A), Regal Gold (#D4AF37), Cream (#FDFBF7)
+   ========================================================== */
+
+/* ===== FULFILLMENT METHOD CARDS ===== */
+.fulfillment-section {
+  background: #FFFDF9;
+  border: 1.5px solid rgba(139, 26, 74, 0.15);
+  border-radius: var(--radius-md, 12px);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.fulfillment-title {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary, #8B1A4A);
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fulfillment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.fulfillment-card {
+  background: var(--white, #fff);
+  border: 2px solid rgba(139, 26, 74, 0.18);
+  border-radius: 10px;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.fulfillment-card:hover {
+  border-color: var(--accent, #D4AF37);
+  box-shadow: 0 4px 14px rgba(139, 26, 74, 0.08);
+}
+
+.fulfillment-card.active {
+  background: #FAF3E8;
+  border-color: var(--primary, #8B1A4A);
+  box-shadow: 0 4px 16px rgba(139, 26, 74, 0.14);
+}
+
+.fulfillment-card input[type="radio"] {
+  margin-top: 3px;
+  accent-color: var(--primary, #8B1A4A);
+  cursor: pointer;
+}
+
+.fulfillment-card-info h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text, #2A1820);
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fulfillment-card-info p {
+  font-size: 0.78rem;
+  color: var(--text-muted, #7A6670);
+  line-height: 1.4;
+}
+
+.fulfillment-card-badge {
+  display: inline-block;
+  background: #2E7D32;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+/* ===== STORE PICKUP DETAILS CARD ===== */
+.store-pickup-box {
+  background: #FBF7EE;
+  border: 1.5px dashed var(--accent, #D4AF37);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 1rem;
+  animation: mapFadeIn 0.3s ease;
+}
+
+.store-pickup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.store-pickup-header h4 {
+  font-size: 1rem;
+  color: var(--primary, #8B1A4A);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.store-pickup-addr {
+  font-size: 0.86rem;
+  color: var(--text, #2A1820);
+  line-height: 1.5;
+  margin-bottom: 0.85rem;
+}
+
+.store-pickup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.78rem;
+  color: var(--text-muted, #7A6670);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  margin-bottom: 0.85rem;
+}
+
+.store-directions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--primary, #8B1A4A), #5C0E30);
+  color: #FFE082;
+  border: 1px solid var(--accent, #D4AF37);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.store-directions-btn:hover {
+  background: var(--accent, #D4AF37);
+  color: #0E0714;
+}
+
+/* ===== LOCATION SELECTION TABS ===== */
+.address-method-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.address-tab-btn {
+  background: var(--white, #fff);
+  border: 1.5px solid rgba(139, 26, 74, 0.2);
+  color: var(--text-muted, #7A6670);
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.address-tab-btn:hover {
+  border-color: var(--primary, #8B1A4A);
+  color: var(--primary, #8B1A4A);
+}
+
+.address-tab-btn.active {
+  background: var(--primary, #8B1A4A);
+  color: var(--white, #fff);
+  border-color: var(--primary, #8B1A4A);
+}
+
+/* ===== INTERACTIVE MAP CONTAINER ===== */
+.delivery-map-wrap {
+  border: 1.5px solid rgba(139, 26, 74, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: #f0ede8;
+  position: relative;
+  animation: mapFadeIn 0.3s ease;
+}
+
+@keyframes mapFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.map-search-bar {
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid #e0d5da;
+  display: flex;
+  gap: 8px;
+}
+
+.map-search-bar input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.map-search-bar input:focus {
+  border-color: var(--primary, #8B1A4A);
+}
+
+.map-viewport {
+  width: 100%;
+  height: 280px;
+  max-height: 40vh;
+  position: relative;
+  z-index: 1;
+}
+
+.map-selected-bar {
+  padding: 10px 14px;
+  background: #FFFDF9;
+  border-top: 1px solid rgba(139, 26, 74, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.map-selected-info {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text, #2A1820);
+}
+
+.map-selected-coords {
+  font-size: 0.72rem;
+  color: var(--text-muted, #7A6670);
+  font-family: monospace;
+}
+
+.btn-confirm-loc {
+  background: #2E7D32;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-confirm-loc:hover {
+  background: #1B5E20;
+}
+
+/* Confirmed GPS Badge */
+.gps-confirmed-badge {
+  background: rgba(46, 125, 50, 0.1);
+  border: 1px solid #2E7D32;
+  color: #2E7D32;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+/* Pickup Status Banner in My Orders */
+.pickup-ready-banner {
+  background: linear-gradient(135deg, #15803D, #2E8B57);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+  animation: pulseReady 2s infinite ease-in-out;
+}
+
+@keyframes pulseReady {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .fulfillment-grid {
+    grid-template-columns: 1fr;
+  }
+}

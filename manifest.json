@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "Nari Niketan — Premium Indian Ethnic Wear",
+  "short_name": "Nari Niketan",
+  "description": "Discover exquisite handcrafted Indian ethnic wear — Sarees, Lehengas, Salwar Suits, Kurtas, and Bridal Collections.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "nari-niketan-pwa-v1",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "tabbed",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#FFF8F0",
+  "theme_color": "#8B1A4A",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["shopping", "lifestyle", "fashion"],
+  "launch_handler": {
+    "client_mode": "auto"
+  },
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
+  "tab_strip": {
+    "home_tab": {
+      "url": "./index.html"
+    },
+    "new_tab_button": {
+      "url": "./shop.html"
+    }
+  },
+  "share_target": {
+    "action": "./shop.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+nariniketan",
+      "url": "./shop.html?search=%s"
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "https://nari-niketan.web.app"
+    },
+    {
+      "origin": "https://nari-niketan.firebaseapp.com"
+    }
+  ],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.nariniketan.app",
+      "id": "com.nariniketan.app"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://nari-niketan.web.app/manifest.webmanifest"
+    }
+  ],
+  "icons": [
+    {
+      "src": "images/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "images/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/screenshots/mobile-home.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Nari Niketan Home - Handcrafted Indian Ethnic Wear"
+    },
+    {
+      "src": "images/screenshots/mobile-shop.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Bridal & Festive Wear Collection"
+    },
+    {
+      "src": "images/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Nari Niketan Desktop Experience"
+    },
+    {
+      "src": "images/screenshots/desktop-shop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Browse Exclusive Sarees and Suits Catalog"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop Collection",
+      "short_name": "Shop",
+      "description": "Browse all ethnic wear catalog",
+      "url": "./shop.html",
+      "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Sarees Collection",
+      "short_name": "Sarees",
+      "description": "Explore handcrafted silk and designer sarees",
+      "url": "./shop.html?cat=Sarees",
+      "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Bridal Lehengas",
+      "short_name": "Lehengas",
+      "description": "Exquisite bridal & wedding lehengas",
+      "url": "./shop.html?cat=Lehengas",
+      "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "My Orders & Tracking",
+      "short_name": "My Orders",
+      "description": "Check real-time delivery status",
+      "url": "./my-orders.html",
+      "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ]
+}

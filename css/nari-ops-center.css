@@ -1,0 +1,324 @@
+/* =========================================================================
+   NARI NIKETAN — Nari AI Website Operations Center CSS v2.0
+   Theme: Luxury Ethnic Royal Maroon (#8B1A4A), Regal Gold (#D4AF37), Dark (#100612)
+   ========================================================================= */
+
+.ops-center-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Operations Center Header */
+.ops-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: linear-gradient(135deg, #1C0A15 0%, #12050E 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.ops-title-group h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.45rem;
+  color: #FFE082;
+  margin: 0 0 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ops-title-group p {
+  font-size: 0.84rem;
+  color: #D6C7D2;
+  margin: 0;
+}
+
+.ops-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Overview Score & Metrics Strip */
+.ops-score-gauge-card {
+  background: linear-gradient(135deg, #2A0E20 0%, #170712 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ops-score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid #D4AF37;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ops-score-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #FFE082;
+  line-height: 1;
+}
+
+.ops-score-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.ops-stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.ops-stat-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.ops-stat-pill-label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.ops-stat-pill-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* 12-Pillar Health Scorecard Grid */
+.ops-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.ops-pillar-card {
+  background: #190913;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.ops-pillar-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.ops-pillar-card.healthy {
+  border-left: 4px solid #22C55E;
+}
+
+.ops-pillar-card.warning {
+  border-left: 4px solid #FBBF24;
+}
+
+.ops-pillar-card.failing {
+  border-left: 4px solid #EF4444;
+}
+
+.ops-pillar-card.not-tested {
+  border-left: 4px solid #71717A;
+}
+
+.ops-pillar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ops-pillar-score {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFE082;
+}
+
+.ops-pillar-status-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+.ops-pillar-status-tag.healthy { background: rgba(34, 197, 94, 0.15); color: #4ADE80; }
+.ops-pillar-status-tag.warning { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
+.ops-pillar-status-tag.failing { background: rgba(239, 68, 68, 0.15); color: #F87171; }
+.ops-pillar-status-tag.not-tested { background: rgba(255, 255, 255, 0.08); color: #A1A1AA; }
+
+/* Sub-Tab Navigation */
+.ops-tabs-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  scrollbar-width: none;
+}
+
+.ops-tabs-nav::-webkit-scrollbar { display: none; }
+
+.ops-tab-btn {
+  background: none;
+  border: none;
+  color: #D6C7D2;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.6rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.ops-tab-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: #FFE082;
+}
+
+.ops-tab-btn.active {
+  background: linear-gradient(135deg, #8B1A4A, #5C0E30);
+  color: #FFE082;
+  border: 1px solid #D4AF37;
+  font-weight: 700;
+}
+
+/* Tab Panels */
+.ops-tab-panel {
+  display: none;
+  animation: opsFadeIn 0.3s ease;
+}
+
+.ops-tab-panel.active {
+  display: block;
+}
+
+@keyframes opsFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Incident Cards */
+.ops-incident-card {
+  background: #1A0914;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1.1rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ops-incident-card.critical { border-left: 4px solid #EF4444; }
+.ops-incident-card.high { border-left: 4px solid #F97316; }
+.ops-incident-card.medium { border-left: 4px solid #FBBF24; }
+.ops-incident-card.low { border-left: 4px solid #38BDF8; }
+
+.ops-incident-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ops-incident-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.ops-incident-meta {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.ops-code-fix-block {
+  background: #0D040A;
+  border: 1px dashed rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #A3E635;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Progress Bar */
+.ops-audit-progress-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+  display: none;
+}
+
+.ops-audit-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #8B1A4A, #D4AF37);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .ops-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ops-actions {
+    width: 100%;
+  }
+  .ops-actions button {
+    flex: 1;
+  }
+  .ops-score-gauge-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}

@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Nari Niketan</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#09060D">
+  <link rel="icon" type="image/png" href="../images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="../images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="admin.css?v=3.1">
+  <link rel="stylesheet" href="../css/nari-ops-center.css?v=2.1">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="AdminNav.toggleMobileSidebar()"></div>
+
+<div class="admin-layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan" class="sidebar-brand-logo">
+      <div>
+        <div class="sidebar-brand-name">Nari Niketan</div>
+        <div class="sidebar-brand-sub">Admin Panel v3.0</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <a class="sidebar-link active" data-section="dashboard" onclick="AdminNav.go('dashboard')">
+        <span class="icon">&#x1F4CA;</span> Dashboard
+      </a>
+
+      <div class="sidebar-section-label">People</div>
+      <a class="sidebar-link" data-section="customers" onclick="AdminNav.go('customers')">
+        <span class="icon">&#x1F465;</span> Customers
+        <span class="badge-count" id="badge-customers" style="display:none">0</span>
+      </a>
+      <a class="sidebar-link" data-section="sellers" onclick="AdminNav.go('sellers')">
+        <span class="icon">&#x1F3EA;</span> Sellers
+        <span class="badge-count" id="badge-sellers" style="display:none">0</span>
+      </a>
+      <a class="sidebar-link" data-section="usermgmt" onclick="AdminNav.go('usermgmt')">
+        <span class="icon">&#x1F6E1;&#xFE0F;</span> Admin &amp; Users
+      </a>
+
+      <div class="sidebar-section-label">Store</div>
+      <a class="sidebar-link" data-section="products" onclick="AdminNav.go('products')">
+        <span class="icon">&#x1F6CD;&#xFE0F;</span> Products
+      </a>
+      <a class="sidebar-link" data-section="categories" onclick="AdminNav.go('categories')">
+        <span class="icon">&#x1F4C2;</span> Categories
+      </a>
+      <a class="sidebar-link" data-section="banners" onclick="AdminNav.go('banners')">
+        <span class="icon">&#x1F5BC;&#xFE0F;</span> Banners/Content
+      </a>
+      <a class="sidebar-link" data-section="reviews" onclick="AdminNav.go('reviews')">
+        <span class="icon">&#x2B50;</span> Reviews
+      </a>
+
+      <div class="sidebar-section-label">Commerce</div>
+      <a class="sidebar-link" data-section="orders" onclick="AdminNav.go('orders')">
+        <span class="icon">&#x1F4E6;</span> Orders
+        <span class="badge-count" id="badge-orders" style="display:none">0</span>
+      </a>
+      <a class="sidebar-link" data-section="payments" onclick="AdminNav.go('payments')">
+        <span class="icon">&#x1F4B3;</span> Payments
+      </a>
+      <a class="sidebar-link" data-section="returns" onclick="AdminNav.go('returns')">
+        <span class="icon">&#x21A9;&#xFE0F;</span> Returns &amp; Refunds
+        <span class="badge-count" id="badge-returns" style="display:none">0</span>
+      </a>
+      <a class="sidebar-link" data-section="coupons" onclick="AdminNav.go('coupons')">
+        <span class="icon">&#x1F3DF;&#xFE0F;</span> Coupons
+      </a>
+      <a class="sidebar-link" data-section="shipping" onclick="AdminNav.go('shipping')">
+        <span class="icon">&#x1F69A;</span> Shipping
+      </a>
+
+            <div class="sidebar-section-label">Marketing</div>
+      <a class="sidebar-link" data-section="aiads" onclick="AdminNav.go('aiads')">
+        <span class="icon">&#x1F4E2;</span> Nari AI Ads &amp; Marketing
+        <span class="badge-count" id="badge-aiads" style="display:none;background:var(--accent)">0</span>
+      </a>
+
+      <div class="sidebar-section-label">Compliance</div>
+      <a class="sidebar-link" data-section="invoices" onclick="AdminNav.go('invoices')">
+        <span class="icon">&#x1F9FE;</span> Invoices &amp; Bills
+      </a>
+      <a class="sidebar-link" data-section="complaints" onclick="AdminNav.go('complaints')">
+        <span class="icon">&#x1F4CB;</span> Grievances
+        <span class="badge-count" id="badge-complaints" style="display:none">0</span>
+      </a>
+
+      <div class="sidebar-section-label">Analytics</div>
+      <a class="sidebar-link" data-section="reports" onclick="AdminNav.go('reports')">
+        <span class="icon">&#x1F4C8;</span> Reports &amp; Analytics
+      </a>
+      <a class="sidebar-link" data-section="notifications" onclick="AdminNav.go('notifications')">
+        <span class="icon">&#x1F514;</span> Notifications
+      </a>
+
+      <div class="sidebar-section-label">System</div>
+      <a class="sidebar-link" data-section="settings" onclick="AdminNav.go('settings')">
+        <span class="icon">&#x2699;&#xFE0F;</span> Site Settings
+      </a>
+      <a class="sidebar-link" data-section="security" onclick="AdminNav.go('security')">
+        <span class="icon">&#x1F512;</span> Security &amp; Audit Logs
+      </a>
+      <a class="sidebar-link" data-section="monitor" onclick="AdminNav.go('monitor')">
+        <span class="icon">&#x1F916;</span> Nari AI Monitor
+        <span class="badge-count" id="badge-monitor" style="display:none;background:#ff4444">0</span>
+      </a>
+      <a class="sidebar-link" data-section="aistylist" onclick="AdminNav.go('aistylist')">
+        <span class="icon">&#x2728;</span> Nari AI Stylist
+      </a>
+
+      <div class="sidebar-section-label">Quick Links</div>
+      <a class="sidebar-link" href="../index.html" target="_blank">
+        <span class="icon">&#x1F3EC;</span> View Store &#x2197;
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user-info">
+        <div class="sidebar-avatar" id="sidebar-avatar-letter">A</div>
+        <div>
+          <div class="sidebar-user-name" id="sidebar-user-name">Admin</div>
+          <div class="sidebar-user-role">&#x1F511; Administrator</div>
+        </div>
+      </div>
+      <button class="sidebar-signout-btn" onclick="auth.signOut().then(()=>window.location.href='../login.html')">
+        &#x1F6AA; Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== TOPBAR ===== -->
+  <header class="admin-topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" onclick="AdminNav.toggleMobileSidebar()">&#x2630;</button>
+      <h1 class="topbar-page-title" id="topbar-page-title">&#x1F4CA; Dashboard</h1>
+    </div>
+    <div class="topbar-right">
+      <a href="../index.html" class="topbar-store-link" target="_blank">&#x1F3EC; Store &#x2197;</a>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="admin-main">
+
+        <!-- ==================== 17. NARI AI ADS & MARKETING ==================== -->
+    <section class="admin-section" id="section-aiads">
+      <div class="page-header" style="margin-bottom:1.5rem">
+        <div>
+          <h2>&#x2728; Nari AI Marketing Studio &amp; Campaign Generator</h2>
+          <p>Create high-converting promotional campaigns across the website using natural language AI</p>
+        </div>
+        <button class="btn btn-primary" onclick="AdminMarketing.openPromptModal()">
+          &#x2728; New AI Campaign
+        </button>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="stats-grid" style="margin-bottom:1.5rem">
+        <div class="stat-card revenue">
+          <span class="stat-icon">&#x1F4E2;</span>
+          <div class="stat-value" id="stat-mkt-campaigns">3 Active</div>
+          <div class="stat-label">Active Campaigns</div>
+        </div>
+        <div class="stat-card products">
+          <span class="stat-icon">&#x1F441;&#xFE0F;</span>
+          <div class="stat-value" id="stat-mkt-impressions">14.2K</div>
+          <div class="stat-label">Ad Impressions</div>
+        </div>
+        <div class="stat-card orders">
+          <span class="stat-icon">&#x1F446;</span>
+          <div class="stat-value" id="stat-mkt-clicks">1,180</div>
+          <div class="stat-label">Total Ad Clicks</div>
+        </div>
+        <div class="stat-card pending">
+          <span class="stat-icon">&#x1F4C8;</span>
+          <div class="stat-value" id="stat-mkt-ctr">8.3%</div>
+          <div class="stat-label">Avg Ad CTR</div>
+        </div>
+      </div>
+
+      <!-- ✨ Natural Language Campaign Creator Box -->
+      <div class="ai-campaign-prompt-box">
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#FFE082;margin-bottom:0.4rem;">
+          &#x2728; Create Campaign with AI (Natural Language Prompt)
+        </div>
+        <p style="font-size:0.84rem;color:#ECE0E6;margin-bottom:1rem;">
+          Describe what you want to promote. Nari AI analyzes your real product catalog, selects matching inventory, drafts 3 copy variations in brand voice, and configures rotating placements.
+        </p>
+
+        <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;">
+          <input type="text" class="form-control" id="ai-campaign-prompt-input" 
+                 placeholder="e.g. 'Create a Durga Puja campaign for sarees under ₹3000' or 'Promote wedding new arrivals'" 
+                 style="flex:1;min-width:280px;font-size:0.95rem;background:rgba(0,0,0,0.5);border-color:rgba(212,175,55,0.4);color:#fff;"
+                 onkeydown="if(event.key==='Enter') AdminMarketing.generateCampaignWithAi()">
+          <button class="btn btn-accent" id="btn-ai-gen-campaign" onclick="AdminMarketing.generateCampaignWithAi()" style="padding:0.75rem 1.5rem;font-weight:700;">
+            &#x2728; Generate Campaign
+          </button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:0.78rem;">
+          <span style="color:var(--text-muted);">Quick Prompts:</span>
+          <button type="button" class="btn btn-ghost btn-xs" onclick="AdminMarketing.setPrompt('Create a Durga Puja festive campaign for sarees under ₹3000')">&#x1FA94; Durga Puja Sarees &lt; ₹3000</button>
+          <button type="button" class="btn btn-ghost btn-xs" onclick="AdminMarketing.setPrompt('Create a royal wedding campaign for bridal sarees and lehengas')">&#x1F48E; Royal Wedding Edit</button>
+          <button type="button" class="btn btn-ghost btn-xs" onclick="AdminMarketing.setPrompt('Promote newly added festive collections and kurtas')">&#x2728; Fresh New Arrivals</button>
+          <button type="button" class="btn btn-ghost btn-xs" onclick="AdminMarketing.setPrompt('Create a flash clearance offer for products with discount > 30%')">&#x1F3F7;&#xFE0F; 30%+ Clearance</button>
+        </div>
+      </div>
+
+      <!-- Generated Campaign Draft Preview (Hidden until generated) -->
+      <div class="ai-campaign-preview-box" id="ai-campaign-draft-box" style="display:none;">
+        <div id="ai-campaign-draft-content"></div>
+      </div>
+
+      <!-- Active Campaigns & Performance Tabs -->
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-top:1.5rem;" class="admin-marketing-grid">
+        <!-- Campaigns Table -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>&#x1F4C5; Active &amp; Scheduled Promotional Campaigns</h3>
+            <button class="btn btn-ghost btn-xs" onclick="AdminMarketing.load()">&#x21BB; Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campaign</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Placements</th>
+                  <th>CTR</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="marketing-campaigns-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AI Marketing Insights & A/B Highlights -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>&#x1F4A1; AI Marketing Insights</h3>
+          </div>
+          <div class="panel-body" id="marketing-insights-container" style="display:flex;flex-direction:column;gap:0.75rem;">
+            <!-- Dynamic insights -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 1. DASHBOARD ==================== -->
+    <section class="admin-section active" id="section-dashboard">
+      <div class="stats-grid" id="dash-stats-grid">
+        <div class="stat-card orders">
+          <span class="stat-icon">&#x1F4E6;</span>
+          <div class="stat-value" id="stat-orders">&#x2014;</div>
+          <div class="stat-label">Total Orders</div>
+        </div>
+        <div class="stat-card revenue">
+          <span class="stat-icon">&#x1F4B0;</span>
+          <div class="stat-value" id="stat-revenue">&#x2014;</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card products">
+          <span class="stat-icon">&#x1F6CD;&#xFE0F;</span>
+          <div class="stat-value" id="stat-products">&#x2014;</div>
+          <div class="stat-label">Products</div>
+        </div>
+        <div class="stat-card users">
+          <span class="stat-icon">&#x1F465;</span>
+          <div class="stat-value" id="stat-users">&#x2014;</div>
+          <div class="stat-label">Customers</div>
+        </div>
+        <div class="stat-card pending">
+          <span class="stat-icon">&#x23F3;</span>
+          <div class="stat-value" id="stat-pending">&#x2014;</div>
+          <div class="stat-label">Pending Orders</div>
+        </div>
+        <div class="stat-card sellers">
+          <span class="stat-icon">&#x1F3EA;</span>
+          <div class="stat-value" id="stat-sellers">&#x2014;</div>
+          <div class="stat-label">Active Sellers</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
+        <button class="btn btn-accent" onclick="AdminNav.go('orders')">&#x1F4E6; Manage Orders</button>
+        <button class="btn btn-primary" onclick="AdminNav.go('products');setTimeout(()=>AdminProducts.openAdd(),300)">&#x2795; Add Product</button>
+        <button class="btn btn-outline" onclick="AdminNav.go('coupons')">&#x1F3DF;&#xFE0F; Coupons</button>
+        <button class="btn btn-outline" onclick="AdminDashboard.load(true)">&#x1F504; Refresh</button>
+      </div>
+
+      <div class="chart-row">
+        <div class="widget-card">
+          <div class="widget-title">&#x1F558; Recent Orders</div>
+          <div id="recent-orders-list"><div class="loading-state"><div class="spinner-admin"></div></div></div>
+        </div>
+        <div class="widget-card">
+          <div class="widget-title">&#x1F6CD;&#xFE0F; Latest Products</div>
+          <div id="recent-products-list"><div class="loading-state"><div class="spinner-admin"></div></div></div>
+        </div>
+      </div>
+
+      <div class="widget-card" style="margin-top:1rem">
+        <div class="widget-title">&#x1F4CA; Revenue by Category</div>
+        <div id="category-revenue-chart"><div class="loading-state"><div class="spinner-admin"></div></div></div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. CUSTOMERS ==================== -->
+    <section class="admin-section" id="section-customers">
+      <div class="section-header">
+        <div><h2 class="section-title">Customer Management</h2><p class="section-subtitle">View and manage all registered customers</p></div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminCustomers.load()">&#x1F504; Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="cust-search" placeholder="Search by name or email..." oninput="AdminCustomers.filter()"></div>
+          <select class="table-filter-select" id="cust-status-filter" onchange="AdminCustomers.filter()">
+            <option value="all">All Customers</option>
+            <option value="active">Active</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Customer</th><th>Email</th><th>Joined</th><th>Orders</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="customers-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. SELLERS ==================== -->
+    <section class="admin-section" id="section-sellers">
+      <div class="section-header">
+        <div><h2 class="section-title">Seller Management</h2><p class="section-subtitle">Approve, suspend, and monitor sellers</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminSellers.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="admin-tabs" id="seller-tabs">
+        <button class="admin-tab active" onclick="AdminSellers.showTab('pending',this)">Pending Approval</button>
+        <button class="admin-tab" onclick="AdminSellers.showTab('approved',this)">Approved</button>
+        <button class="admin-tab" onclick="AdminSellers.showTab('all',this)">All Sellers</button>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="seller-search" placeholder="Search sellers..." oninput="AdminSellers.filter()"></div>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Seller</th><th>Email</th><th>Business</th><th>Applied</th><th>Products</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="sellers-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. ADMIN & USER MGMT ==================== -->
+    <section class="admin-section" id="section-usermgmt">
+      <div class="section-header">
+        <div><h2 class="section-title">Admin &amp; User Management</h2><p class="section-subtitle">Manage roles, grant admin access, delete accounts</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminUserMgmt.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="usermgmt-search" placeholder="Search by email or name..." oninput="AdminUserMgmt.filter()"></div>
+          <select class="table-filter-select" id="usermgmt-role-filter" onchange="AdminUserMgmt.filter()">
+            <option value="all">All Roles</option>
+            <option value="admin">Admins</option>
+            <option value="seller">Sellers</option>
+            <option value="customer">Customers</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Admin Access</th><th>Actions</th></tr></thead>
+            <tbody id="usermgmt-table-body"><tr><td colspan="6" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. PRODUCTS ==================== -->
+    <section class="admin-section" id="section-products">
+      <div class="section-header">
+        <div><h2 class="section-title">Product Management</h2><p class="section-subtitle">Add, edit, and manage the store catalog</p></div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminProducts.load()">&#x1F504; Refresh</button>
+          <button class="btn btn-accent" onclick="AdminProducts.openAdd()">&#x2795; Add Product</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="products-search" placeholder="Search products..." oninput="AdminProducts.filter()"></div>
+          <select class="table-filter-select" id="products-cat-filter" onchange="AdminProducts.filter()">
+            <option value="all">All Categories</option>
+            <option value="Sarees">Sarees</option>
+            <option value="Suits">Suits</option>
+            <option value="Lehengas">Lehengas</option>
+            <option value="Kurtas">Kurtas</option>
+            <option value="Dupattas">Dupattas</option>
+            <option value="Western">Western</option>
+            <option value="Accessories">Accessories</option>
+          </select>
+          <select class="table-filter-select" id="products-type-filter" onchange="AdminProducts.filter()">
+            <option value="all">All Types</option>
+            <option value="admin">Admin Products</option>
+            <option value="seller">Seller Products</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Type</th><th>Actions</th></tr></thead>
+            <tbody id="products-table-body"><tr><td colspan="8" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. CATEGORIES ==================== -->
+    <section class="admin-section" id="section-categories">
+      <div class="section-header">
+        <div><h2 class="section-title">Category Management</h2><p class="section-subtitle">Manage product categories displayed in the store</p></div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminCategories.load()">&#x1F504; Refresh</button>
+          <button class="btn btn-accent" onclick="AdminCategories.openAdd()">&#x2795; Add Category</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Image</th><th>Name</th><th>Slug</th><th>Products</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="categories-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 7. BANNERS ==================== -->
+    <section class="admin-section" id="section-banners">
+      <div class="section-header">
+        <div><h2 class="section-title">Banner &amp; Content Management</h2><p class="section-subtitle">Manage homepage banners and promotional content</p></div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminBanners.load()">&#x1F504; Refresh</button>
+          <button class="btn btn-accent" onclick="AdminBanners.openAdd()">&#x2795; Add Banner</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Preview</th><th>Title</th><th>Subtitle</th><th>Link</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="banners-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 8. REVIEWS ==================== -->
+    <section class="admin-section" id="section-reviews">
+      <div class="section-header">
+        <div><h2 class="section-title">Review Management</h2><p class="section-subtitle">Approve, reject, or delete product reviews</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminReviews.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="reviews-search" placeholder="Search reviews..." oninput="AdminReviews.filter()"></div>
+          <select class="table-filter-select" id="reviews-status-filter" onchange="AdminReviews.filter()">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="reviews-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 9. ORDERS ==================== -->
+    <section class="admin-section" id="section-orders">
+      <div class="section-header">
+        <div><h2 class="section-title">Order Management</h2><p class="section-subtitle">Track, update, and manage all customer orders</p></div>
+        <div class="section-actions" style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="AdminOrders.load()">&#x1F504; Refresh</button>
+          <button class="btn btn-danger btn-sm" onclick="AdminOrders.clearCancelled()">&#x1F5D1;&#xFE0F; Clear Cancelled</button>
+          <button class="btn btn-outline btn-sm" style="border-color:#cc0c39;color:#ff6b81" onclick="AdminOrders.deleteAll()">&#x26A0;&#xFE0F; Delete All Orders</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="orders-search" placeholder="Search orders..." oninput="AdminOrders.filter()"></div>
+          <select class="table-filter-select" id="orders-status-filter" onchange="AdminOrders.filter()">
+            <option value="all">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="orders-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 10. PAYMENTS ==================== -->
+    <section class="admin-section" id="section-payments">
+      <div class="section-header">
+        <div><h2 class="section-title">Payment Management</h2><p class="section-subtitle">Track payments by method and reconcile revenue</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminPayments.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:1.25rem">
+        <div class="stat-card"><span class="stat-icon">&#x1F4B3;</span><div class="stat-value" id="pay-stat-total">&#x2014;</div><div class="stat-label">Total Revenue</div></div>
+        <div class="stat-card"><span class="stat-icon">&#x1F4B5;</span><div class="stat-value" id="pay-stat-cod">&#x2014;</div><div class="stat-label">COD</div></div>
+        <div class="stat-card"><span class="stat-icon">&#x1F4F1;</span><div class="stat-value" id="pay-stat-upi">&#x2014;</div><div class="stat-label">UPI / Online</div></div>
+        <div class="stat-card"><span class="stat-icon">&#x1F4B8;</span><div class="stat-value" id="pay-stat-pending">&#x2014;</div><div class="stat-label">COD Pending</div></div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="payments-search" placeholder="Search by order ID or customer..." oninput="AdminPayments.filter()"></div>
+          <select class="table-filter-select" id="payments-method-filter" onchange="AdminPayments.filter()">
+            <option value="all">All Methods</option>
+            <option value="COD">COD</option>
+            <option value="UPI">UPI</option>
+            <option value="Card">Card</option>
+            <option value="Online">Online</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Amount</th><th>Method</th><th>Order Status</th><th>Actions</th></tr></thead>
+            <tbody id="payments-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 11. RETURNS & REFUNDS ==================== -->
+    <section class="admin-section" id="section-returns">
+      <div class="section-header">
+        <div><h2 class="section-title">Returns &amp; Refunds</h2><p class="section-subtitle">Process return requests and refunds</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminReturns.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="AdminReturns.showTab('returns',this)">Returns</button>
+        <button class="admin-tab" onclick="AdminReturns.showTab('refunds',this)">Refunds</button>
+      </div>
+      <div class="admin-tab-pane active" id="tab-returns">
+        <div class="table-wrapper">
+          <div class="table-toolbar">
+            <div class="table-search"><span>&#x1F50D;</span><input type="text" id="returns-search" placeholder="Search returns..." oninput="AdminReturns.filterReturns()"></div>
+            <select class="table-filter-select" id="returns-status-filter" onchange="AdminReturns.filterReturns()">
+              <option value="all">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="table-overflow">
+            <table class="data-table">
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Reason</th><th>Description</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="returns-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="admin-tab-pane" id="tab-refunds">
+        <div class="table-wrapper">
+          <div class="table-toolbar">
+            <div class="table-search"><span>&#x1F50D;</span><input type="text" id="refunds-search" placeholder="Search refunds..." oninput="AdminReturns.filterRefunds()"></div>
+            <select class="table-filter-select" id="refunds-status-filter" onchange="AdminReturns.filterRefunds()">
+              <option value="all">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Processed">Processed</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="table-overflow">
+            <table class="data-table">
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Method</th><th>Details</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="refunds-table-body"><tr><td colspan="8" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 12. COUPONS ==================== -->
+    <section class="admin-section" id="section-coupons">
+      <div class="section-header">
+        <div><h2 class="section-title">Coupon Management</h2><p class="section-subtitle">Create and manage discount codes</p></div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminCoupons.load()">&#x1F504; Refresh</button>
+          <button class="btn btn-accent" onclick="AdminCoupons.openAdd()">&#x2795; Add Coupon</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Code</th><th>Type</th><th>Discount</th><th>Min. Order</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="coupons-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 13. SHIPPING ==================== -->
+    <section class="admin-section" id="section-shipping">
+      <div class="section-header">
+        <div><h2 class="section-title">Shipping Management</h2><p class="section-subtitle">Assign tracking numbers and manage shipments</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminShipping.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="shipping-search" placeholder="Search by order ID or customer..." oninput="AdminShipping.filter()"></div>
+          <select class="table-filter-select" id="shipping-status-filter" onchange="AdminShipping.filter()">
+            <option value="all">All Statuses</option>
+            <option value="Processing">Ready to Ship</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Address</th><th>Date</th><th>Tracking</th><th>Courier</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="shipping-table-body"><tr><td colspan="8" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 14. INVOICES ==================== -->
+    <section class="admin-section" id="section-invoices">
+      <div class="section-header">
+        <div><h2 class="section-title">Invoice &amp; Bill Management</h2><p class="section-subtitle">Generate and print customer retail order invoices</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminInvoices.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="invoices-search" placeholder="Search by order ID or customer..." oninput="AdminInvoices.filter()"></div>
+          <select class="table-filter-select" id="invoices-status-filter" onchange="AdminInvoices.filter()">
+            <option value="all">All Orders</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Invoice #</th><th>Order ID</th><th>Customer</th><th>Date</th><th>Payment</th><th>Amount</th><th>Actions</th></tr></thead>
+            <tbody id="invoices-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 15. COMPLAINTS ==================== -->
+    <section class="admin-section" id="section-complaints">
+      <div class="section-header">
+        <div><h2 class="section-title">Grievance &amp; Complaint Management</h2><p class="section-subtitle">Resolve customer grievances submitted via the redressal form</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminComplaints.load()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-search"><span>&#x1F50D;</span><input type="text" id="complaints-search" placeholder="Search complaints..." oninput="AdminComplaints.filter()"></div>
+          <select class="table-filter-select" id="complaints-status-filter" onchange="AdminComplaints.filter()">
+            <option value="all">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Ticket #</th><th>Customer</th><th>Category</th><th>Subject</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="complaints-table-body"><tr><td colspan="7" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 16. REPORTS ==================== -->
+    <section class="admin-section" id="section-reports">
+      <div class="section-header">
+        <div><h2 class="section-title">Reports &amp; Analytics</h2><p class="section-subtitle">Revenue trends, top products, and customer insights</p></div>
+        <div class="section-actions">
+          <select class="table-filter-select" id="reports-period" onchange="AdminReports.load()">
+            <option value="7">Last 7 Days</option>
+            <option value="30" selected>Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+            <option value="365">Last Year</option>
+          </select>
+          <button class="btn btn-accent" onclick="AdminReports.exportCSV()">&#x1F4E5; Export CSV</button>
+        </div>
+      </div>
+      <div id="reports-content"><div class="loading-state"><div class="spinner-admin"></div> Loading analytics...</div></div>
+    </section>
+
+    <!-- ==================== 17. NOTIFICATIONS ==================== -->
+    <section class="admin-section" id="section-notifications">
+      <div class="section-header">
+        <div><h2 class="section-title">Notifications</h2><p class="section-subtitle">Broadcast announcements and manage notification history</p></div>
+        <div class="section-actions"><button class="btn btn-outline" onclick="AdminNotifications.loadHistory()">&#x1F504; Refresh</button></div>
+      </div>
+      <div class="widget-card" style="margin-bottom:1.25rem">
+        <div class="widget-title">&#x1F4E2; Send Announcement</div>
+        <div class="form-grid" style="margin-top:.75rem">
+          <div class="form-group full">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" id="notif-title" placeholder="Announcement title...">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" id="notif-message" rows="3" placeholder="Enter your announcement message..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-control" id="notif-type">
+              <option value="info">Info</option>
+              <option value="promo">Promotion</option>
+              <option value="alert">Alert</option>
+              <option value="order">Order Update</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:.75rem">
+          <button class="btn btn-accent" onclick="AdminNotifications.send()">&#x1F4E4; Save &amp; Record</button>
+          <button class="btn btn-outline" onclick="AdminNotifications.sendBrowserPush()">&#x1F514; Send Browser Push</button>
+        </div>
+      </div>
+      <div class="widget-card">
+        <div class="widget-title">&#x1F4DC; Notification History</div>
+        <div id="notif-history-list"><div class="loading-state"><div class="spinner-admin"></div></div></div>
+      </div>
+    </section>
+
+    <!-- ==================== 18. SITE SETTINGS ==================== -->
+    <section class="admin-section" id="section-settings">
+      <div class="section-header">
+        <div><h2 class="section-title">Site Settings</h2><p class="section-subtitle">Configure store information and general settings</p></div>
+        <div class="section-actions"><button class="btn btn-accent" onclick="AdminSettings.save()">&#x1F4BE; Save Settings</button></div>
+      </div>
+      <div class="widget-card" style="margin-bottom:1.25rem">
+        <div class="widget-title">&#x1F3EA; Store Information</div>
+        <div class="form-grid" style="margin-top:.75rem">
+          <div class="form-group"><label class="form-label">Store Name</label><input type="text" class="form-control" id="set-store-name" placeholder="Nari Niketan"></div>
+          <div class="form-group"><label class="form-label">Contact Email</label><input type="email" class="form-control" id="set-email" placeholder="contact@nariniketan.shop"></div>
+          <div class="form-group"><label class="form-label">Phone</label><input type="text" class="form-control" id="set-phone" placeholder="+91 XXXXX XXXXX"></div>
+          <div class="form-group"><label class="form-label">GSTIN</label><input type="text" class="form-control" id="set-gstin" placeholder="e.g. 27ABCDE1234F1Z5"></div>
+          <div class="form-group"><label class="form-label">GST Rate (%)</label>
+            <select class="form-control" id="set-gst-rate">
+              <option value="5">5% (Textiles)</option>
+              <option value="12" selected>12%</option>
+              <option value="18">18%</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Return Policy (days)</label><input type="number" class="form-control" id="set-return-days" placeholder="7" min="1" max="30"></div>
+          <div class="form-group full"><label class="form-label">Store Address</label><textarea class="form-control" id="set-address" rows="2" placeholder="Full address..."></textarea></div>
+          <div class="form-group full"><label class="form-label">Store Description</label><textarea class="form-control" id="set-description" rows="2" placeholder="Short description of your store..."></textarea></div>
+        </div>
+      </div>
+
+      <div class="widget-card" style="margin-bottom:1.25rem">
+        <div class="widget-title">&#x1F4E6; Shipping &amp; Order Settings</div>
+        <div class="form-grid" style="margin-top:.75rem">
+          <div class="form-group"><label class="form-label">Free Shipping Threshold (Rs.)</label><input type="number" class="form-control" id="set-free-shipping" placeholder="999"></div>
+          <div class="form-group"><label class="form-label">Default Shipping Fee (Rs.)</label><input type="number" class="form-control" id="set-shipping-fee" placeholder="49"></div>
+          <div class="form-group"><label class="form-label">Order Email Notifications</label>
+            <label class="toggle" style="margin-top:.35rem"><input type="checkbox" id="set-email-notif" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 19. SECURITY & AUDIT ==================== -->
+    <section class="admin-section" id="section-security">
+      <div class="section-header">
+        <div><h2 class="section-title">Security &amp; Audit Logs</h2><p class="section-subtitle">Track admin actions and manage data exports</p></div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminSecurity.load()">&#x1F504; Refresh</button>
+          <button class="btn btn-accent" onclick="AdminSecurity.exportData()">&#x1F4E5; Export All Data</button>
+        </div>
+      </div>
+      <div class="table-wrapper" style="margin-bottom:1.25rem">
+        <div class="table-overflow">
+          <table class="data-table">
+            <thead><tr><th>Timestamp</th><th>Admin</th><th>Action</th><th>Details</th></tr></thead>
+            <tbody id="audit-log-body"><tr><td colspan="4" class="loading-state"><div class="spinner-admin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="danger-zone">
+        <h3>&#x26A0;&#xFE0F; Danger Zone</h3>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+          <button class="btn btn-danger" onclick="AdminSecurity.clearSampleData()">&#x1F5D1;&#xFE0F; Clear Sample Products</button>
+          <button class="btn btn-danger" onclick="AdminOrders.clearCancelled()">&#x1F5D1;&#xFE0F; Clear Cancelled Orders</button>
+          <button class="btn btn-danger" onclick="AdminOrders.deleteAll()">&#x26A0;&#xFE0F; Wipe All Orders</button>
+          <button class="btn btn-danger" onclick="AdminSecurity.confirmDataExport()">&#x1F4E4; Request Data Export</button>
+        </div>
+      </div>
+    </section>
+
+            <!-- ==================== 20. NARI AI WEBSITE OPERATIONS CENTER ==================== -->
+    <section class="admin-section" id="section-monitor">
+      <div class="ops-center-container">
+        
+        <!-- Header -->
+        <div class="ops-header">
+          <div class="ops-title-group">
+            <h2>&#x1F6E1;&#xFE0F; Nari AI Website Operations Center</h2>
+            <p>Comprehensive Real-Time QA, Security, Performance, SEO, Responsiveness &amp; Business Operations Sentinel</p>
+          </div>
+          <div class="ops-actions">
+            <button class="btn btn-primary" onclick="NariAdminMonitor.runAudit('full')" id="btn-run-full-audit" style="font-weight:700;">
+              &#x25B6; Run Full Audit
+            </button>
+            <button class="btn btn-accent" onclick="NariAdminMonitor.runAudit('quick')">
+              &#x26A1; Quick Audit
+            </button>
+            <button class="btn btn-outline" onclick="NariAdminMonitor.openExportModal()">
+              &#x1F4E5; Export Report
+            </button>
+            <button class="btn btn-outline" onclick="NariAdminMonitor.load(this)" id="btn-ops-refresh">
+              &#x21BB; Refresh Logs
+            </button>
+          </div>
+        </div>
+
+        <!-- Scope & Target Selector Bar -->
+        <div class="panel" style="background:rgba(212,175,55,0.04);border:1.5px solid rgba(212,175,55,0.3);padding:1rem 1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:280px;">
+              <span style="font-size:0.8rem;font-weight:700;color:#FFE082;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">
+                &#x1F3AF; Target URL:
+              </span>
+              <input type="text" class="form-control" id="ops-target-url" value="../shop.html" 
+                     style="flex:1;font-family:monospace;font-size:0.88rem;padding:0.4rem 0.75rem;background:rgba(0,0,0,0.5);color:#fff;"
+                     placeholder="e.g. ../shop.html, ../index.html, https://www.nariniketan.shop">
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+              <span style="font-size:0.75rem;color:var(--text-dim);">Quick Targets:</span>
+              <button class="btn btn-ghost btn-xs" onclick="NariAdminMonitor.setTarget('../shop.html')">&#x1F50D; /shop.html</button>
+              <button class="btn btn-ghost btn-xs" onclick="NariAdminMonitor.setTarget('../index.html')">&#x1F3E0; /index.html</button>
+              <button class="btn btn-ghost btn-xs" onclick="NariAdminMonitor.setTarget('../checkout.html')">&#x1F6D2; /checkout.html</button>
+              <button class="btn btn-ghost btn-xs" onclick="NariAdminMonitor.setTarget('../product.html')">&#x1F457; /product.html</button>
+              <button class="btn btn-ghost btn-xs" onclick="NariAdminMonitor.setTarget('../seller/index.html')">&#x1F3EA; /seller</button>
+            </div>
+          </div>
+          <div class="ops-audit-progress-wrap" id="ops-progress-wrap">
+            <div class="ops-audit-progress-bar" id="ops-progress-bar"></div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px;" id="ops-status-text">
+            Ready &mdash; Select an audit mode above to begin live verification
+          </div>
+        </div>
+
+        <!-- Overall Score & Aggregate Metrics Card -->
+        <div class="ops-score-gauge-card">
+          <div class="ops-score-circle">
+            <div class="ops-score-value" id="ops-overall-score">&mdash;</div>
+            <div class="ops-score-label">Overall Health</div>
+          </div>
+          <div class="ops-stats-summary">
+            <div class="ops-stat-pill">
+              <div class="ops-stat-pill-label">Active Incidents</div>
+              <div class="ops-stat-pill-value" id="ops-incidents-count" style="color:#FFE082;">0 Open</div>
+            </div>
+            <div class="ops-stat-pill">
+              <div class="ops-stat-pill-label">Passed Checks</div>
+              <div class="ops-stat-pill-value" id="ops-passed-count" style="color:#4ADE80;">0</div>
+            </div>
+            <div class="ops-stat-pill">
+              <div class="ops-stat-pill-label">Failed Checks</div>
+              <div class="ops-stat-pill-value" id="ops-failed-count" style="color:#F87171;">0</div>
+            </div>
+            <div class="ops-stat-pill">
+              <div class="ops-stat-pill-label">Audit Scope</div>
+              <div class="ops-stat-pill-value" id="ops-scope-label" style="color:#38BDF8;font-size:0.95rem;">12 Pillars</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12-Pillar Health Scorecard Grid -->
+        <div class="ops-pillars-grid">
+          <div class="ops-pillar-card not-tested" id="pillar-website" onclick="NariAdminMonitor.switchTab('tech')">
+            <div class="ops-pillar-header">
+              <span>&#x1F310; Website &amp; Crawl</span>
+              <span class="ops-pillar-score" id="score-website">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-website">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-functionality" onclick="NariAdminMonitor.switchTab('qa')">
+            <div class="ops-pillar-header">
+              <span>&#x26A1; QA &amp; Journeys</span>
+              <span class="ops-pillar-score" id="score-functionality">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-functionality">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-responsive" onclick="NariAdminMonitor.switchTab('responsive')">
+            <div class="ops-pillar-header">
+              <span>&#x1F4F1; Responsiveness</span>
+              <span class="ops-pillar-score" id="score-responsive">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-responsive">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-api" onclick="NariAdminMonitor.switchTab('tech')">
+            <div class="ops-pillar-header">
+              <span>&#x1F310; APIs &amp; Network</span>
+              <span class="ops-pillar-score" id="score-api">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-api">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-firebase" onclick="NariAdminMonitor.switchTab('tech')">
+            <div class="ops-pillar-header">
+              <span>&#x1F525; Firebase / DB</span>
+              <span class="ops-pillar-score" id="score-firebase">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-firebase">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-security" onclick="NariAdminMonitor.switchTab('security')">
+            <div class="ops-pillar-header">
+              <span>&#x1F6E1;&#xFE0F; Security Config</span>
+              <span class="ops-pillar-score" id="score-security">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-security">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-performance" onclick="NariAdminMonitor.switchTab('perf')">
+            <div class="ops-pillar-header">
+              <span>&#x1F680; Performance</span>
+              <span class="ops-pillar-score" id="score-performance">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-performance">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-seo" onclick="NariAdminMonitor.switchTab('perf')">
+            <div class="ops-pillar-header">
+              <span>&#x1F50D; SEO &amp; Schema</span>
+              <span class="ops-pillar-score" id="score-seo">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-seo">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-accessibility" onclick="NariAdminMonitor.switchTab('perf')">
+            <div class="ops-pillar-header">
+              <span>&#x267F; Accessibility</span>
+              <span class="ops-pillar-score" id="score-accessibility">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-accessibility">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-seller" onclick="NariAdminMonitor.switchTab('business')">
+            <div class="ops-pillar-header">
+              <span>&#x1F3EA; Seller Portal</span>
+              <span class="ops-pillar-score" id="score-seller">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-seller">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-admin" onclick="NariAdminMonitor.switchTab('business')">
+            <div class="ops-pillar-header">
+              <span>&#x1F511; Admin Portal</span>
+              <span class="ops-pillar-score" id="score-admin">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-admin">Not Tested</span>
+          </div>
+
+          <div class="ops-pillar-card not-tested" id="pillar-ai" onclick="NariAdminMonitor.switchTab('business')">
+            <div class="ops-pillar-header">
+              <span>&#x2728; AI Services</span>
+              <span class="ops-pillar-score" id="score-ai">&mdash;</span>
+            </div>
+            <span class="ops-pillar-status-tag not-tested" id="tag-ai">Not Tested</span>
+          </div>
+        </div>
+
+        <!-- Sub-Tabs Navigation -->
+        <div class="ops-tabs-nav">
+          <button class="ops-tab-btn active" onclick="NariAdminMonitor.switchTab('overview')">&#x1F4CA; Overview &amp; Matrix</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('tech')">&#x1F527; Technical &amp; Errors</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('qa')">&#x26A1; QA &amp; Journeys</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('responsive')">&#x1F4F1; Multi-Viewport Matrix</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('security')">&#x1F6E1;&#xFE0F; Security &amp; RBAC</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('perf')">&#x1F680; Performance &amp; SEO</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('business')">&#x1F3EA; Business &amp; AI Logic</button>
+          <button class="ops-tab-btn" onclick="NariAdminMonitor.switchTab('incidents')">&#x1F4CB; Active Incidents (<span id="tab-incidents-badge">0</span>)</button>
+        </div>
+
+        <!-- Tab 1: Overview & Matrix -->
+        <div class="ops-tab-panel active" id="ops-tab-overview">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F3AF; Operations Center Executive Summary</h3>
+              <span style="font-size:0.75rem;color:var(--text-dim);" id="ops-summary-timestamp">Last Audit: Never run</span>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <p style="font-size:0.85rem;color:#ECE0E6;margin-bottom:1rem;line-height:1.6;">
+                The Operations Center executes continuous, unsimulated checks against all 16 core storefront routes and endpoints. Zero hardcoded passes &mdash; scores are strictly generated from verified HTTP status, live DOM measurements, Firestore latency probes, and security heuristics.
+              </p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;">
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:1rem;">
+                  <div style="font-size:0.75rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;">Crawl Status</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:#FFE082;margin-top:4px;" id="ops-crawl-summary">16 Core Routes Identified</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:1rem;">
+                  <div style="font-size:0.75rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;">Database Connectivity</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:#22C55E;margin-top:4px;" id="ops-db-summary">Firestore Active</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:1rem;">
+                  <div style="font-size:0.75rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;">Mobile Layout Health</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:#38BDF8;margin-top:4px;" id="ops-mobile-summary">Ready for Audit</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Technical & Errors -->
+        <div class="ops-tab-panel" id="ops-tab-tech">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F527; JavaScript Exceptions, Network &amp; Database Diagnostics</h3>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div id="tech-findings-container">
+                <p style="color:var(--text-dim);font-size:0.85rem;">Run an audit to view technical diagnostics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: QA & Journeys -->
+        <div class="ops-tab-panel" id="ops-tab-qa">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x26A1; Interactive Buttons, Forms &amp; Broken Links Audit</h3>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div id="qa-findings-container">
+                <p style="color:var(--text-dim);font-size:0.85rem;">Run a QA audit to inspect links, buttons, and form boundaries.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Responsive Matrix -->
+        <div class="ops-tab-panel" id="ops-tab-responsive">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F4F1; Multi-Viewport Responsive Layout Test Matrix</h3>
+              <span style="font-size:0.75rem;color:var(--text-dim);">Live isolated iframe sandbox measurement</span>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));gap:0.75rem;" id="ops-viewport-matrix-grid">
+                <!-- Dynamically populated viewport cards -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Security & Config -->
+        <div class="ops-tab-panel" id="ops-tab-security">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F6E1;&#xFE0F; Defensive Security, RBAC &amp; Configuration Audit</h3>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div id="security-findings-container">
+                <p style="color:var(--text-dim);font-size:0.85rem;">Run an audit to inspect transport security, headers, and access control.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 6: Performance & SEO -->
+        <div class="ops-tab-panel" id="ops-tab-perf">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F680; Performance, SEO, Metadata &amp; WCAG Accessibility</h3>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div id="perf-findings-container">
+                <p style="color:var(--text-dim);font-size:0.85rem;">Run an audit to view load times, structured schema, and a11y compliance.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 7: Business & AI Logic -->
+        <div class="ops-tab-panel" id="ops-tab-business">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F3EA; Catalog Integrity, Fulfilment (Pickup/Delivery) &amp; AI Sentinel</h3>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div id="business-findings-container">
+                <p style="color:var(--text-dim);font-size:0.85rem;">Run an audit to inspect price consistency and order constraints.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 8: Incident Timeline & Logs -->
+        <div class="ops-tab-panel" id="ops-tab-incidents">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>&#x1F4CB; Active Incidents &amp; Root Cause Analysis</h3>
+              <button class="btn btn-ghost btn-xs" onclick="NariAdminMonitor.clearResolvedLogs()">&#x1F9F9; Clear Resolved</button>
+            </div>
+            <div class="panel-body" style="padding:1.25rem;">
+              <div id="ops-incidents-list">
+                <p style="color:var(--text-dim);font-size:0.85rem;text-align:center;padding:2rem;">
+                  &#x23F3; No active incidents. Run an audit to perform an end-to-end scan.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hidden Isolated Browser Sandbox for Live DOM Testing -->
+      <div id="audit-sandbox-container" style="position:fixed;top:-10000px;left:-10000px;visibility:hidden;pointer-events:none;z-index:-999;"></div>
+
+    </section>
+
+    <!-- ==================== 21. NARI AI STYLIST & ANALYTICS ==================== -->
+    <section class="admin-section" id="section-aistylist">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">&#x2728; Nari AI Stylist &amp; Analytics</h2>
+          <p class="section-subtitle">Customer styling recommendations, RAG intent telemetry, and AI persona controls</p>
+        </div>
+        <div class="section-actions">
+          <button class="btn btn-outline" onclick="AdminAIStylist.load()">&#x21BB; Refresh Analytics</button>
+          <button class="btn btn-accent" onclick="AdminAIStylist.saveConfig()">&#x1F4BE; Save Persona Settings</button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="stats-grid">
+        <div class="stat-card users">
+          <span class="stat-icon">&#x1F4AC;</span>
+          <div class="stat-value" id="ai-stat-conversations">0</div>
+          <div class="stat-label">Total AI Chats</div>
+        </div>
+        <div class="stat-card products">
+          <span class="stat-icon">&#x1F457;</span>
+          <div class="stat-value" id="ai-stat-recs">0</div>
+          <div class="stat-label">Outfits Recommended</div>
+        </div>
+        <div class="stat-card orders">
+          <span class="stat-icon">&#x1F6D2;</span>
+          <div class="stat-value" id="ai-stat-cart-adds">0</div>
+          <div class="stat-label">Added To Cart From AI</div>
+        </div>
+        <div class="stat-card revenue">
+          <span class="stat-icon">&#x1F3AF;</span>
+          <div class="stat-value" id="ai-stat-conversion">0%</div>
+          <div class="stat-label">Recommendation Conversion</div>
+        </div>
+      </div>
+
+      <!-- 2 Column Analytics & Persona Layout -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:1.5rem;margin-bottom:1.5rem">
+        <!-- Live AI Persona Config -->
+        <div class="widget-card">
+          <div class="widget-title">&#x1F3AD; AI Stylist Persona &amp; Tone Configuration</div>
+          <div style="display:flex;flex-direction:column;gap:.85rem;margin-top:.75rem">
+            <div class="form-group">
+              <label class="form-label">Assistant Display Name</label>
+              <input type="text" class="form-control" id="ai-cfg-botname" placeholder="Nari AI Stylist">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Welcome / Greeting Message</label>
+              <textarea class="form-control" id="ai-cfg-greeting" rows="2" placeholder="Greeting message..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quick Suggestion Chips (Comma Separated)</label>
+              <textarea class="form-control" id="ai-cfg-chips" rows="2" placeholder="e.g. Wedding Lehengas under ₹3,000, Pure Silk Sarees for Festival, Daily Wear Kurtas"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Custom Styling / Pairing Rule</label>
+              <textarea class="form-control" id="ai-cfg-pairing" rows="2" placeholder="e.g. Always recommend Kundan jewelry and embroidered dupattas with bridal sarees"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time AI Search Intent & Popular Occasions -->
+        <div class="widget-card">
+          <div class="widget-title">&#x1F525; Top Customer Search Intent &amp; Occasions</div>
+          <div id="ai-popular-intents" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.75rem">
+            <div style="text-align:center;padding:2rem;color:var(--text-muted)"><div class="spinner-admin"></div> Loading intent telemetry...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live RAG Outfit Query Simulator -->
+      <div class="widget-card">
+        <div class="widget-title">&#x26A1; AI Outfit Match Simulator (Test RAG In Real-Time)</div>
+        <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:1rem">Test natural language queries against your live Firestore inventory to verify relevance scoring.</p>
+        <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+          <input type="text" class="form-control" id="ai-sim-query" placeholder="e.g. 'Red Banarasi silk saree for wedding under 2500'" style="flex:1">
+          <button class="btn btn-accent" onclick="AdminAIStylist.runSimulator()">&#x2728; Test AI Match</button>
+        </div>
+        <div id="ai-sim-results" style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;min-height:100px">
+          <span style="color:var(--text-muted);font-size:.82rem">Enter a prompt above and click "Test AI Match" to view matched products and generated styling tips.</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- =================== MODALS =================== -->
+
+<!-- Order Detail -->
+<div class="modal-overlay hidden" id="order-detail-modal">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h3 class="modal-title">&#x1F4E6; Order Details</h3>
+      <button class="modal-close" onclick="document.getElementById('order-detail-modal').classList.add('hidden')">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="order-detail-content"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('order-detail-modal').classList.add('hidden')">Close</button>
+      <button class="btn btn-danger" onclick="if(_currentAdminOrder) AdminOrders.delete(_currentAdminOrder.id)">&#x1F5D1;&#xFE0F; Delete Order</button>
+      <button class="btn btn-accent" id="btn-print-invoice" onclick="AdminInvoices.printFromOrder()">&#x1F5A8; Print Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Product Add/Edit -->
+<div class="modal-overlay hidden" id="product-modal">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h3 class="modal-title" id="product-modal-title">&#x2795; Add Product</h3>
+      <button class="modal-close" onclick="AdminProducts.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <form id="product-form" onsubmit="event.preventDefault()">
+        <div class="form-grid">
+          <div class="form-group full"><label class="form-label">Product Name <span class="required">*</span></label><input type="text" class="form-control" name="p-name" placeholder="e.g. Royal Silk Banarasi Saree" required></div>
+          <div class="form-group"><label class="form-label">Category <span class="required">*</span></label>
+            <select class="form-control" name="p-category">
+              <option value="Sarees">Sarees</option><option value="Suits">Suits</option><option value="Lehengas">Lehengas</option>
+              <option value="Kurtas">Kurtas</option><option value="Dupattas">Dupattas</option><option value="Western">Western</option><option value="Accessories">Accessories</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Stock</label><input type="number" class="form-control" name="p-stock" placeholder="0" min="0"></div>
+          <div class="form-group"><label class="form-label">Selling Price (Rs.) <span class="required">*</span></label><input type="number" class="form-control" name="p-price" placeholder="1999" min="0" required></div>
+          <div class="form-group"><label class="form-label">Original Price (Rs.)</label><input type="number" class="form-control" name="p-original-price" placeholder="2999" min="0"></div>
+          <div class="form-group full"><label class="form-label">Image URL</label><input type="url" class="form-control" name="p-image" placeholder="https://..."><p class="form-hint">Paste full image URL from Firebase Storage or any image host</p></div>
+          <div class="form-group full"><label class="form-label">Description</label><textarea class="form-control" name="p-description" rows="3" placeholder="Describe the product..."></textarea></div>
+          <div class="form-group"><label class="form-label">Fabric</label><input type="text" class="form-control" name="p-fabric" placeholder="e.g. Pure Silk"></div>
+          <div class="form-group"><label class="form-label">Care Instructions</label><input type="text" class="form-control" name="p-care" placeholder="e.g. Dry Clean Only"></div>
+          <div class="form-group"><label class="form-label">Sizes <span class="text-sm text-muted">(comma separated)</span></label><input type="text" class="form-control" name="p-sizes" placeholder="S, M, L, XL, XXL"></div>
+          <div class="form-group"><label class="form-label">Colors <span class="text-sm text-muted">(comma separated)</span></label><input type="text" class="form-control" name="p-colors" placeholder="Red, Blue, Green"></div>
+          <div class="form-group"><label class="form-label">Rating (0-5)</label><input type="number" class="form-control" name="p-rating" min="0" max="5" step="0.1" placeholder="4.5"></div>
+          <div class="form-group">
+            <label class="form-label">Featured</label>
+            <div class="toggle-row" style="padding:.4rem 0"><label class="toggle"><input type="checkbox" name="p-featured" id="p-featured-toggle"><span class="toggle-slider"></span></label><span class="text-sm text-muted" style="margin-left:.75rem">Show on homepage</span></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminProducts.closeModal()">Cancel</button>
+      <button class="btn btn-accent" id="product-save-btn" onclick="AdminProducts.save()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coupon Add/Edit -->
+<div class="modal-overlay hidden" id="coupon-modal">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <h3 class="modal-title">&#x1F3DF;&#xFE0F; Create Coupon</h3>
+      <button class="modal-close" onclick="AdminCoupons.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <form id="coupon-form" onsubmit="event.preventDefault()">
+        <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Coupon Code <span class="required">*</span></label><input type="text" class="form-control" name="c-code" placeholder="e.g. SAVE20" required oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="form-grid" style="margin-bottom:.75rem">
+          <div class="form-group"><label class="form-label">Type</label><select class="form-control" name="c-type"><option value="percent">Percentage (%)</option><option value="flat">Flat (Rs.)</option></select></div>
+          <div class="form-group"><label class="form-label">Value <span class="required">*</span></label><input type="number" class="form-control" name="c-value" placeholder="e.g. 20" min="1" required></div>
+        </div>
+        <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Minimum Order (Rs.)</label><input type="number" class="form-control" name="c-min" placeholder="e.g. 999" min="0"></div>
+        <div class="form-group"><label class="form-label">Expiry Date</label><input type="date" class="form-control" name="c-expiry"></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminCoupons.closeModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="AdminCoupons.save()">Create Coupon</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category Add/Edit -->
+<div class="modal-overlay hidden" id="category-modal">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <h3 class="modal-title" id="cat-modal-title">&#x1F4C2; Add Category</h3>
+      <button class="modal-close" onclick="AdminCategories.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Category Name <span class="required">*</span></label><input type="text" class="form-control" id="cat-name" placeholder="e.g. Sarees" required></div>
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Slug</label><input type="text" class="form-control" id="cat-slug" placeholder="e.g. sarees" oninput="this.value=this.value.toLowerCase().replace(/\s+/g,'-')"></div>
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Image URL</label><input type="url" class="form-control" id="cat-image" placeholder="https://..."></div>
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Sort Order</label><input type="number" class="form-control" id="cat-order" placeholder="1" min="1"></div>
+      <div class="toggle-row"><span class="toggle-label">Active / Visible</span><label class="toggle"><input type="checkbox" id="cat-active" checked><span class="toggle-slider"></span></label></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminCategories.closeModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="AdminCategories.save()">Save Category</button>
+    </div>
+  </div>
+</div>
+
+<!-- Banner Add/Edit -->
+<div class="modal-overlay hidden" id="banner-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title" id="banner-modal-title">&#x1F5BC;&#xFE0F; Add Banner</h3>
+      <button class="modal-close" onclick="AdminBanners.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label class="form-label">Title <span class="required">*</span></label><input type="text" class="form-control" id="ban-title" placeholder="e.g. New Collection Arrived" required></div>
+        <div class="form-group full"><label class="form-label">Subtitle</label><input type="text" class="form-control" id="ban-subtitle" placeholder="e.g. Shop the latest ethnic wear"></div>
+        <div class="form-group full"><label class="form-label">Background Image URL</label><input type="url" class="form-control" id="ban-image" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Button Text</label><input type="text" class="form-control" id="ban-btn-text" placeholder="Shop Now"></div>
+        <div class="form-group"><label class="form-label">Button Link</label><input type="text" class="form-control" id="ban-btn-link" placeholder="./shop.html"></div>
+        <div class="form-group"><label class="form-label">Sort Order</label><input type="number" class="form-control" id="ban-order" placeholder="1" min="1"></div>
+        <div class="form-group"><label class="form-label">Active</label><label class="toggle" style="margin-top:.4rem"><input type="checkbox" id="ban-active" checked><span class="toggle-slider"></span></label></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminBanners.closeModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="AdminBanners.save()">Save Banner</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shipping Tracking -->
+<div class="modal-overlay hidden" id="shipping-modal">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <h3 class="modal-title">&#x1F69A; Update Shipment</h3>
+      <button class="modal-close" onclick="AdminShipping.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ship-order-id">
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Tracking Number</label><input type="text" class="form-control" id="ship-tracking" placeholder="e.g. 1Z999AA10123456784"></div>
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Courier / Carrier</label>
+        <select class="form-control" id="ship-courier">
+          <option>Delhivery</option><option>BlueDart</option><option>DTDC</option><option>India Post</option><option>Ekart</option><option>Xpressbees</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem"><label class="form-label">Status</label>
+        <select class="form-control" id="ship-status">
+          <option value="Processing">Processing</option><option value="Shipped">Shipped</option><option value="Out for Delivery">Out for Delivery</option><option value="Delivered">Delivered</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Estimated Delivery</label><input type="date" class="form-control" id="ship-eta"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminShipping.closeModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="AdminShipping.save()">Update Shipment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Complaint Detail -->
+<div class="modal-overlay hidden" id="complaint-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">&#x1F4CB; Complaint Details</h3>
+      <button class="modal-close" onclick="AdminComplaints.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="complaint-detail-content"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminComplaints.closeModal()">Close</button>
+      <button class="btn btn-success" onclick="AdminComplaints.resolve()">&#x2713; Mark Resolved</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Print Modal -->
+<div class="modal-overlay hidden" id="invoice-modal">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h3 class="modal-title">&#x1F9FE; Retail Invoice</h3>
+      <button class="modal-close" onclick="AdminInvoices.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="invoice-content" style="background:#fff;color:#000;border-radius:8px;padding:1.5rem"></div>
+    <div class="modal-footer no-print">
+      <button class="btn btn-outline" onclick="AdminInvoices.closeModal()">Close</button>
+      <button class="btn btn-accent" onclick="window.print()">&#x1F5A8; Print Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Profile -->
+<div class="modal-overlay hidden" id="customer-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">&#x1F464; Customer Profile</h3>
+      <button class="modal-close" onclick="AdminCustomers.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="customer-detail-content"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="AdminCustomers.closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nari AI Auto-Sync Health Popup Modal -->
+<div class="modal-overlay hidden" id="auto-sync-popup-modal" style="z-index:99999;">
+  <div class="modal-box" style="max-width:540px;border:1.5px solid var(--gold);background:linear-gradient(145deg, #180D15 0%, #0F070E 100%);box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:14px;">
+    <div class="modal-header" style="border-bottom:1px solid rgba(212,175,55,0.25);padding:1rem 1.25rem;">
+      <h3 class="modal-title" style="color:#FFE082;font-size:1.15rem;display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;">
+        ✨ Nari AI Auto-Sync &amp; Self-Healing
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('auto-sync-popup-modal').classList.add('hidden')">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="auto-sync-popup-content" style="padding:1.25rem;">
+      <!-- Populated dynamically by JS -->
+    </div>
+    <div class="modal-footer" style="border-top:1px solid rgba(255,255,255,0.08);padding:0.85rem 1.25rem;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:0.75rem;color:var(--text-muted);display:flex;align-items:center;gap:4px;">
+        <span style="color:#22C55E;font-weight:700;">&#x25CF;</span> Live Firestore Sync Active
+      </span>
+      <button class="btn btn-accent" onclick="document.getElementById('auto-sync-popup-modal').classList.add('hidden')" style="font-weight:700;padding:0.5rem 1.2rem;">
+        Awesome, Got It! &#x1F680;
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- AI Alert Detail Modal -->
+<div class="modal-overlay hidden" id="monitor-modal">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h3 class="modal-title" id="monitor-modal-title">&#x1F916; AI Diagnosis &amp; Root Cause</h3>
+      <button class="modal-close" onclick="NariAdminMonitor.closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="monitor-modal-body" style="padding:1.25rem"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="NariAdminMonitor.closeModal()">Close</button>
+      <button class="btn btn-accent" id="monitor-modal-resolve-btn">&#x2705; Mark Resolved</button>
+      <a class="btn" id="monitor-modal-whatsapp-btn" href="#" target="_blank" style="background:#25d366;color:#fff;text-decoration:none">&#x1F4F1; WhatsApp Alert</a>
+    </div>
+  </div>
+</div>
+
+<!-- Operations Export Modal -->
+<div class="modal-overlay hidden" id="modal-ops-export">
+  <div class="modal-card" style="max-width:480px;background:#1A0815;border:1.5px solid rgba(212,175,55,0.4);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.7);">
+    <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(212,175,55,0.2);padding:1rem 1.25rem;">
+      <h3 style="font-family:'Playfair Display',serif;color:#FFE082;margin:0;font-size:1.15rem;">&#x1F4E5; Export Operations Audit Report</h3>
+      <button class="btn btn-ghost btn-sm" onclick="NariAdminMonitor.closeExportModal()" style="font-size:1rem;padding:2px 8px;">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:1.25rem;display:flex;flex-direction:column;gap:0.85rem;">
+      <p style="font-size:0.84rem;color:#ECE0E6;margin:0;">
+        Select a format to download the complete website operations, security, responsiveness and QA audit report:
+      </p>
+      
+      <button class="btn btn-primary" onclick="NariAdminMonitor.exportPDF()" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;background:linear-gradient(135deg, #8B1A4A, #5C0E30);border:1px solid #D4AF37;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.35rem;">&#x1F4C4;</span>
+          <span style="text-align:left;">
+            <strong style="display:block;font-size:0.92rem;color:#FFE082;">PDF Document (.pdf)</strong>
+            <small style="color:#ECE0E6;font-size:0.72rem;">Executive summary, 12-pillar scorecard &amp; viewport tables</small>
+          </span>
+        </span>
+        <span style="color:#FFE082;font-weight:700;">&rarr;</span>
+      </button>
+
+      <button class="btn btn-outline" onclick="NariAdminMonitor.exportJSON()" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.35rem;">&#x1F4CB;</span>
+          <span style="text-align:left;">
+            <strong style="display:block;font-size:0.92rem;color:#fff;">JSON Machine Payload (.json)</strong>
+            <small style="color:var(--text-dim);font-size:0.72rem;">Full structured diagnostic dataset for APIs &amp; CI</small>
+          </span>
+        </span>
+        <span>&rarr;</span>
+      </button>
+
+      <button class="btn btn-outline" onclick="NariAdminMonitor.exportCSV()" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.35rem;">&#x1F4CA;</span>
+          <span style="text-align:left;">
+            <strong style="display:block;font-size:0.92rem;color:#fff;">CSV Spreadsheet (.csv)</strong>
+            <small style="color:var(--text-dim);font-size:0.72rem;">Active incidents list formatted for Excel / Google Sheets</small>
+          </span>
+        </span>
+        <span>&rarr;</span>
+      </button>
+    </div>
+    <div class="modal-footer" style="border-top:1px solid rgba(212,175,55,0.2);padding:0.85rem 1.25rem;display:flex;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="NariAdminMonitor.closeExportModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<div class="confirm-overlay hidden" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon">&#x26A0;&#xFE0F;</div>
+    <h3 class="confirm-title" id="confirm-title">Are you sure?</h3>
+    <p class="confirm-msg" id="confirm-msg">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="AdminConfirm.close(false)">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok-btn" onclick="AdminConfirm.close(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/store.js?v=3.9"></script>
+<script src="../js/nari-monitor.js?v=1.2"></script>
+<script src="../js/nari-ai-ads.js?v=1.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="../js/nari-ops-engine.js?v=2.2"></script>
+<script src="../js/admin-advanced.js?v=5.2"></script>
+</body>
+</html>

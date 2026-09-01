@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/auth.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-brand-panel">
+      <div class="auth-brand-content">
+        <div class="auth-brand-logo">
+          <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="auth-logo-img" width="90" height="90" style="width:90px;height:90px;max-width:90px;max-height:90px;border-radius:50%;object-fit:cover;">
+          <div class="auth-logo-text">
+            <span class="brand-name">Nari Niketan</span>
+            <span class="brand-tagline">Elegance Redefined</span>
+          </div>
+        </div>
+        <h2 class="auth-brand-title">Join the <span>Nari Niketan</span> Family</h2>
+        <p class="auth-brand-desc">Create your free account and unlock a world of premium Indian ethnic fashion.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-feature-icon"></div> Welcome discount on first order</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#9825;</div> Exclusive member-only deals</div>
+          <div class="auth-feature"><div class="auth-feature-icon"></div> Easy order tracking</div>
+          <div class="auth-feature"><div class="auth-feature-icon"></div> Secure & private account</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-form-panel">
+      <div class="auth-box">
+
+        <div id="already-logged-in-box" style="display:none; text-align:center; padding:1rem 0;">
+          <div style="font-size:3rem; margin-bottom:0.75rem;"></div>
+          <h2 style="font-family:var(--font-display); color:var(--primary); margin-bottom:0.5rem;">Already Signed In</h2>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.25rem;">You are currently logged in as:</p>
+          <p style="font-size:1rem; font-weight:700; color:var(--text); margin-bottom:1.5rem;" id="logged-in-user-name">user@email.com</p>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <a href="index.html" class="btn btn-primary btn-full">Continue to Store</a>
+            <a href="my-orders.html" class="btn btn-outline btn-full">View My Orders</a>
+            <button class="btn btn-ghost btn-full" onclick="signOutAndStay()" style="color:var(--error);">Sign Out / Register New User</button>
+          </div>
+        </div>
+
+        <div id="main-register-wrapper">
+          <div class="auth-mode-switch">
+            <a href="login.html" class="auth-mode-btn">Sign In</a>
+            <a href="register.html" class="auth-mode-btn active">&#10024; Create Account</a>
+          </div>
+
+          <div class="auth-box-header">
+            <h2>Create Account</h2>
+            <p>Join Nari Niketan and enjoy member benefits</p>
+          </div>
+          <div class="auth-error-banner" id="error-banner" style="display:none">
+            <span>&#10007;</span><span id="error-msg"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" class="form-control" id="name" placeholder="Your full name" autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-control" id="email" placeholder="your@email.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" placeholder="+91 XXXXXXXXXX" autocomplete="tel">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <div class="input-relative">
+              <input type="password" class="form-control" id="password" placeholder="Min 6 characters" autocomplete="new-password" style="padding-right:2.5rem">
+              <button class="pw-toggle-btn" onclick="togglePw('password',this)" type="button">&#128065;</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password *</label>
+            <div class="input-relative">
+              <input type="password" class="form-control" id="confirm-password" placeholder="Repeat password" autocomplete="new-password" style="padding-right:2.5rem">
+              <button class="pw-toggle-btn" onclick="togglePw('confirm-password',this)" type="button">&#128065;</button>
+            </div>
+          </div>
+          <div style="margin-bottom:1.25rem">
+            <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer;font-size:0.85rem;color:var(--text-light)">
+              <input type="checkbox" id="agree-terms" style="accent-color:var(--primary);width:16px;height:16px;margin-top:1px;flex-shrink:0">
+              I agree to the <a href="terms-and-conditions.html" target="_blank" style="color:var(--primary);font-weight:600;margin:0 2px">Terms &amp; Conditions</a> and <a href="privacy-policy.html" target="_blank" style="color:var(--primary);font-weight:600;margin:0 2px">Privacy Policy</a>
+            </label>
+          </div>
+          <button class="btn btn-primary btn-full" id="register-btn" onclick="registerUser()">
+            Create My Account
+          </button>
+          <div class="auth-divider">or sign up with</div>
+          <button class="social-auth-btn" onclick="registerGoogle()">
+            <span>&#128309;</span> Continue with Google
+          </button>
+
+          <div class="auth-footer-box">
+            <p>Already have an account?</p>
+            <a href="login.html" class="btn btn-outline btn-full">
+              Sign In to Existing Account
+            </a>
+          </div>
+
+          <div class="auth-switch">
+            <a href="index.html">Back to Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const redirect = new URLSearchParams(window.location.search).get("redirect") || "index.html";
+    const redirectQuery = redirect && redirect !== "index.html" ? `?redirect=${encodeURIComponent(redirect)}` : "";
+    
+    // Update links to preserve redirect
+    const signinLink = document.querySelector('.auth-mode-switch a[href="login.html"]');
+    if (signinLink) signinLink.href = "login.html" + redirectQuery;
+    const footerSigninLink = document.querySelector('.auth-footer-box a[href="login.html"]');
+    if (footerSigninLink) footerSigninLink.href = "login.html" + redirectQuery;
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const hasExplicitRedirect = new URLSearchParams(window.location.search).has("redirect");
+        if (hasExplicitRedirect) {
+          window.location.href = redirect;
+        } else {
+          document.getElementById("main-register-wrapper").style.display = "none";
+          document.getElementById("already-logged-in-box").style.display = "block";
+          document.getElementById("logged-in-user-name").textContent = user.displayName || user.email || user.phoneNumber || "User";
+        }
+      } else {
+        document.getElementById("main-register-wrapper").style.display = "block";
+        document.getElementById("already-logged-in-box").style.display = "none";
+      }
+    });
+
+    async function signOutAndStay() {
+      try {
+        await auth.signOut();
+        document.getElementById("already-logged-in-box").style.display = "none";
+        document.getElementById("main-register-wrapper").style.display = "block";
+        App.toast("Signed out. You can now register.", "default");
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById("error-banner").style.display = "flex";
+      document.getElementById("error-msg").textContent = msg;
+    }
+    function hideError() { document.getElementById("error-banner").style.display = "none"; }
+
+    async function registerUser() {
+      hideError();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const pw = document.getElementById("password").value;
+      const cpw = document.getElementById("confirm-password").value;
+      const agreed = document.getElementById("agree-terms").checked;
+
+      if (!name || !email || !pw) { showError("Please fill in all required fields."); return; }
+      if (pw.length < 6) { showError("Password must be at least 6 characters."); return; }
+      if (pw !== cpw) { showError("Passwords do not match."); return; }
+      if (!agreed) { showError("Please agree to the terms and conditions."); return; }
+
+      const btn = document.getElementById("register-btn");
+      btn.disabled = true; btn.textContent = "Creating account...";
+      try {
+        const user = await Auth.registerWithEmail(name, email, pw);
+        if (phone && user) {
+          try { await Store.updateUserProfile(user.uid, { phone }); } catch(e){}
+        }
+        App.toast("Welcome to Nari Niketan!", "success");
+        setTimeout(() => window.location.href = redirect, 800);
+      } catch(e) { showError(Auth.getErrorMessage(e)); }
+      finally { btn.disabled = false; btn.innerHTML = "Create My Account"; }
+    }
+
+    async function registerGoogle() {
+      try {
+        await Auth.loginWithGoogle();
+        App.toast("Signed up with Google!", "success");
+        setTimeout(() => window.location.href = redirect, 800);
+      } catch(e) { showError(Auth.getErrorMessage(e)); }
+    }
+
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id);
+      if (inp.type === "password") { inp.type = "text"; btn.textContent = "Hide"; }
+      else { inp.type = "password"; btn.innerHTML = "&#128065;"; }
+    }
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

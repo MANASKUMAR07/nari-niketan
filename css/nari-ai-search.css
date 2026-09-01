@@ -1,0 +1,159 @@
+/* ==========================================================
+   NARI NIKETAN — AI Natural-Language Search CSS
+   Theme: Royal Maroon (#8B1A4A), Regal Gold (#D4AF37), Light Amber Tint
+   ========================================================== */
+
+/* AI Search Explanation Banner */
+.ai-search-banner {
+  background: linear-gradient(135deg, rgba(139, 26, 74, 0.08), rgba(212, 175, 55, 0.12));
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(139, 26, 74, 0.05);
+  animation: aiFadeIn 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@keyframes aiFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ai-search-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #4A1525;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.ai-search-badge {
+  background: linear-gradient(135deg, #8B1A4A, #5C0E30);
+  color: #FFE082;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #D4AF37;
+  flex-shrink: 0;
+}
+
+.ai-search-clear-btn {
+  background: rgba(139, 26, 74, 0.1);
+  border: 1px solid rgba(139, 26, 74, 0.25);
+  color: #8B1A4A;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ai-search-clear-btn:hover {
+  background: #8B1A4A;
+  color: #fff;
+}
+
+/* Close Alternatives Banner */
+.ai-alt-banner {
+  background: #FFF8E7;
+  border: 1.5px dashed #D4AF37;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 1.25rem;
+  color: #5C3D10;
+  font-size: 0.88rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ai-alt-banner-title {
+  font-weight: 700;
+  color: #8B1A4A;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* Quick Search Suggestion Pills (Responsive Wrapping & Zero Overflow) */
+.ai-search-suggestions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 4px 0 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ai-suggestion-chip {
+  background: #FFF9E6;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #8B1A4A;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.ai-suggestion-chip:hover {
+  background: #8B1A4A;
+  color: #FFE082;
+  border-color: #8B1A4A;
+  transform: translateY(-1px);
+}
+
+/* Context Refinement Tag */
+.ai-context-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  color: #8B1A4A;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .ai-search-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .ai-search-clear-btn {
+    align-self: flex-start;
+  }
+  .ai-suggestion-chip {
+    font-size: 0.72rem;
+    padding: 4px 10px;
+  }
+}

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed &mdash; Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="robots" content="noindex">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+
+  <style>
+    /* -- Confirmation Page Styles -- */
+    .confirm-wrap {
+      max-width: 700px;
+      margin: 2.5rem auto;
+      padding: 0 1rem 3rem;
+    }
+
+    /* Success Card */
+    .confirm-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(139,26,74,0.10);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(139,26,74,0.08);
+    }
+    .confirm-check {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 2rem;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(76,175,80,0.3);
+      animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop-in {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .confirm-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      color: #8B1A4A;
+      margin-bottom: 0.4rem;
+    }
+    .confirm-sub { color: #666; font-size: 0.95rem; margin-bottom: 1.25rem; }
+    .confirm-order-id {
+      display: inline-block;
+      background: #FDF5E4;
+      border: 1.5px dashed #D4AF37;
+      border-radius: 10px;
+      padding: 0.6rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #8B1A4A;
+      letter-spacing: 1.5px;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Steps */
+    .confirm-steps {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+      position: relative;
+    }
+    .confirm-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      min-width: 70px;
+    }
+    .confirm-step .step-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2.5px solid #D4AF37;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      background: #FDF5E4;
+    }
+    .confirm-step.active .step-icon { background: #8B1A4A; border-color: #8B1A4A; }
+    .confirm-step strong { font-size: 0.78rem; color: #333; }
+    .confirm-step span   { font-size: 0.7rem;  color: #999; }
+    .step-line {
+      flex: 1; height: 2px; background: #eee;
+      min-width: 20px; max-width: 60px;
+      align-self: center; margin-bottom: 24px;
+    }
+
+    .confirm-note {
+      font-size: 0.88rem; color: #666; line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .confirm-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn-confirm-primary {
+      background: #8B1A4A; color: #fff;
+      border: none; border-radius: 8px;
+      padding: 0.75rem 1.75rem;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer;
+      text-decoration: none; display: inline-block;
+      transition: background 0.2s;
+    }
+    .btn-confirm-primary:hover { background: #6B1238; }
+    .btn-confirm-outline {
+      background: #fff; color: #8B1A4A;
+      border: 2px solid #8B1A4A; border-radius: 8px;
+      padding: 0.75rem 1.75rem;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer;
+      text-decoration: none; display: inline-block;
+      transition: all 0.2s;
+    }
+    .btn-confirm-outline:hover { background: #8B1A4A; color: #fff; }
+
+    /* -- Feedback Card -- */
+    .feedback-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(139,26,74,0.10);
+      padding: 2rem;
+      border: 1px solid rgba(139,26,74,0.08);
+    }
+    .feedback-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: #8B1A4A;
+      margin-bottom: 0.3rem;
+    }
+    .feedback-card > p {
+      color: #666; font-size: 0.88rem; margin-bottom: 1.5rem;
+    }
+
+    /* Star Rating */
+    .star-rating-wrap { margin-bottom: 1.25rem; }
+    .star-rating-label { font-size: 0.88rem; font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block; }
+    .stars-row {
+      display: flex; gap: 0.4rem; justify-content: center;
+      margin-bottom: 0.4rem;
+    }
+    .star-btn {
+      font-size: 2.2rem; background: none; border: none;
+      cursor: pointer; color: #ddd;
+      transition: color 0.15s, transform 0.15s;
+      line-height: 1;
+    }
+    .star-btn:hover, .star-btn.active { color: #F5A623; transform: scale(1.15); }
+    .star-label-text { font-size: 0.82rem; color: #888; text-align: center; min-height: 1.2rem; }
+
+    /* Feedback form fields */
+    .feedback-field { margin-bottom: 1rem; }
+    .feedback-field label { display: block; font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 0.4rem; }
+    .feedback-field input,
+    .feedback-field textarea,
+    .feedback-field select {
+      width: 100%; box-sizing: border-box;
+      border: 1.5px solid #e0d5da;
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      color: #333;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fafafa;
+    }
+    .feedback-field input:focus,
+    .feedback-field textarea:focus { border-color: #8B1A4A; background: #fff; }
+    .feedback-field textarea { resize: vertical; min-height: 90px; }
+
+    .feedback-submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #8B1A4A, #D4AF37);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: opacity 0.2s;
+    }
+    .feedback-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .feedback-submit-btn:hover:not(:disabled) { opacity: 0.9; }
+
+    /* Success state */
+    .feedback-success {
+      text-align: center;
+      padding: 1.5rem;
+      display: none;
+    }
+    .feedback-success .fb-check { font-size: 3rem; margin-bottom: 0.5rem; }
+    .feedback-success h3 { font-family: 'Playfair Display', serif; color: #8B1A4A; font-size: 1.3rem; }
+    .feedback-success p  { color: #666; font-size: 0.9rem; }
+
+    @media (max-width: 600px) {
+      .confirm-card, .feedback-card { padding: 1.5rem 1rem; }
+      .confirm-title { font-size: 1.5rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <div class="page-content">
+    <div class="confirm-wrap">
+
+      <!-- -- ORDER SUCCESS CARD -- -->
+      <div class="confirm-card">
+        <div class="confirm-check">&#10003;</div>
+        <h1 class="confirm-title">Order Placed Successfully!</h1>
+        <p class="confirm-sub">Thank you for shopping with Nari Niketan. We'll start preparing your order right away.</p>
+
+        <div class="confirm-order-id" id="order-id-display">Loading...</div>
+
+        <!-- Dynamic Fulfillment Details & Steps -->
+        <div id="fulfillment-dynamic-wrap">
+          <!-- Progress Steps -->
+          <div class="confirm-steps" id="confirm-steps-container">
+            <div class="confirm-step active">
+              <div class="step-icon">&#9989;</div>
+              <strong>Confirmed</strong>
+              <span>Order placed</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="confirm-step">
+              <div class="step-icon">&#9881;</div>
+              <strong>Processing</strong>
+              <span>Packing</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="confirm-step">
+              <div class="step-icon">&#x1F69A;</div>
+              <strong>Shipped</strong>
+              <span>On the way</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="confirm-step">
+              <div class="step-icon">🎁</div>
+              <strong>Delivered</strong>
+              <span>Doorstep</span>
+            </div>
+          </div>
+
+          <div id="store-pickup-confirm-box" style="display:none;background:#FAF3E8;border:1px dashed #D4AF37;border-radius:10px;padding:1.1rem;margin-bottom:1.5rem;text-align:left;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;flex-wrap:wrap;gap:8px;">
+              <strong style="color:#8B1A4A;font-size:0.95rem;">🏪 Store Pickup Location</strong>
+              <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer" style="background:#8B1A4A;color:#FFE082;padding:5px 12px;border-radius:6px;font-size:0.8rem;font-weight:700;text-decoration:none;">
+                🧭 Get Directions &rarr;
+              </a>
+            </div>
+            <p style="font-size:0.85rem;color:#333;margin:0 0 0.35rem 0;"><strong>Nari Niketan Store:</strong> Main Market, Rihand Nagar, Sonbhadra, Uttar Pradesh 231223</p>
+            <p style="font-size:0.78rem;color:#666;margin:0;">⏰ Store Hours: 10:00 AM &ndash; 9:00 PM | 📞 +91 6307032042</p>
+          </div>
+
+          <p class="confirm-note" id="confirm-note-text">
+            Estimated delivery: <strong>3&ndash;7 business days</strong> across India.<br>
+            Need help? Manage your order anytime from <a href="my-orders.html" style="color:#8B1A4A;font-weight:600">My Orders</a> or contact us at
+            <a href="tel:+916307032042" style="color:#8B1A4A">+91 6307032042</a>.
+          </p>
+        </div>
+
+        <div class="confirm-actions">
+          <a href="my-orders.html" class="btn-confirm-primary">Track My Order</a>
+          <a href="shop.html" class="btn-confirm-outline">Continue Shopping</a>
+        </div>
+      </div>
+
+      <!-- -- FEEDBACK / RATING CARD -- -->
+      <div class="feedback-card">
+        <h2>&#11088; Rate Your Experience</h2>
+        <p>Help us improve! Share your honest feedback about shopping with Nari Niketan.</p>
+
+        <!-- Form (shown by default) -->
+        <div id="feedback-form-wrap">
+          <!-- Star Rating -->
+          <div class="star-rating-wrap">
+            <span class="star-rating-label">How would you rate Nari Niketan? *</span>
+            <div class="stars-row" id="stars-row">
+              <button class="star-btn" data-val="1" aria-label="1 star">&#9733;</button>
+              <button class="star-btn" data-val="2" aria-label="2 stars">&#9733;</button>
+              <button class="star-btn" data-val="3" aria-label="3 stars">&#9733;</button>
+              <button class="star-btn" data-val="4" aria-label="4 stars">&#9733;</button>
+              <button class="star-btn" data-val="5" aria-label="5 stars">&#9733;</button>
+            </div>
+            <div class="star-label-text" id="star-label-text">Tap a star to rate</div>
+          </div>
+
+          <!-- Category -->
+          <div class="feedback-field">
+            <label for="fb-category">What are you rating?</label>
+            <select id="fb-category">
+              <option value="overall">Overall Experience</option>
+              <option value="products">Product Quality</option>
+              <option value="delivery">Delivery Speed</option>
+              <option value="website">Website &amp; App</option>
+              <option value="support">Customer Support</option>
+            </select>
+          </div>
+
+          <!-- Comment -->
+          <div class="feedback-field">
+            <label for="fb-comment">Your Review <span style="color:#999;font-weight:400">(optional)</span></label>
+            <textarea id="fb-comment" placeholder="Tell us about your experience &mdash; what did you love? What can we improve?"></textarea>
+          </div>
+
+          <!-- Name (optional) -->
+          <div class="feedback-field">
+            <label for="fb-name">Your Name <span style="color:#999;font-weight:400">(optional)</span></label>
+            <input type="text" id="fb-name" placeholder="e.g. Priya Sharma">
+          </div>
+
+          <button class="feedback-submit-btn" id="fb-submit-btn" onclick="submitFeedback()">
+            Submit Feedback &#9993;
+          </button>
+          <p style="text-align:center;font-size:0.78rem;color:#aaa;margin-top:0.75rem">
+            Your feedback is saved securely and helps us serve you better.
+          </p>
+        </div>
+
+        <!-- Success message (hidden initially) -->
+        <div class="feedback-success" id="feedback-success">
+          <div class="fb-check">&#x1F389;</div>
+          <h3>Thank You for Your Feedback!</h3>
+          <p>Your review has been recorded. We truly appreciate you taking the time to help us improve.</p>
+          <p style="margin-top:0.5rem">
+            <a href="shop.html" style="color:#8B1A4A;font-weight:600">&larr; Continue Shopping</a>
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /confirm-wrap -->
+  </div><!-- /page-content -->
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+
+  <script>
+    // -- Show Order ID and Load Fulfillment Type --
+    const orderId = new URLSearchParams(window.location.search).get('orderId');
+    const displayEl = document.getElementById('order-id-display');
+    if (orderId) {
+      displayEl.textContent = '#' + orderId.substring(0, 12).toUpperCase();
+      
+      // Load order details from Store to adapt UI
+      if (typeof Store !== 'undefined' && Store.getOrder) {
+        Store.getOrder(orderId).then(order => {
+          if (order && order.fulfillmentType === 'pickup') {
+            const stepsContainer = document.getElementById('confirm-steps-container');
+            if (stepsContainer) {
+              stepsContainer.innerHTML = `
+                <div class="confirm-step active">
+                  <div class="step-icon">✅</div>
+                  <strong>Confirmed</strong>
+                  <span>Order placed</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="confirm-step">
+                  <div class="step-icon">🛍️</div>
+                  <strong>Preparing</strong>
+                  <span>Packing outfit</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="confirm-step">
+                  <div class="step-icon">🏪</div>
+                  <strong>Ready</strong>
+                  <span>Ready for Pickup</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="confirm-step">
+                  <div class="step-icon">✨</div>
+                  <strong>Collected</strong>
+                  <span>Order handed over</span>
+                </div>`;
+            }
+            const pickupBox = document.getElementById('store-pickup-confirm-box');
+            if (pickupBox) pickupBox.style.display = 'block';
+
+            const noteText = document.getElementById('confirm-note-text');
+            if (noteText) {
+              noteText.innerHTML = `
+                Pickup readiness: <strong>Ready within 2&ndash;4 hours</strong> during store hours.<br>
+                We'll update your status in <a href="my-orders.html" style="color:#8B1A4A;font-weight:600">My Orders</a> when ready for collection!`;
+            }
+          }
+        }).catch(err => console.warn(err));
+      }
+    } else {
+      displayEl.textContent = 'Order Confirmed';
+    }
+
+    // -- Star Rating Logic --
+    let selectedRating = 0;
+    const starLabels = ['', 'Poor &#x1F61E;', 'Fair &#x1F610;', 'Good &#x1F642;', 'Very Good &#x1F60A;', 'Excellent! &#x1F929;'];
+    const starBtns = document.querySelectorAll('.star-btn');
+    const starLabelText = document.getElementById('star-label-text');
+
+    starBtns.forEach(btn => {
+      btn.addEventListener('mouseover', () => highlightStars(+btn.dataset.val));
+      btn.addEventListener('mouseout',  () => highlightStars(selectedRating));
+      btn.addEventListener('click', () => {
+        selectedRating = +btn.dataset.val;
+        highlightStars(selectedRating);
+        starLabelText.textContent = starLabels[selectedRating];
+        starLabelText.style.color = selectedRating >= 4 ? '#2E7D32' : selectedRating === 3 ? '#F5A623' : '#c62828';
+      });
+    });
+
+    function highlightStars(val) {
+      starBtns.forEach(b => {
+        b.classList.toggle('active', +b.dataset.val <= val);
+      });
+    }
+
+    // -- Submit Feedback to Firestore --
+    async function submitFeedback() {
+      if (selectedRating === 0) {
+        alert('Please select a star rating before submitting.');
+        return;
+      }
+
+      const btn = document.getElementById('fb-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      const comment  = document.getElementById('fb-comment').value.trim();
+      const name     = document.getElementById('fb-name').value.trim();
+      const category = document.getElementById('fb-category').value;
+
+      // Get current user if logged in
+      let userId = null, userEmail = null;
+      try {
+        const user = firebase.auth().currentUser;
+        if (user) { userId = user.uid; userEmail = user.email; }
+      } catch(e) {}
+
+      const feedbackData = {
+        rating:    selectedRating,
+        category:  category,
+        comment:   comment || null,
+        name:      name || (userEmail ? userEmail.split('@')[0] : 'Anonymous'),
+        orderId:   orderId || null,
+        userId:    userId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        platform:  'website'
+      };
+
+      try {
+        await db.collection('feedbacks').add(feedbackData);
+
+        // Show success
+        document.getElementById('feedback-form-wrap').style.display = 'none';
+        const successEl = document.getElementById('feedback-success');
+        successEl.style.display = 'block';
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Submit Feedback &#9993;';
+        alert('Could not save feedback. Please check your connection and try again.\n\nError: ' + err.message);
+      }
+    }
+  </script>
+
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

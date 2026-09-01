@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /seller/
+Disallow: /my-account.html
+Disallow: /my-orders.html
+Disallow: /checkout.html
+
+Sitemap: https://www.nariniketan.shop/sitemap.xml

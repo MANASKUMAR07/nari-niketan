@@ -1,0 +1,82 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      "**/.*",
+      "**/node_modules/**",
+      "firestore.rules",
+      "storage.rules",
+      "*.pdf"
+    ],
+    "cleanUrls": false,
+    "headers": [
+      {
+        "source": "/admin/**",
+        "headers": [
+          { "key": "X-Robots-Tag",           "value": "noindex, nofollow" },
+          { "key": "X-Frame-Options",         "value": "DENY" },
+          { "key": "X-Content-Type-Options",  "value": "nosniff" },
+          { "key": "Cache-Control",           "value": "no-store, no-cache, must-revalidate, private" }
+        ]
+      },
+      {
+        "source": "/sw.js",
+        "headers": [
+          { "key": "Cache-Control",         "value": "no-cache, no-store, must-revalidate" },
+          { "key": "Service-Worker-Allowed","value": "/" }
+        ]
+      },
+      {
+        "source": "/manifest.webmanifest",
+        "headers": [
+          { "key": "Content-Type",    "value": "application/manifest+json; charset=utf-8" },
+          { "key": "Cache-Control",   "value": "no-cache, must-revalidate" }
+        ]
+      },
+      {
+        "source": "/css/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+        ]
+      },
+      {
+        "source": "/js/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+        ]
+      },
+      {
+        "source": "/seller/seller.css",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+        ]
+      },
+      {
+        "source": "/images/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=2592000" }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

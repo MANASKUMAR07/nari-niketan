@@ -1,0 +1,21 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Product images: stored at products/{sellerId}/{productId}/{filename}
+    // - Anyone can READ (needed to display images on storefront)
+    // - Only the owning seller can WRITE to their own folder
+    match /products/{sellerId}/{productId}/{filename} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == sellerId
+                   && request.resource.size < 5 * 1024 * 1024   // max 5MB per file
+                   && request.resource.contentType.matches('image/.*'); // images only
+    }
+
+    // Deny everything else by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

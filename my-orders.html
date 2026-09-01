@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders &mdash; Nari Niketan</title>
+  <meta name="theme-color" content="#8B1A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nari Niketan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="stylesheet" href="css/nari-maps.css?v=1.0">
+  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <div class="nav-logo-text">
+          <span class="brand-name">Nari Niketan</span>
+          <span class="brand-tagline">Elegance Redefined</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="pwa-nav-btn pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none" title="Install Nari Niketan App">
+          <span class="badge-sparkle"></span> Install App
+        </button>
+        <a href="cart.html" class="nav-icon-btn" title="Cart">&rsquo; <span class="cart-badge" id="cart-count" style="display:none">0</span></a>
+        <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+          <button class="nav-avatar" id="nav-avatar" aria-label="User menu">U</button>
+          <div class="dropdown-menu" id="user-dropdown">
+            <div style="padding:.5rem 1rem"><p style="font-size:.88rem;font-weight:600" id="nav-user-name">User</p></div>
+            <a href="my-account.html">My Account</a>
+            <a href="my-orders.html" class="active">My Orders</a>
+            <hr class="dropdown-divider">
+            <button onclick="App.signOut()">Sign Out</button>
+          </div>
+        </div>
+        <button class="nav-login-btn" id="nav-login-btn" onclick="window.location.href='login.html'">Login / Register</button>
+        <button class="hamburger" id="hamburger" aria-label="Toggle Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <nav class="mobile-nav" id="mobile-nav" style="top:var(--navbar-h)">
+    <a href="index.html">&nbsp; Home</a>
+    <a href="shop.html">Shop All</a>
+    <a href="shop.html?cat=Sarees"> Sarees</a>
+    <a href="shop.html?cat=Suits">Suits</a>
+    <a href="shop.html?cat=Lehengas">&lsquo;&mdash; Lehengas</a>
+    <a href="cart.html">&rsquo; Cart</a>
+    <a href="my-orders.html" class="active">My Orders</a>
+    <a href="login.html">Login / Register</a>
+    <button class="pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none;background:none;border:none;color:var(--accent,#D4AF37);font-weight:700;padding:0.75rem 1rem;text-align:left;cursor:pointer;font-size:1rem;">
+      Install App
+    </button>
+  </nav>
+
+  <div class="page-content" >
+    <div class="orders-page">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;">
+        <h2 style="font-family:var(--font-display);color:var(--primary);font-size:1.6rem;">My Orders</h2>
+        <a href="shop.html" class="btn btn-outline btn-sm">Browse Products</a>
+      </div>
+
+      <div id="orders-container">
+        <div style="text-align:center;padding:3rem">
+          <div class="spinner" style="margin:0 auto 1rem"></div>
+          <p style="color:var(--text-muted)">Loading your orders...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancellation Modal -->
+  <div class="modal-overlay" id="cancel-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9999; align-items:center; justify-content:center; padding:1rem;">
+    <div class="modal" style="background:var(--white); border-radius:var(--radius-lg); width:100%; max-width:480px; padding:1.75rem; box-shadow:var(--shadow-xl);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="font-family:var(--font-display); color:var(--primary); font-size:1.25rem;">Cancel Order</h3>
+        <button onclick="closeCancelModal()" style="background:none; border:none; font-size:1.25rem; cursor:pointer; color:var(--text-muted);">&#10005;</button>
+      </div>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">
+        Are you sure you want to cancel <strong id="cancel-order-label"></strong>?
+      </p>
+
+      <div class="form-group" style="margin-bottom:1.25rem;">
+        <label class="form-label">Please select a reason for cancellation:</label>
+        <select class="form-control" id="cancel-reason" style="width:100%; padding:0.6rem; border:1px solid rgba(139,26,74,.2); border-radius:6px;">
+          <option value="Ordered by mistake">Ordered by mistake</option>
+          <option value="Need to change size / color">Need to change size / color</option>
+          <option value="Found a better price / design elsewhere">Found a better price / design elsewhere</option>
+          <option value="Delivery time is too long">Delivery time is too long</option>
+          <option value="Changed my mind">Changed my mind</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div style="display:flex; gap:0.75rem; justify-content:flex-end; flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="closeCancelModal()" style="flex:1; min-width:120px;">Keep Order</button>
+        <button class="btn btn-primary" id="confirm-cancel-btn" onclick="confirmCancelOrder()" style="flex:1; min-width:160px; background:var(--error); border-color:var(--error);">
+          Confirm Cancellation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REFUND MODAL ===== -->
+  <div id="refund-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
+    <div style="background:var(--white); border-radius:var(--radius-lg); width:100%; max-width:520px; box-shadow:var(--shadow-xl); overflow:hidden;">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,var(--primary),#B5265F); padding:1.5rem; color:#fff; text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;"></div>
+        <h3 style="font-family:var(--font-display); font-size:1.3rem; margin-bottom:0.3rem;">Request Your Refund</h3>
+        <p style="font-size:0.85rem; opacity:0.9;">Order cancelled successfully. Where should we send your refund?</p>
+        <div style="background:rgba(255,255,255,0.15); border-radius:8px; padding:0.5rem 1rem; margin-top:0.75rem; display:inline-block;">
+          <span style="font-size:0.82rem; opacity:0.85;">Refund Amount:</span>
+          <span id="refund-amount-display" style="font-size:1.1rem; font-weight:800; margin-left:0.4rem;">&#8377;0</span>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:1.5rem;">
+
+        <!-- Refund Method Tabs -->
+        <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; background:var(--cream); border-radius:10px; padding:0.3rem;">
+          <button id="tab-upi" onclick="switchRefundTab('upi')" style="flex:1; padding:0.55rem; border:none; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; background:var(--primary); color:#fff; transition:all .2s;">UPI</button>
+          <button id="tab-bank" onclick="switchRefundTab('bank')" style="flex:1; padding:0.55rem; border:none; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; background:transparent; color:var(--text-muted); transition:all .2s;">&#127966; Bank Transfer</button>
+          <button id="tab-credit" onclick="switchRefundTab('credit')" style="flex:1; padding:0.55rem; border:none; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; background:transparent; color:var(--text-muted); transition:all .2s;">Store Credit</button>
+        </div>
+
+        <!-- UPI Tab -->
+        <div id="refund-upi" style="">
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">Refund will be credited to your UPI account within <strong>3&ndash;5 business days</strong>.</p>
+          <div style="margin-bottom:1rem;">
+            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">UPI ID *</label>
+            <input id="refund-upi-id" type="text" placeholder="yourname@upi / 9876543210@paytm" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'">
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+            <span style="font-size:0.78rem; color:var(--text-muted);">Common UPI apps:</span>
+            <button onclick="document.getElementById('refund-upi-id').value+='@paytm'" style="font-size:0.72rem; padding:0.2rem 0.5rem; border:1px solid rgba(139,26,74,.2); border-radius:4px; background:none; cursor:pointer; color:var(--primary);">@paytm</button>
+            <button onclick="document.getElementById('refund-upi-id').value+='@gpay'" style="font-size:0.72rem; padding:0.2rem 0.5rem; border:1px solid rgba(139,26,74,.2); border-radius:4px; background:none; cursor:pointer; color:var(--primary);">@gpay</button>
+            <button onclick="document.getElementById('refund-upi-id').value+='@phonepe'" style="font-size:0.72rem; padding:0.2rem 0.5rem; border:1px solid rgba(139,26,74,.2); border-radius:4px; background:none; cursor:pointer; color:var(--primary);">@phonepe</button>
+            <button onclick="document.getElementById('refund-upi-id').value+='@okaxis'" style="font-size:0.72rem; padding:0.2rem 0.5rem; border:1px solid rgba(139,26,74,.2); border-radius:4px; background:none; cursor:pointer; color:var(--primary);">@okaxis</button>
+          </div>
+        </div>
+
+        <!-- Bank Transfer Tab -->
+        <div id="refund-bank" style="display:none;">
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">Refund will be credited to your bank account within <strong>5&ndash;7 business days</strong>.</p>
+          <div style="display:grid; gap:0.85rem;">
+            <div>
+              <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">Account Holder Name *</label>
+              <input id="refund-acc-name" type="text" placeholder="As on bank passbook" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'">
+            </div>
+            <div>
+              <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">Account Number *</label>
+              <input id="refund-acc-number" type="text" placeholder="Enter account number" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'">
+            </div>
+            <div>
+              <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">IFSC Code *</label>
+              <input id="refund-ifsc" type="text" placeholder="e.g. SBIN0001234" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; text-transform:uppercase; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'" oninput="this.value=this.value.toUpperCase()">
+            </div>
+            <div>
+              <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">Bank Name</label>
+              <input id="refund-bank-name" type="text" placeholder="e.g. State Bank of India" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'">
+            </div>
+          </div>
+        </div>
+
+        <!-- Store Credit Tab -->
+        <div id="refund-credit" style="display:none; text-align:center; padding:1rem 0;">
+          <div style="font-size:3rem; margin-bottom:0.75rem;"></div>
+          <h4 style="font-family:var(--font-display); color:var(--primary); margin-bottom:0.5rem;">Get Store Credit</h4>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">Get your refund as a <strong>store credit coupon code</strong> and receive an extra <strong style="color:var(--primary)">5% bonus</strong>!</p>
+          <div style="background:var(--cream); border:2px dashed rgba(139,26,74,.25); border-radius:12px; padding:1rem;">
+            <p style="font-size:0.85rem; color:var(--text-muted);">Your credit code will be emailed to you within 24 hours and can be used on any future order.</p>
+          </div>
+          <div style="margin-top:1rem;">
+            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem;">Confirm your email address</label>
+            <input id="refund-credit-email" type="email" placeholder="your@email.com" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'">
+          </div>
+        </div>
+
+        <!-- Error banner -->
+        <div id="refund-error" style="display:none; margin-top:1rem; padding:0.6rem 0.9rem; background:rgba(211,47,47,.08); border:1px solid rgba(211,47,47,.2); border-radius:8px; font-size:0.85rem; color:var(--error);"></div>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:1rem 1.5rem 1.5rem; display:flex; gap:0.75rem; justify-content:space-between; align-items:center;">
+        <button onclick="closeRefundModal()" style="background:none; border:1px solid rgba(139,26,74,.2); border-radius:8px; padding:0.6rem 1.2rem; font-size:0.88rem; color:var(--text-muted); cursor:pointer; font-family:inherit;">Skip for now</button>
+        <button id="refund-submit-btn" onclick="submitRefundRequest()" style="background:linear-gradient(135deg,var(--primary),#B5265F); color:#fff; border:none; border-radius:8px; padding:0.7rem 1.5rem; font-size:0.9rem; font-weight:700; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:0.5rem;">Submit Refund Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RETURN MODAL ===== -->
+  <div id="return-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
+    <div style="background:var(--white); border-radius:var(--radius-lg); width:100%; max-width:500px; box-shadow:var(--shadow-xl); overflow:hidden; max-height:90vh; display:flex; flex-direction:column;">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#1A6B3C,#2E8B57); padding:1.25rem 1.5rem; color:#fff; flex-shrink:0;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-size:1.5rem; margin-bottom:0.25rem;">&#8634; Return Order</div>
+            <p id="return-order-label" style="font-size:0.82rem; opacity:0.9;"></p>
+          </div>
+          <button onclick="closeReturnModal()" style="background:rgba(255,255,255,.15); border:none; color:#fff; width:32px; height:32px; border-radius:50%; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">&#10005;</button>
+        </div>
+        <div style="background:rgba(255,255,255,0.15); border-radius:8px; padding:0.5rem 1rem; margin-top:0.75rem; display:inline-block;">
+          <span style="font-size:0.78rem; opacity:0.85;">Return Window:</span>
+          <span style="font-size:0.9rem; font-weight:700; margin-left:0.4rem;">7 days from delivery &middot; Free pickup</span>
+        </div>
+      </div>
+
+      <!-- Body (scrollable) -->
+      <div style="padding:1.5rem; overflow-y:auto; flex:1;">
+
+        <!-- Reason -->
+        <div style="margin-bottom:1.1rem;">
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">Return Reason *</label>
+          <select id="return-reason" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.9rem; outline:none; font-family:inherit; background:var(--white);">
+            <option value="">&mdash; Select a reason &mdash;</option>
+            <option value="Defective / Damaged product">Defective / Damaged product</option>
+            <option value="Wrong item delivered">Wrong item delivered (not what I ordered)</option>
+            <option value="Size does not fit">Size does not fit</option>
+            <option value="Color different from image">Color is different from what was shown</option>
+            <option value="Fabric quality issue">Fabric or stitching quality issue</option>
+            <option value="Item not as described">Item not as described</option>
+            <option value="Missing parts / incomplete set">Missing parts or incomplete set (e.g., dupatta)</option>
+            <option value="Changed mind">Changed my mind (unused, tags intact)</option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom:1.1rem;">
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.04em;">Description (Optional)</label>
+          <textarea id="return-description" rows="3" placeholder="Briefly describe the issue. For defective items, please describe the defect clearly to speed up processing." style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid rgba(139,26,74,.2); border-radius:8px; font-size:0.88rem; outline:none; font-family:inherit; resize:vertical; transition:border .2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(139,26,74,.2)'"></textarea>
+        </div>
+
+        <!-- Pickup address note -->
+        <div style="background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.2); border-radius:8px; padding:0.85rem 1rem; margin-bottom:1.1rem;">
+          <p style="font-size:0.82rem; font-weight:600; color:#15803D; margin-bottom:0.3rem;">Free Pickup from Delivery Address</p>
+          <p style="font-size:0.78rem; color:var(--text-muted);">Our courier will pick up the item from the address the order was delivered to. No need to visit any store or courier office.</p>
+        </div>
+
+        <!-- Checklist -->
+        <div style="background:var(--cream); border-radius:8px; padding:0.9rem 1rem; margin-bottom:1rem;">
+          <p style="font-size:0.8rem; font-weight:700; color:var(--text); margin-bottom:0.6rem;">&#10003; Before submitting, please confirm:</p>
+          <label style="display:flex; align-items:flex-start; gap:0.6rem; margin-bottom:0.5rem; cursor:pointer;">
+            <input type="checkbox" id="return-check1" style="margin-top:2px; flex-shrink:0;">
+            <span style="font-size:0.82rem; color:var(--text-muted);">The item is <strong>unused and unwashed</strong> with original tags intact</span>
+          </label>
+          <label style="display:flex; align-items:flex-start; gap:0.6rem; margin-bottom:0.5rem; cursor:pointer;">
+            <input type="checkbox" id="return-check2" style="margin-top:2px; flex-shrink:0;">
+            <span style="font-size:0.82rem; color:var(--text-muted);">I have read and agree to the <a href="return-policy.html" target="_blank" style="color:var(--primary);">Return Policy</a></span>
+          </label>
+          <label style="display:flex; align-items:flex-start; gap:0.6rem; cursor:pointer;">
+            <input type="checkbox" id="return-check3" style="margin-top:2px; flex-shrink:0;">
+            <span style="font-size:0.82rem; color:var(--text-muted);">I understand pickup will be arranged within <strong>2&ndash;3 business days</strong></span>
+          </label>
+        </div>
+
+        <!-- Error -->
+        <div id="return-error" style="display:none; padding:0.6rem 0.9rem; background:rgba(211,47,47,.08); border:1px solid rgba(211,47,47,.2); border-radius:8px; font-size:0.85rem; color:var(--error);"></div>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:1rem 1.5rem 1.5rem; display:flex; gap:0.75rem; flex-wrap:wrap; flex-shrink:0; border-top:1px solid rgba(139,26,74,.08);">
+        <button onclick="closeReturnModal()" style="flex:1; min-width:100px; background:none; border:1px solid rgba(139,26,74,.2); border-radius:8px; padding:0.65rem 1rem; font-size:0.88rem; color:var(--text-muted); cursor:pointer; font-family:inherit;">Cancel</button>
+        <button id="return-submit-btn" onclick="submitReturnRequest()" style="flex:2; min-width:160px; background:linear-gradient(135deg,#1A6B3C,#2E8B57); color:#fff; border:none; border-radius:8px; padding:0.7rem 1.25rem; font-size:0.9rem; font-weight:700; cursor:pointer; font-family:inherit;">&#8634; Submit Return Request</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/nari-monitor.js?v=1.1"></script>
+<script src="js/store.js?v=3.8"></script>
+  <script src="js/cart.js?v=3.8"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/nari-maps.js?v=1.0"></script>
+  <script>
+    let activeCancelOrderId = null;
+    let refundOrderId = null;
+    let refundOrderAmount = 0;
+    let activeRefundTab = 'upi';
+
+    const statusClass = {
+      Pending:             "badge-pending",
+      Processing:          "badge-processing",
+      Preparing:           "badge-processing",
+      "Ready for Pickup":  "badge-shipped",
+      ready_for_pickup:    "badge-shipped",
+      Collected:           "badge-delivered",
+      Shipped:             "badge-shipped",
+      Delivered:           "badge-delivered",
+      Cancelled:           "badge-cancelled",
+      "Return Requested":   "badge-processing",
+      "Return Approved":    "badge-shipped",
+      Returned:            "badge-pending"
+    };
+
+    const refundStatusStyle = {
+      Pending:   { bg: 'rgba(245,158,11,.1)',  color: '#B45309', icon: '', label: 'Refund Pending' },
+      Processed: { bg: 'rgba(34,197,94,.1)',   color: '#15803D', icon: '&#10003;', label: 'Refund Processed' },
+      Rejected:  { bg: 'rgba(211,47,47,.08)',  color: 'var(--error)', icon: '&#10060;', label: 'Refund Rejected' }
+    };
+
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        window.location.href = "login.html?redirect=my-orders.html";
+        return;
+      }
+      loadUserOrders(user.uid);
+    });
+
+    async function loadUserOrders(uid) {
+      const container = document.getElementById("orders-container");
+      try {
+        const orders = await Store.getUserOrders(uid);
+
+        if (!orders || !orders.length) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon"></div>
+              <h3>No orders yet</h3>
+              <p>You haven't placed any orders with this account yet.</p>
+              <a href="shop.html" class="btn btn-primary" style="margin-top:1rem;">Start Shopping</a>
+            </div>`;
+          return;
+        }
+
+        // Fetch all refund & return statuses in parallel for relevant orders
+        const cancelledOrders = orders.filter(o => o.status === 'Cancelled');
+        const deliveredOrders = orders.filter(o => ['Delivered','Return Requested','Return Approved','Returned'].includes(o.status));
+        const refundMap = {};
+        const returnMap = {};
+        await Promise.all([
+          ...cancelledOrders.map(async o => {
+            const r = await Store.getRefundRequest(o.id);
+            if (r) refundMap[o.id] = r;
+          }),
+          ...deliveredOrders.map(async o => {
+            const r = await Store.getReturnRequest(o.id);
+            if (r) returnMap[o.id] = r;
+          })
+        ]);
+
+        container.innerHTML = orders.map(order => {
+          const items = order.items || [];
+          const isCancellable = order.status === "Pending" || order.status === "Processing" || !order.status;
+          const isCancelled = order.status === "Cancelled";
+          const isDelivered = order.status === "Delivered";
+          const isReturnPending = ['Return Requested','Return Approved','Returned'].includes(order.status);
+          // Return window: 7 days from delivery date
+          let inReturnWindow = false;
+          if (isDelivered && order.deliveredAt) {
+            const deliveredMs = order.deliveredAt.toMillis ? order.deliveredAt.toMillis() : (order.deliveredAt.seconds ? order.deliveredAt.seconds * 1000 : 0);
+            inReturnWindow = deliveredMs > 0 && (Date.now() - deliveredMs) < 7 * 24 * 60 * 60 * 1000;
+          } else if (isDelivered) {
+            // If no deliveredAt recorded, allow return (give benefit of doubt)
+            inReturnWindow = true;
+          }
+          const refund = refundMap[order.id];
+          const returnReq = returnMap[order.id];
+
+          const itemsHtml = items.map(i => `
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid rgba(139,26,74,.05);">
+              <div class="order-preview-img" style="width:48px;height:58px;flex-shrink:0;">
+                <img src="${i.imageUrl || (i.images && i.images[0]) || 'https://placehold.co/48x58/F5ECD8/8B1A4A?text=Item'}" alt="${i.name}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" onerror="this.src='https://placehold.co/48x58/F5ECD8/8B1A4A?text=Item'">
+              </div>
+              <div style="flex:1;">
+                <p style="font-weight:600;font-size:0.9rem;color:var(--text);margin-bottom:0.2rem;">${i.name}</p>
+                <p style="font-size:0.78rem;color:var(--text-muted);">Size: ${i.size || 'Standard'} | Color: ${i.color || 'Standard'} | Qty: ${i.qty || 1}</p>
+              </div>
+              <span style="font-weight:700;color:var(--primary);font-size:0.95rem;">&#8377;${Number((i.price || 0) * (i.qty || 1)).toLocaleString('en-IN')}</span>
+            </div>
+          `).join("");
+
+          const addr = order.address || {};
+          const addrText = [addr.line1, addr.line2, addr.city, addr.state, addr.pincode].filter(Boolean).join(", ");
+
+          let refundBlock = '';
+          if (isCancelled) {
+            if (refund) {
+              const rs = refundStatusStyle[refund.status] || refundStatusStyle['Pending'];
+              const methodLabel = refund.method === 'upi' ? `UPI: ${refund.upiId}`
+                : refund.method === 'bank' ? `Bank: ${refund.accountHolder} &mdash; ${refund.accountNumber}`
+                : 'Store Credit';
+              refundBlock = `
+                <div style="background:${rs.bg}; border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                  <div>
+                    <p style="font-size:0.82rem; font-weight:700; color:${rs.color};">${rs.icon} ${rs.label}</p>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem;">via ${methodLabel}</p>
+                  </div>
+                  <span style="font-size:0.88rem; font-weight:700; color:${rs.color};">&#8377;${Number(order.totalAmount||0).toLocaleString('en-IN')}</span>
+                </div>`;
+            } else {
+              refundBlock = `
+                <div style="background:rgba(139,26,74,.05); border:1.5px dashed rgba(139,26,74,.2); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+                  <div>
+                    <p style="font-size:0.85rem; font-weight:600; color:var(--primary);">Refund not yet requested</p>
+                    <p style="font-size:0.78rem; color:var(--text-muted);">Submit your UPI / bank details to get &#8377;${Number(order.totalAmount||0).toLocaleString('en-IN')} back</p>
+                  </div>
+                  <button onclick="openRefundModal('${order.id}', ${order.totalAmount || 0})" style="background:var(--primary); color:#fff; border:none; border-radius:8px; padding:0.5rem 1rem; font-size:0.82rem; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap;">Request Refund &rarr;</button>
+                </div>`;
+            }
+          }
+
+          const returnStatusStyle = {
+            Pending:   { bg: 'rgba(245,158,11,.1)',  color: '#B45309', icon: '', label: 'Return Requested &mdash; Under Review' },
+            Approved:  { bg: 'rgba(34,197,94,.1)',   color: '#15803D', icon: '&#10003;', label: 'Return Approved &mdash; Pickup Arranged' },
+            Completed: { bg: 'rgba(139,26,74,.08)',  color: 'var(--primary)', icon: '', label: 'Return Completed' },
+            Rejected:  { bg: 'rgba(211,47,47,.08)',  color: 'var(--error)', icon: '&#10060;', label: 'Return Rejected' }
+          };
+          let returnBlock = '';
+          if (returnReq) {
+            const rs = returnStatusStyle[returnReq.status] || returnStatusStyle['Pending'];
+            returnBlock = `
+              <div style="background:${rs.bg}; border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                <div>
+                  <p style="font-size:0.82rem; font-weight:700; color:${rs.color};">${rs.icon} ${rs.label}</p>
+                  <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.15rem;">Reason: ${returnReq.reason || '&mdash;'}</p>
+                </div>
+              </div>`;
+          }
+
+          return `
+            <div class="order-card" style="margin-bottom:1.5rem; opacity: ${isCancelled ? '0.9' : '1'};">
+              <div class="order-card-header">
+                <div>
+                  <p class="order-id">Order #${order.id.substring(0,8).toUpperCase()}</p>
+                  <p class="order-date">${App.formatDateTime(order.createdAt || order.clientCreatedAt)}</p>
+                </div>
+                <span class="badge ${statusClass[order.status] || 'badge-pending'}">${order.status || 'Pending'}</span>
+              </div>
+
+              <div style="margin:1rem 0;">${itemsHtml}</div>
+
+              ${(() => {
+                const isPickup = order.fulfillmentType === "pickup";
+                const isReady = order.status === "Ready for Pickup" || order.status === "ready_for_pickup";
+
+                if (isPickup) {
+                  return `
+                    ${isReady ? `
+                      <div class="pickup-ready-banner">
+                        <div>
+                          <p style="font-weight:700;font-size:0.95rem;margin:0 0 0.2rem 0;">🎉 Your order is ready for pickup!</p>
+                          <p style="font-size:0.8rem;margin:0;opacity:0.95;">Please visit our store with Order ID #${order.id.substring(0,8).toUpperCase()} to collect your outfit.</p>
+                        </div>
+                        <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer" style="background:#fff;color:#15803D;font-weight:700;padding:6px 12px;border-radius:6px;font-size:0.8rem;text-decoration:none;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                          🧭 Get Directions &rarr;
+                        </a>
+                      </div>` : ''}
+                    <div style="font-size:0.82rem;color:var(--text);background:#FAF3E8;border:1px dashed #D4AF37;padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;">
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;flex-wrap:wrap;gap:6px;">
+                        <strong style="color:var(--primary);">🏪 Store Pickup: ${order.pickupDetails?.storeName || 'Nari Niketan Store'}</strong>
+                        <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;font-size:0.78rem;">📍 Get Directions</a>
+                      </div>
+                      <p style="margin:0 0 0.3rem 0;color:var(--text-muted);">${order.pickupDetails?.storeAddress || 'Main Market, Rihand Nagar, Sonbhadra, UP 231223'}</p>
+                      <div style="font-size:0.75rem;color:#7A6670;">⏰ Store Hours: 10:00 AM &ndash; 9:00 PM | 📞 +91 6307032042</div>
+                    </div>`;
+                }
+
+                const mapUrl = order.deliveryAddress?.googleMapsUrl || (order.deliveryAddress?.latitude && `https://www.google.com/maps?q=${order.deliveryAddress.latitude},${order.deliveryAddress.longitude}`);
+
+                return addrText ? `
+                  <div style="font-size:0.82rem;color:var(--text-muted);background:var(--cream);padding:0.65rem 0.85rem;border-radius:6px;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <div>
+                      <strong style="color:var(--primary);">🚚 Deliver to:</strong> ${order.customerName || 'Customer'} &mdash; ${addrText}
+                    </div>
+                    ${mapUrl ? `
+                      <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px;background:#2E7D32;color:#fff;padding:4px 8px;border-radius:4px;font-size:0.72rem;font-weight:700;text-decoration:none;white-space:nowrap;">
+                        📍 View Delivery Location
+                      </a>` : ''}
+                  </div>` : '';
+              })()}
+
+              ${isCancelled && order.cancellationReason ? `<div style="font-size:0.82rem;color:var(--error);background:rgba(211,47,47,.08);padding:0.5rem 0.85rem;border-radius:6px;margin-bottom:0.75rem;"><strong>Cancelled:</strong> ${order.cancellationReason}</div>` : ''}
+
+              ${refundBlock}
+              ${returnBlock}
+
+              <div class="order-card-footer" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                <div>
+                  <p class="order-total-label">${items.length} item(s) | Payment: ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'Standard'}</p>
+                  <p class="order-total-price">&#8377;${Number(order.totalAmount || 0).toLocaleString('en-IN')}</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                  ${isCancellable
+                    ? `<button class="btn btn-outline btn-sm" onclick="openCancelModal('${order.id}', '#${order.id.substring(0,8).toUpperCase()}', ${order.totalAmount || 0})" style="color:var(--error); border-color:rgba(211,47,47,.4);">&#10005; Cancel Order</button>`
+                    : isCancelled
+                      ? `<span style="font-size:0.85rem;color:var(--error);font-weight:600;">&#10007; Cancelled</span>`
+                      : isReturnPending
+                        ? `<span style="font-size:0.85rem;color:#B45309;font-weight:600;">&#8635; Return In Progress</span>`
+                        : isDelivered && inReturnWindow && !returnReq
+                          ? `<button class="btn btn-outline btn-sm" onclick="openReturnModal('${order.id}', '#${order.id.substring(0,8).toUpperCase()}')" style="color:var(--primary); border-color:rgba(139,26,74,.3);">&#8617; Return Order</button>`
+                          : isDelivered
+                            ? `<span style="font-size:0.85rem;color:var(--success);font-weight:600;">&#10003; Delivered</span>`
+                            : `<span style="font-size:0.85rem;color:var(--success);font-weight:600;">&#10003; In Transit</span>`
+                  }
+                </div>
+              </div>
+            </div>`;
+        }).join("");
+
+      } catch (err) {
+        console.error("Error loading orders:", err);
+        container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">&#10007;</div><h3>Could not load orders</h3><p>An error occurred. Please refresh.</p></div>`;
+      }
+    }
+
+    // ===== CANCEL MODAL =====
+    function openCancelModal(orderId, orderLabel, orderAmount) {
+      activeCancelOrderId = orderId;
+      refundOrderAmount = orderAmount || 0;
+      document.getElementById("cancel-order-label").textContent = orderLabel;
+      document.getElementById("cancel-modal").style.display = "flex";
+    }
+
+    function closeCancelModal() {
+      activeCancelOrderId = null;
+      document.getElementById("cancel-modal").style.display = "none";
+    }
+
+    async function confirmCancelOrder() {
+      if (!activeCancelOrderId) return;
+      const btn = document.getElementById("confirm-cancel-btn");
+      const reason = document.getElementById("cancel-reason").value;
+      const cancelledId = activeCancelOrderId;
+
+      btn.disabled = true;
+      btn.textContent = "Cancelling...";
+      try {
+        await Store.cancelOrder(cancelledId, reason);
+        closeCancelModal();
+        // Auto-open refund modal after cancellation
+        openRefundModal(cancelledId, refundOrderAmount);
+        if (auth.currentUser) loadUserOrders(auth.currentUser.uid);
+      } catch (err) {
+        App.toast("Could not cancel order: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Confirm Cancellation";
+      }
+    }
+
+    document.getElementById("cancel-modal")?.addEventListener("click", e => {
+      if (e.target === e.currentTarget) closeCancelModal();
+    });
+
+    // ===== REFUND MODAL =====
+    function openRefundModal(orderId, amount) {
+      refundOrderId = orderId;
+      refundOrderAmount = amount;
+      // Pre-fill email if available
+      if (auth.currentUser && auth.currentUser.email) {
+        document.getElementById('refund-credit-email').value = auth.currentUser.email;
+      }
+      document.getElementById('refund-amount-display').textContent = '&#8377;' + Number(amount).toLocaleString('en-IN');
+      document.getElementById('refund-error').style.display = 'none';
+      // Reset form fields
+      document.getElementById('refund-upi-id').value = '';
+      document.getElementById('refund-acc-name').value = '';
+      document.getElementById('refund-acc-number').value = '';
+      document.getElementById('refund-ifsc').value = '';
+      document.getElementById('refund-bank-name').value = '';
+      switchRefundTab('upi');
+      document.getElementById('refund-modal').style.display = 'flex';
+    }
+
+    function closeRefundModal() {
+      document.getElementById('refund-modal').style.display = 'none';
+      refundOrderId = null;
+      App.toast('Refund request skipped. You can submit it anytime from My Orders.', 'default', 4000);
+    }
+
+    function switchRefundTab(tab) {
+      activeRefundTab = tab;
+      ['upi', 'bank', 'credit'].forEach(t => {
+        const el = document.getElementById(`refund-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          el.style.display = '';
+          btn.style.background = 'var(--primary)';
+          btn.style.color = '#fff';
+        } else {
+          el.style.display = 'none';
+          btn.style.background = 'transparent';
+          btn.style.color = 'var(--text-muted)';
+        }
+      });
+      document.getElementById('refund-error').style.display = 'none';
+    }
+
+    async function submitRefundRequest() {
+      if (!refundOrderId) return;
+      const errEl = document.getElementById('refund-error');
+      errEl.style.display = 'none';
+
+      let refundData = { method: activeRefundTab, amount: refundOrderAmount };
+
+      // Validate based on tab
+      if (activeRefundTab === 'upi') {
+        const upiId = document.getElementById('refund-upi-id').value.trim();
+        if (!upiId || !upiId.includes('@')) {
+          errEl.textContent = 'Please enter a valid UPI ID (e.g. name@upi).';
+          errEl.style.display = 'block';
+          return;
+        }
+        refundData.upiId = upiId;
+      } else if (activeRefundTab === 'bank') {
+        const name = document.getElementById('refund-acc-name').value.trim();
+        const accNum = document.getElementById('refund-acc-number').value.trim();
+        const ifsc = document.getElementById('refund-ifsc').value.trim();
+        if (!name || !accNum || !ifsc) {
+          errEl.textContent = 'Please fill in Account Holder Name, Account Number, and IFSC Code.';
+          errEl.style.display = 'block';
+          return;
+        }
+        refundData.accountHolder = name;
+        refundData.accountNumber = accNum;
+        refundData.ifscCode = ifsc;
+        refundData.bankName = document.getElementById('refund-bank-name').value.trim();
+      } else if (activeRefundTab === 'credit') {
+        const email = document.getElementById('refund-credit-email').value.trim();
+        if (!email || !email.includes('@')) {
+          errEl.textContent = 'Please enter a valid email address.';
+          errEl.style.display = 'block';
+          return;
+        }
+        refundData.email = email;
+      }
+
+      // Add user info
+      if (auth.currentUser) {
+        refundData.userId = auth.currentUser.uid;
+        refundData.userEmail = auth.currentUser.email || '';
+      }
+
+      const btn = document.getElementById('refund-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      try {
+        await Store.submitRefundRequest(refundOrderId, refundData);
+        document.getElementById('refund-modal').style.display = 'none';
+        App.toast('&#10003; Refund request submitted! We will process it within 3&ndash;7 business days.', 'success', 5000);
+        if (auth.currentUser) loadUserOrders(auth.currentUser.uid);
+      } catch (err) {
+        errEl.textContent = 'Could not submit refund: ' + err.message;
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Refund Request';
+      }
+    }
+
+    document.getElementById('refund-modal')?.addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeRefundModal();
+    });
+
+    // ===== RETURN MODAL =====
+    let activeReturnOrderId = null;
+    let activeReturnOrderLabel = '';
+
+    function openReturnModal(orderId, orderLabel) {
+      activeReturnOrderId = orderId;
+      activeReturnOrderLabel = orderLabel;
+      document.getElementById('return-order-label').textContent = orderLabel;
+      document.getElementById('return-reason').value = '';
+      document.getElementById('return-description').value = '';
+      document.getElementById('return-check1').checked = false;
+      document.getElementById('return-check2').checked = false;
+      document.getElementById('return-check3').checked = false;
+      document.getElementById('return-error').style.display = 'none';
+      document.getElementById('return-modal').style.display = 'flex';
+    }
+
+    function closeReturnModal() {
+      document.getElementById('return-modal').style.display = 'none';
+      activeReturnOrderId = null;
+    }
+
+    async function submitReturnRequest() {
+      const errEl = document.getElementById('return-error');
+      errEl.style.display = 'none';
+
+      const reason = document.getElementById('return-reason').value;
+      const description = document.getElementById('return-description').value.trim();
+      const check1 = document.getElementById('return-check1').checked;
+      const check2 = document.getElementById('return-check2').checked;
+      const check3 = document.getElementById('return-check3').checked;
+
+      if (!reason) {
+        errEl.textContent = 'Please select a return reason.';
+        errEl.style.display = 'block';
+        return;
+      }
+      if (!check1 || !check2 || !check3) {
+        errEl.textContent = 'Please confirm all three checkboxes before submitting.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const returnData = {
+        reason,
+        description: description || '',
+        userId: auth.currentUser?.uid || '',
+        userEmail: auth.currentUser?.email || ''
+      };
+
+      const btn = document.getElementById('return-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      try {
+        await Store.submitReturnRequest(activeReturnOrderId, returnData);
+        closeReturnModal();
+        App.toast('&#8634; Return request submitted! We will review it within 24&ndash;48 hours and arrange a free pickup.', 'success', 6000);
+        if (auth.currentUser) loadUserOrders(auth.currentUser.uid);
+      } catch (err) {
+        errEl.textContent = 'Could not submit return: ' + err.message;
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '&#8634; Submit Return Request';
+      }
+    }
+
+    document.getElementById('return-modal')?.addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeReturnModal();
+    });
+  </script>
+  <script src="js/navbar.js?v=4.0"></script>
+  <script src="js/pwa-install.js" defer></script>
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>

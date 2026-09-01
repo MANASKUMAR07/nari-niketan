@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nari Niketan — Master System Analysis, Architecture & Implementation Blueprint</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+    :root {
+      --p: #8B1A4A; --pd: #5A0D2F; --pl: #FDF0F6;
+      --a: #D4AF37; --ad: #9A7B1C; --al: #FDFBEF;
+      --g: #1E6B3A; --gl: #EAF5EE;
+      --b: #0D5CA1; --bl: #E8F2FC;
+      --o: #B84A07; --ol: #FEF0E8;
+      --dk: #1A0A0F;
+      --tx: #221218; --tm: #64505A;
+      --br: #E5D0C0; --bg: #FDFAF8; --wh: #FFFFFF;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',system-ui,sans-serif;color:var(--tx);background:var(--wh);font-size:13px;line-height:1.6;padding:2.5rem 3.5rem;}
+    @media print{
+      body{padding:.9cm 1.1cm;font-size:10.5px;line-height:1.45;}
+      .np{display:none!important;}
+      .pb{page-break-before:always;}
+      h2,h3{page-break-after:avoid;}
+      .nobreak{page-break-inside:avoid;}
+      svg{max-width:100%!important;}
+    }
+    /* HEADER */
+    .hdr{border-bottom:4px solid var(--p);padding-bottom:1.5rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:flex-end;position:relative;}
+    .hdr::after{content:'';position:absolute;bottom:-8px;left:0;width:180px;height:4px;background:var(--a);}
+    .htitle{font-family:'Cinzel',serif;font-size:2.8rem;font-weight:900;color:var(--p);letter-spacing:2px;line-height:1.05;}
+    .hsub{color:var(--ad);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.82rem;margin-top:.35rem;}
+    .hmeta{text-align:right;font-size:.78rem;color:var(--tm);line-height:1.7;}
+    /* ACTIONS */
+    .act{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--br);border-radius:10px;padding:.8rem 1.4rem;margin-bottom:1.8rem;}
+    .btn{background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;border:none;padding:.65rem 1.4rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;display:inline-flex;align-items:center;gap:.45rem;box-shadow:0 4px 14px rgba(139,26,74,.28);transition:all .2s;}
+    .btn:hover{transform:translateY(-2px);}
+    /* HEADINGS */
+    h2{font-family:'Cinzel',serif;font-size:1.35rem;color:var(--p);border-bottom:2px solid var(--br);padding-bottom:.4rem;margin-top:2.2rem;margin-bottom:.9rem;}
+    h3{font-size:1.05rem;color:var(--pd);font-weight:700;margin-top:1.4rem;margin-bottom:.5rem;}
+    h4{font-size:.94rem;color:var(--tx);font-weight:700;margin-top:.9rem;margin-bottom:.35rem;}
+    p{margin-bottom:.75rem;color:#3A2030;}
+    li{margin-bottom:.35rem;color:#3A2030;}
+    ul,ol{margin-left:1.3rem;margin-bottom:.9rem;}
+    /* TABLES */
+    table{width:100%;border-collapse:collapse;margin:1.1rem 0;font-size:.82rem;}
+    th,td{border:1px solid var(--br);padding:.6rem .85rem;text-align:left;vertical-align:top;}
+    th{background:#F9EDE2;color:var(--pd);font-weight:700;text-transform:uppercase;font-size:.72rem;letter-spacing:.7px;}
+    tr:nth-child(even) td{background:#FDFBF8;}
+    /* BADGES */
+    .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.7rem;font-weight:700;}
+    .bg-p{background:var(--pl);color:var(--p);}
+    .bg-g{background:var(--gl);color:var(--g);}
+    .bg-b{background:var(--bl);color:var(--b);}
+    .bg-a{background:var(--al);color:var(--ad);}
+    .bg-o{background:var(--ol);color:var(--o);}
+    /* CALLOUTS */
+    .note{border-left:4px solid var(--p);background:var(--pl);padding:.9rem 1.1rem;border-radius:0 8px 8px 0;margin:1rem 0;}
+    .note.gold{border-left-color:var(--a);background:var(--al);}
+    .note.green{border-left-color:var(--g);background:var(--gl);}
+    .note-title{font-weight:700;color:var(--p);margin-bottom:.25rem;font-size:.88rem;}
+    /* COMPARISON GRID */
+    .cg{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:1.1rem 0;}
+    .cc{border:1px solid var(--br);border-radius:9px;padding:1.1rem;background:var(--wh);}
+    .cc.yes{border:2px solid var(--p);background:var(--pl);position:relative;}
+    .cc.yes::before{content:'✓ CHOSEN';position:absolute;top:-10px;right:12px;background:var(--p);color:#fff;font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.8px;}
+    .cc.no{background:#FAFAFA;border-color:#DEDEDE;}
+    .cc h4{font-size:.9rem;margin:0 0 .4rem;}
+    .cc.yes h4{color:var(--p);}
+    .cc.no h4{color:#777;}
+    .cc ul{font-size:.79rem;margin-left:1rem;}
+    /* DIAGRAM WRAPPER */
+    .dbox{background:#fff;border:1.5px solid var(--br);border-radius:12px;padding:1.2rem;margin:1.4rem 0;text-align:center;box-shadow:0 3px 14px rgba(0,0,0,.045);}
+    .dcap{font-size:.78rem;font-weight:700;color:var(--p);margin-top:.7rem;text-transform:uppercase;letter-spacing:.9px;}
+    /* CODE */
+    code{font-family:'Fira Code',monospace;background:#F6EAE0;padding:1px 5px;border-radius:4px;font-size:.82em;color:var(--pd);}
+    pre{background:#1A0A0F;color:#F8EFE0;padding:1rem 1.3rem;border-radius:8px;font-family:'Fira Code',monospace;font-size:.78rem;overflow-x:auto;margin:1rem 0;line-height:1.55;border-left:4px solid var(--a);}
+    /* TOC */
+    .toc{background:var(--bg);border:1px solid var(--br);border-radius:10px;padding:1.2rem 1.6rem;margin:1.5rem 0;}
+    .toc-g{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 2rem;}
+    .toc ul{list-style:none;margin:0;}
+    .toc li{margin-bottom:.3rem;font-size:.84rem;}
+    .toc a{color:var(--p);text-decoration:none;font-weight:600;}
+    /* STEP FLOW */
+    .steps{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;}
+    .step{display:flex;align-items:flex-start;gap:.75rem;}
+    .step-num{min-width:28px;height:28px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;flex-shrink:0;}
+    .step-body{padding:.1rem 0;}
+    .step-body strong{font-size:.88rem;}
+    .step-body p{font-size:.82rem;margin:.1rem 0 0;color:var(--tm);}
+  </style>
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+</head>
+<body>
+
+<!-- ACTION BAR -->
+<div class="act np">
+  <span style="font-weight:700;color:var(--p);">Nari Niketan &mdash; Master System Analysis &amp; Architecture Blueprint</span>
+  <button class="btn" onclick="window.print()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Save as PDF / Print
+  </button>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="htitle">NARI NIKETAN</div>
+    <div class="hsub">Master System Analysis · Architecture · Technology Blueprint · Multi-Vendor Production Release</div>
+  </div>
+  <div class="hmeta">
+    <strong>Document Version:</strong> 6.0 · 2026 Production Release<br>
+    <strong>Production Custom Domain:</strong> <a href="https://www.nariniketan.shop" target="_blank" style="color:var(--p);font-weight:700">https://www.nariniketan.shop</a><br>
+    <strong>Platform Type:</strong> Multi-Vendor Serverless Cloud-Native E-Commerce PWA<br>
+    <strong>Frontend Stack:</strong> Semantic HTML5 · Vanilla CSS3 (Custom Tokens) · Modular ES6+ JS<br>
+    <strong>Backend / DB:</strong> Google Firebase Auth · Cloud Firestore NoSQL Real-Time Database<br>
+    <strong>DNS & CDN:</strong> GoDaddy DNS + Google Cloud Global Edge CDN (Auto SSL/TLS)<br>
+    <strong>Security Model:</strong> Token-Verified RBAC · Declarative Firestore Server Rules
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc np">
+  <h3 style="margin-top:0;margin-bottom:.75rem;color:var(--p);">Document Contents</h3>
+  <div class="toc-g">
+    <ul>
+      <li><a href="#s1">1. Executive Summary &amp; Core Capabilities</a></li>
+      <li><a href="#s2">2. Website Architecture Diagram (Customer, Seller &amp; Admin Flows)</a></li>
+      <li><a href="#s3">3. System Architecture (Cloud Topology &amp; DNS Integration)</a></li>
+      <li><a href="#s4">4. Technology Stack &amp; Architectural Rationale</a></li>
+      <li><a href="#s5">5. Data Flow &amp; Multi-Vendor Order Lifecycle</a></li>
+    </ul>
+    <ul>
+      <li><a href="#s6">6. Database Schema &amp; Firestore ER Model (All 7 Collections)</a></li>
+      <li><a href="#s7">7. Authentication, RBAC &amp; Firestore Security Engine</a></li>
+      <li><a href="#s8">8. Dual-Pricing, PWA &amp; Complete Component Map</a></li>
+      <li><a href="#s9">9. GoDaddy Custom Domain &amp; Cloud Deployment Runbook</a></li>
+      <li><a href="#s10">10. Architecture Decision Records &amp; Feature Roadmap</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ SECTION 1 ═══════════ -->
+<h2 id="s1">1. Executive Summary &amp; Core Capabilities</h2>
+<p><strong>Nari Niketan</strong> is an enterprise-grade, multi-vendor serverless E-Commerce web application and Progressive Web App (PWA) tailored for the Indian ethnic fashion market. The platform connects shoppers with authentic ethnic apparel (Sarees, Suits, Lehengas, Kurtas, and Dupattas) while empowering independent artisans and vendors through a dedicated Seller Portal.</p>
+
+<div class="note gold">
+  <div class="note-title">Serverless Cloud-Native Architecture</div>
+  <p style="margin:0;">Built with zero server maintenance overhead, Nari Niketan leverages Google Cloud Firestore and Firebase Hosting. The architecture effortlessly scales from zero to 100,000+ simultaneous shoppers with sub-100ms global query speeds, automated SSL certificates, and zero infrastructure management costs.</p>
+</div>
+
+<table class="nobreak">
+  <thead><tr><th>Module</th><th>Customer Capabilities</th><th>Seller / Vendor Capabilities</th><th>Master Admin Capabilities</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Catalog &amp; Pricing</strong></td><td>Multi-category filtering, MRP vs Selling Price display, dynamic <strong>% OFF</strong> badges, size/color variant selector</td><td>Vendor catalog management, product upload via File or Direct Image URL, stock tracker</td><td>Full catalog CRUD, global featured product curation, price &amp; category master controls</td></tr>
+    <tr><td><strong>Identity &amp; Auth</strong></td><td>1-Click Google OAuth 2.0, Email/Password, Phone SMS OTP + reCAPTCHA</td><td>Dedicated Seller portal (<code>/seller/login.html</code>), approval status tracking</td><td>Permanent Super-Owner auto-privilege (<code>manasku2007@gmail.com</code>), user management</td></tr>
+    <tr><td><strong>Cart &amp; Checkout</strong></td><td>LocalStorage cart engine, instant coupon validation (<code>NARI20</code>), COD &amp; Online payment hooks</td><td>View order line items assigned to vendor UID, fulfillment tracking</td><td>Coupon creator (Percentage &amp; Flat discounts, minimum thresholds, activation toggle)</td></tr>
+    <tr><td><strong>Orders &amp; Returns</strong></td><td>Live order tracker, 1-click self-service cancellation, photo-proof return requests</td><td>Vendor-specific order fulfillment (Pending → Shipped → Delivered)</td><td>Master revenue &amp; order dashboard, order lifecycle updater, return/refund approval pipeline</td></tr>
+    <tr><td><strong>Mobile &amp; PWA</strong></td><td>Installable on Android/iOS home screens, offline caching via Service Worker (<code>sw.js</code>)</td><td>Mobile-responsive management on any smartphone or tablet</td><td>PWA-installable admin suite with push-ready foundations</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════ SECTION 2 ═══════════ -->
+<h2 id="s2" class="pb">2. Website Architecture Diagram — Navigation &amp; User Journeys</h2>
+<p>The diagram below illustrates the complete navigation flow across the 3 primary application domains: <strong>Customer Storefront</strong>, <strong>Multi-Vendor Seller Portal</strong>, and <strong>Master Admin Control Center</strong>.</p>
+
+<div class="dbox nobreak">
+  <svg viewBox="0 0 920 620" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif" font-size="11">
+    <defs>
+      <linearGradient id="gP" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8B1A4A"/><stop offset="100%" stop-color="#5A0D2F"/></linearGradient>
+      <linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#D4AF37"/><stop offset="100%" stop-color="#9A7B1C"/></linearGradient>
+      <linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1E6B3A"/><stop offset="100%" stop-color="#145228"/></linearGradient>
+      <linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0D5CA1"/><stop offset="100%" stop-color="#084178"/></linearGradient>
+      <marker id="arr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1.5 L8 5 L0 8.5z" fill="#8B1A4A"/></marker>
+      <marker id="arrG" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1.5 L8 5 L0 8.5z" fill="#1E6B3A"/></marker>
+      <marker id="arrA" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1.5 L8 5 L0 8.5z" fill="#9A7B1C"/></marker>
+      <filter id="shd"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity=".1"/></filter>
+    </defs>
+    <rect width="920" height="620" fill="#FDFAF8" rx="10" stroke="#E5D0C0" stroke-width="1.5"/>
+
+    <!-- LEGEND -->
+    <rect x="20" y="15" width="12" height="12" rx="2" fill="url(#gP)"/><text x="36" y="25" fill="#5A0D2F" font-weight="700" font-size="10">Customer Storefront</text>
+    <rect x="180" y="15" width="12" height="12" rx="2" fill="url(#gG)"/><text x="196" y="25" fill="#145228" font-weight="700" font-size="10">Auth &amp; Seller Portal</text>
+    <rect x="340" y="15" width="12" height="12" rx="2" fill="url(#gA)"/><text x="356" y="25" fill="#7A5A0A" font-weight="700" font-size="10">Master Admin Portal</text>
+    <rect x="490" y="15" width="12" height="12" rx="2" fill="url(#gB)"/><text x="506" y="25" fill="#084178" font-weight="700" font-size="10">Google Cloud / Firestore</text>
+
+    <!-- ENTRY POINT -->
+    <ellipse cx="460" cy="65" rx="110" ry="24" fill="#F2E8DC" stroke="#D4BEAB" stroke-width="1.5"/>
+    <text x="460" y="60" text-anchor="middle" font-weight="800" fill="#5A0D2F" font-size="11">🌐 nariniketan.shop</text>
+    <text x="460" y="75" text-anchor="middle" fill="#66505B" font-size="9">Global Edge CDN · HTTPS / TLS 1.3</text>
+
+    <line x1="460" y1="90" x2="460" y2="115" stroke="#8B1A4A" stroke-width="2" marker-end="url(#arr)"/>
+
+    <!-- STOREFRONT HUB -->
+    <rect x="360" y="118" width="200" height="44" rx="8" fill="url(#gP)" filter="url(#shd)"/>
+    <text x="460" y="136" text-anchor="middle" fill="#fff" font-weight="800" font-size="12">🏠 index.html</text>
+    <text x="460" y="152" text-anchor="middle" fill="#F8D0E0" font-size="9">Storefront · Hero · Featured Products</text>
+
+    <!-- Flow left: Storefront -->
+    <rect x="40" y="200" width="160" height="40" rx="6" fill="url(#gP)"/><text x="120" y="225" text-anchor="middle" fill="#fff" font-weight="700">🛒 shop.html</text>
+    <rect x="40" y="270" width="160" height="40" rx="6" fill="url(#gP)"/><text x="120" y="295" text-anchor="middle" fill="#fff" font-weight="700">👗 product.html</text>
+    <rect x="40" y="340" width="160" height="40" rx="6" fill="url(#gP)"/><text x="120" y="365" text-anchor="middle" fill="#fff" font-weight="700">🛍️ cart.html</text>
+    <rect x="40" y="410" width="160" height="40" rx="6" fill="url(#gP)"/><text x="120" y="435" text-anchor="middle" fill="#fff" font-weight="700">💳 checkout.html</text>
+    <rect x="40" y="480" width="160" height="40" rx="6" fill="url(#gP)"/><text x="120" y="505" text-anchor="middle" fill="#fff" font-weight="700">📦 my-orders.html</text>
+
+    <!-- Flow center: Auth & Seller -->
+    <rect x="360" y="200" width="200" height="40" rx="6" fill="url(#gG)"/><text x="460" y="225" text-anchor="middle" fill="#fff" font-weight="700">🔑 login.html / register.html</text>
+    <rect x="360" y="290" width="200" height="44" rx="6" fill="url(#gG)"/><text x="460" y="310" text-anchor="middle" fill="#fff" font-weight="700">🏪 /seller/login.html</text><text x="460" y="325" text-anchor="middle" fill="#C8ECD5" font-size="8.5">Vendor Onboarding &amp; Sign-In</text>
+    <rect x="360" y="380" width="200" height="44" rx="6" fill="url(#gG)"/><text x="460" y="400" text-anchor="middle" fill="#fff" font-weight="700">📊 /seller/index.html</text><text x="460" y="415" text-anchor="middle" fill="#C8ECD5" font-size="8.5">Vendor Dashboard &amp; Products</text>
+
+    <!-- Flow right: Master Admin -->
+    <rect x="680" y="200" width="200" height="44" rx="6" fill="url(#gA)"/><text x="780" y="220" text-anchor="middle" fill="#fff" font-weight="700">👑 /admin/index.html</text><text x="780" y="235" text-anchor="middle" fill="#FEF8E0" font-size="8.5">Admin Control Hub</text>
+    <rect x="680" y="280" width="200" height="38" rx="6" fill="url(#gA)"/><text x="780" y="304" text-anchor="middle" fill="#fff" font-weight="700">📊 Orders &amp; Revenue Analytics</text>
+    <rect x="680" y="340" width="200" height="38" rx="6" fill="url(#gA)"/><text x="780" y="364" text-anchor="middle" fill="#fff" font-weight="700">🛍️ Product &amp; Price Master</text>
+    <rect x="680" y="400" width="200" height="38" rx="6" fill="url(#gA)"/><text x="780" y="424" text-anchor="middle" fill="#fff" font-weight="700">🏪 Seller Approval Pipeline</text>
+    <rect x="680" y="460" width="200" height="38" rx="6" fill="url(#gA)"/><text x="780" y="484" text-anchor="middle" fill="#fff" font-weight="700">💸 Refunds &amp; Returns Manager</text>
+
+    <!-- Connectors -->
+    <line x1="360" y1="140" x2="120" y2="140" stroke="#8B1A4A" stroke-width="1.5"/>
+    <line x1="120" y1="140" x2="120" y2="200" stroke="#8B1A4A" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="460" y1="162" x2="460" y2="200" stroke="#1E6B3A" stroke-width="1.5" marker-end="url(#arrG)"/>
+    <line x1="560" y1="140" x2="780" y2="140" stroke="#D4AF37" stroke-width="1.5"/>
+    <line x1="780" y1="140" x2="780" y2="200" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#arrA)"/>
+
+    <!-- Bottom sync note -->
+    <rect x="40" y="555" width="840" height="44" rx="8" fill="#F0FFF4" stroke="#1E6B3A" stroke-width="1.5"/>
+    <text x="460" y="573" text-anchor="middle" fill="#145228" font-weight="800" font-size="10.5">SYNCHRONIZED BY GOOGLE CLOUD FIRESTORE REAL-TIME WEBSOCKETS</text>
+    <text x="460" y="589" text-anchor="middle" fill="#2E7D32" font-size="9">All role transitions and data access protected by server-enforced firestore.rules</text>
+  </svg>
+  <div class="dcap">FIGURE 1 — Comprehensive Tri-Portal User Flow Architecture: Customer, Vendor, and Administrator</div>
+</div>
+
+<!-- ═══════════ SECTION 3 ═══════════ -->
+<h2 id="s3" class="pb">3. Multi-Tier Technical System Architecture</h2>
+<p>The platform executes across a 4-tier serverless cloud topology ensuring high throughput, automated security, and global content delivery.</p>
+
+<div class="dbox nobreak">
+  <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif" font-size="10.5">
+    <defs>
+      <marker id="a1" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1.5 L8 5 L0 8.5z" fill="#8B1A4A"/></marker>
+      <marker id="a2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1.5 L8 5 L0 8.5z" fill="#D4AF37"/></marker>
+      <marker id="a3" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1.5 L8 5 L0 8.5z" fill="#1E6B3A"/></marker>
+    </defs>
+    <rect width="900" height="480" fill="#FDFAF8" rx="10" stroke="#E5D0C0" stroke-width="1.5"/>
+
+    <!-- T1: CLIENT LAYER -->
+    <rect x="20" y="18" width="860" height="78" rx="8" fill="#FDF0F6" stroke="#8B1A4A" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="35" y="36" font-weight="800" fill="#8B1A4A" font-size="10" letter-spacing="1">TIER 1 — CLIENT BROWSERS &amp; PROGRESSIVE WEB APPS (Mobile / Desktop)</text>
+    <rect x="30" y="42" width="190" height="44" rx="6" fill="#8B1A4A"/><text x="125" y="60" text-anchor="middle" fill="#fff" font-weight="700">Shopper Web &amp; PWA</text><text x="125" y="75" text-anchor="middle" fill="#F8D0E0" font-size="9">HTML5 · CSS3 · Cart Engine</text>
+    <rect x="240" y="42" width="190" height="44" rx="6" fill="#1E6B3A"/><text x="335" y="60" text-anchor="middle" fill="#fff" font-weight="700">Seller Dashboard</text><text x="335" y="75" text-anchor="middle" fill="#C8ECD5" font-size="9">/seller/ · Product Upload</text>
+    <rect x="450" y="42" width="190" height="44" rx="6" fill="#D4AF37"/><text x="545" y="60" text-anchor="middle" fill="#fff" font-weight="700">Admin Control Panel</text><text x="545" y="75" text-anchor="middle" fill="#FEF8E0" font-size="9">/admin/ · Full Management</text>
+    <rect x="660" y="42" width="210" height="44" rx="6" fill="#0D5CA1"/><text x="765" y="60" text-anchor="middle" fill="#fff" font-weight="700">Service Worker (sw.js)</text><text x="765" y="75" text-anchor="middle" fill="#C8E0F5" font-size="9">Offline Cache · PWA Install</text>
+
+    <!-- Arrow T1→T2 -->
+    <line x1="450" y1="96" x2="450" y2="118" stroke="#8B1A4A" stroke-width="2" marker-end="url(#a1)"/>
+    <text x="455" y="112" fill="#8B1A4A" font-size="9" font-weight="700">GoDaddy DNS ➔ HTTPS / TLS 1.3</text>
+
+    <!-- T2: EDGE CDN -->
+    <rect x="20" y="122" width="860" height="78" rx="8" fill="#EEF4FB" stroke="#0D5CA1" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="35" y="140" font-weight="800" fill="#0D5CA1" font-size="10" letter-spacing="1">TIER 2 — GODADDY DNS + GOOGLE GLOBAL EDGE CDN (Firebase Hosting)</text>
+    <rect x="30" y="146" width="220" height="44" rx="6" fill="#0D5CA1"/><text x="140" y="164" text-anchor="middle" fill="#fff" font-weight="700">nariniketan.shop</text><text x="140" y="179" text-anchor="middle" fill="#C8E0F5" font-size="9">GoDaddy DNS (A Records)</text>
+    <rect x="270" y="146" width="220" height="44" rx="6" fill="#084178"/><text x="380" y="164" text-anchor="middle" fill="#fff" font-weight="700">Automated SSL / TLS</text><text x="380" y="179" text-anchor="middle" fill="#C8E0F5" font-size="9">Google Trust Services 256-bit</text>
+    <rect x="510" y="146" width="220" height="44" rx="6" fill="#EEF4FB" stroke="#0D5CA1" stroke-width="1.5"/><text x="620" y="164" text-anchor="middle" fill="#084178" font-weight="700">Edge PoPs &amp; Compression</text><text x="620" y="179" text-anchor="middle" fill="#4A7DAA" font-size="9">Brotli / Gzip · Cache Headers</text>
+    <rect x="750" y="146" width="120" height="44" rx="6" fill="#F5FDEF" stroke="#1E6B3A" stroke-width="1.5"/><text x="810" y="162" text-anchor="middle" fill="#145228" font-weight="700">Routing</text><text x="810" y="175" text-anchor="middle" fill="#1E6B3A" font-size="8">Clean URLs</text><text x="810" y="185" text-anchor="middle" fill="#1E6B3A" font-size="8">firebase.json</text>
+
+    <!-- Arrow T2→T3 -->
+    <line x1="450" y1="200" x2="450" y2="222" stroke="#D4AF37" stroke-width="2" marker-end="url(#a2)"/>
+    <text x="455" y="216" fill="#9A7B1C" font-size="9" font-weight="700">Firebase SDK WebSocket / Secure Auth</text>
+
+    <!-- T3: IDENTITY + SECURITY -->
+    <rect x="20" y="226" width="860" height="78" rx="8" fill="#FDFBEF" stroke="#D4AF37" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="35" y="244" font-weight="800" fill="#9A7B1C" font-size="10" letter-spacing="1">TIER 3 — IDENTITY, AUTHENTICATION &amp; TOKEN VERIFICATION ENGINE</text>
+    <rect x="30" y="250" width="200" height="44" rx="6" fill="#D4AF37"/><text x="130" y="268" text-anchor="middle" fill="#fff" font-weight="700">Firebase Auth Gateway</text><text x="130" y="283" text-anchor="middle" fill="#FEF8E0" font-size="9">Google OAuth · Email · Phone OTP</text>
+    <rect x="250" y="250" width="200" height="44" rx="6" fill="#9A7B1C"/><text x="350" y="268" text-anchor="middle" fill="#fff" font-weight="700">Authorized Domains</text><text x="350" y="283" text-anchor="middle" fill="#FEF8E0" font-size="9">nariniketan.shop Whitelist</text>
+    <rect x="470" y="250" width="200" height="44" rx="6" fill="#FDF5EE" stroke="#8B1A4A" stroke-width="1.5"/><text x="570" y="268" text-anchor="middle" fill="#5A0D2F" font-weight="700">isOwner() RBAC Guard</text><text x="570" y="283" text-anchor="middle" fill="#8B1A4A" font-size="9">Token Email Authentication</text>
+    <rect x="690" y="250" width="180" height="44" rx="6" fill="#F5FDEF" stroke="#1E6B3A" stroke-width="1.5"/><text x="780" y="268" text-anchor="middle" fill="#145228" font-weight="700">reCAPTCHA Shield</text><text x="780" y="283" text-anchor="middle" fill="#1E6B3A" font-size="9">Bot &amp; Abuse Prevention</text>
+
+    <!-- Arrow T3→T4 -->
+    <line x1="450" y1="304" x2="450" y2="328" stroke="#1E6B3A" stroke-width="2" marker-end="url(#a3)"/>
+    <text x="455" y="320" fill="#145228" font-size="9" font-weight="700">Validated Real-Time Database Operations</text>
+
+    <!-- T4: CLOUD FIRESTORE -->
+    <rect x="20" y="332" width="860" height="140" rx="8" fill="#F0FFF4" stroke="#1E6B3A" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="35" y="350" font-weight="800" fill="#1E6B3A" font-size="10" letter-spacing="1">TIER 4 — GOOGLE CLOUD FIRESTORE (7 REAL-TIME DOCUMENT COLLECTIONS)</text>
+    <rect x="30" y="358" width="115" height="48" rx="6" fill="#1E6B3A"/><text x="87" y="377" text-anchor="middle" fill="#fff" font-weight="700">/products</text><text x="87" y="392" text-anchor="middle" fill="#C8ECD5" font-size="8">MRP · SalePrice</text>
+    <rect x="155" y="358" width="115" height="48" rx="6" fill="#145228"/><text x="212" y="377" text-anchor="middle" fill="#fff" font-weight="700">/orders</text><text x="212" y="392" text-anchor="middle" fill="#C8ECD5" font-size="8">sellerIds · Status</text>
+    <rect x="280" y="358" width="115" height="48" rx="6" fill="#1E6B3A"/><text x="337" y="377" text-anchor="middle" fill="#fff" font-weight="700">/users</text><text x="337" y="392" text-anchor="middle" fill="#C8ECD5" font-size="8">RBAC Profiles</text>
+    <rect x="405" y="358" width="115" height="48" rx="6" fill="#145228"/><text x="462" y="377" text-anchor="middle" fill="#fff" font-weight="700">/coupons</text><text x="462" y="392" text-anchor="middle" fill="#C8ECD5" font-size="8">Promo Engine</text>
+    <rect x="530" y="358" width="115" height="48" rx="6" fill="#1E6B3A"/><text x="587" y="377" text-anchor="middle" fill="#fff" font-weight="700">/refunds</text><text x="587" y="392" text-anchor="middle" fill="#C8ECD5" font-size="8">Claims Pipeline</text>
+    <rect x="655" y="358" width="115" height="48" rx="6" fill="#145228"/><text x="712" y="377" text-anchor="middle" fill="#fff" font-weight="700">/returns</text><text x="712" y="392" text-anchor="middle" fill="#C8ECD5" font-size="8">Dispute Logs</text>
+    <rect x="780" y="358" width="90" height="48" rx="6" fill="#8B1A4A"/><text x="825" y="375" text-anchor="middle" fill="#fff" font-weight="700" font-size="9">firestore</text><text x="825" y="388" text-anchor="middle" fill="#fff" font-weight="700" font-size="9">.rules</text><text x="825" y="399" text-anchor="middle" fill="#F8D0E0" font-size="7.5">Server Gate</text>
+
+    <rect x="30" y="416" width="840" height="44" rx="6" fill="#D4EDDA" stroke="#1E6B3A" stroke-width="1"/>
+    <text x="450" y="432" text-anchor="middle" fill="#145228" font-weight="800" font-size="10">SUB-100ms LATENCY · 99.999% SLA · AUTOMATED MULTI-REGION SYNCHRONIZATION</text>
+    <text x="450" y="450" text-anchor="middle" fill="#2E7D32" font-size="9">Store.js Centralized Data Access Object (DAO) with hybrid client caching and live real-time listeners</text>
+  </svg>
+  <div class="dcap">FIGURE 2 — Production Cloud Architecture: DNS Layer ➔ Edge CDN ➔ Auth Engine ➔ Cloud Firestore</div>
+</div>
+
+<!-- ═══════════ SECTION 4 ═══════════ -->
+<h2 id="s4" class="pb">4. Technology Stack &amp; Architectural Rationale</h2>
+
+<div class="cg">
+  <div class="cc yes">
+    <h4>&#9989; Frontend: Semantic HTML5 + Vanilla CSS3 + ES6+ JS</h4>
+    <ul>
+      <li><strong>0ms Hydration Overhead:</strong> Renders immediately on mobile devices without heavy framework loading.</li>
+      <li><strong>Zero Build Dependency:</strong> No Webpack or Vite build steps required for deployment.</li>
+      <li><strong>Ultra-Low Data Consumption:</strong> Lightweight assets optimized for 3G/4G Indian networks.</li>
+      <li><strong>Native Longevity:</strong> Built on evergreen web standards that won't break with third-party framework updates.</li>
+    </ul>
+  </div>
+  <div class="cc yes">
+    <h4>&#9989; Backend: Google Cloud Firestore (Serverless NoSQL)</h4>
+    <ul>
+      <li><strong>Direct Browser Connection:</strong> Eliminates the need for custom Express/Node.js API servers.</li>
+      <li><strong>Real-Time Synchronization:</strong> Live order updates and inventory changes push instantaneously to clients.</li>
+      <li><strong>Declarative Security:</strong> Access control enforced directly on Google hardware via <code>firestore.rules</code>.</li>
+      <li><strong>Automatic Scaling:</strong> Scales seamlessly from 0 to 100,000+ active users with zero ops overhead.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ SECTION 5 ═══════════ -->
+<h2 id="s5">5. Database Schema &amp; Firestore ER Model</h2>
+<p>Cloud Firestore organizes data into 7 root collections designed for high query performance and atomic writes.</p>
+
+<table class="nobreak">
+  <thead><tr><th>Collection</th><th>Key Document Fields</th><th>Access Pattern</th><th>Security Rule Enforcement</th></tr></thead>
+  <tbody>
+    <tr><td><code>/products</code></td><td><code>name, category, price (MRP), salePrice, stock, imageUrl, sellerId, sizes[], colors[], featured</code></td><td>Public read; Category/featured filter</td><td>Admin or Approved Seller (matching <code>sellerId == request.auth.uid</code>)</td></tr>
+    <tr><td><code>/orders</code></td><td><code>userId, customerName, email, phone, address{}, items[], subtotal, discount, totalAmount, status, sellerIds[]</code></td><td>User reads own; Seller reads matching <code>sellerIds</code>; Admin reads all</td><td>Customer creates own; Customer cancels own; Admin full control</td></tr>
+    <tr><td><code>/users</code></td><td><code>uid, name, email, phone, isAdmin, isSeller, sellerStatus, storeName, createdAt</code></td><td>User reads own; Admin reads all</td><td>User writes own; <code>isAdmin</code> protected; Owner emails auto-elevate</td></tr>
+    <tr><td><code>/coupons</code></td><td><code>code, discount, type ('percent'|'flat'), minOrder, active</code></td><td>Public read for live checkout validation</td><td>Admin only write access</td></tr>
+    <tr><td><code>/refunds</code></td><td><code>orderId, userId, userEmail, amount, status ('Pending'|'Approved'|'Rejected'), createdAt</code></td><td>User reads own; Admin reads and updates all</td><td>User creates own; Admin updates status</td></tr>
+    <tr><td><code>/returns</code></td><td><code>orderId, userId, userEmail, reason, description, status, adminNote, createdAt</code></td><td>User reads own; Admin reads and updates all</td><td>User creates own; Admin updates status</td></tr>
+    <tr><td><code>/feedback</code></td><td><code>userId, userEmail, rating, message, createdAt</code></td><td>Admin reads all; Authenticated creates</td><td>Authenticated users create; Admin manages</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════ SECTION 6 ═══════════ -->
+<h2 id="s6" class="pb">6. Dual-Pricing, PWA &amp; Component Map</h2>
+
+<h3>6.1 Dual-Pricing Engine (MRP vs Selling Price)</h3>
+<p>To maximize shopper conversion, Nari Niketan implements a transparent pricing structure:</p>
+<ul>
+  <li><code>price</code> (MRP): Maximum Retail Price, displayed with a strike-through (e.g. <span style="text-decoration:line-through;color:#888;">₹3,999</span>).</li>
+  <li><code>salePrice</code>: Actual discounted price charged at checkout (e.g. <strong style="color:var(--p);">₹1,999</strong>).</li>
+  <li><code>% OFF Badge</code>: Dynamically computed in JavaScript: <code>Math.round(((price - salePrice) / price) * 100)% OFF</code>.</li>
+</ul>
+
+<h3>6.2 Progressive Web App (PWA) Architecture</h3>
+<ul>
+  <li><strong>Service Worker (<code>sw.js</code>):</strong> Intercepts network requests and caches core stylesheets, icons, and scripts for offline access.</li>
+  <li><strong>Web Manifest (<code>manifest.webmanifest</code>):</strong> Defines standalone app experience with high-resolution brand icons and splash screens.</li>
+  <li><strong>Custom Install Prompt (<code>js/pwa-install.js</code>):</strong> Renders a branded modal guiding users on installing the app on Android and iOS.</li>
+</ul>
+
+<!-- ═══════════ SECTION 7 ═══════════ -->
+<h2 id="s7" class="pb">7. Authentication &amp; RBAC Security Engine</h2>
+<p>Security is enforced on Google's cloud infrastructure using server-verified JSON Web Tokens (JWT) and Firestore Security Rules.</p>
+
+<pre>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() { return request.auth != null; }
+
+    // Hardcoded Super-Owner Check from Google Auth Token
+    function isOwner() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'manasku2007@gmail.com' ||
+        request.auth.token.email == 'nariniketan07@gmail.com'
+      );
+    }
+
+    // Admin Verification (Owner or approved in /users)
+    function isAdmin() {
+      return isOwner() ||
+        (isAuthenticated() &&
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+    }
+
+    // Approved Seller Check
+    function isSeller() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSeller == true ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.sellerStatus == 'approved');
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isAdmin() || (isSeller() && request.resource.data.sellerId == request.auth.uid);
+      allow update: if isAdmin() || (isSeller() && resource.data.sellerId == request.auth.uid);
+      allow delete: if isAdmin() || (isSeller() && resource.data.sellerId == request.auth.uid);
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && resource.data.userId == request.auth.uid) ||
+        (isSeller() && resource.data.keys().hasAll(['sellerIds']) && request.auth.uid in resource.data.sellerIds);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() ||
+        (isAuthenticated() && resource.data.userId == request.auth.uid && (
+          request.resource.data.status == "Cancelled" ||
+          request.resource.data.status == "Return Requested"
+        ));
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAdmin() ||
+        (isOwner() && request.auth.uid == userId) ||
+        (isAuthenticated() && request.auth.uid == userId &&
+          !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['isAdmin', 'isSeller', 'sellerStatus']));
+      allow delete: if isAdmin();
+    }
+  }
+}
+</pre>
+
+<!-- ═══════════ SECTION 8 ═══════════ -->
+<h2 id="s8" class="pb">8. Deployment, DNS &amp; Custom Domain Runbook</h2>
+<table class="nobreak">
+  <thead><tr><th>Configuration</th><th>Production Setting</th></tr></thead>
+  <tbody>
+    <tr><td>Primary Custom Domain</td><td><code>https://www.nariniketan.shop</code></td></tr>
+    <tr><td>Apex Domain Redirect</td><td><code>https://nariniketan.shop</code> ➔ <code>https://www.nariniketan.shop</code></td></tr>
+    <tr><td>DNS Provider</td><td>GoDaddy DNS Zone (A Records: <code>199.36.158.100</code>)</td></tr>
+    <tr><td>Firebase Hosting URL</td><td><code>https://nari-niketan.web.app</code></td></tr>
+    <tr><td>SSL/TLS Encryption</td><td>256-bit automated Let's Encrypt / Google Trust Services</td></tr>
+    <tr><td>Deployment Command</td><td><code>firebase deploy --only hosting,firestore:rules</code></td></tr>
+  </tbody>
+</table>
+
+<!-- FOOTER -->
+<div style="margin-top:3rem;padding-top:1.5rem;border-top:1.5px solid var(--br);text-align:center;font-size:.78rem;color:var(--tm);">
+  <strong>NARI NIKETAN E-COMMERCE PLATFORM</strong> &bull; Master System Analysis &amp; Architecture Blueprint &bull; Version 6.0 (2026 Production Release) &bull; Built with Pride in India
+</div>
+
+  <script src="js/nari-ai-stylist.js?v=1.0"></script>
+  <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+</body>
+</html>
