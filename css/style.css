@@ -519,6 +519,8 @@ textarea.form-control { min-height: 110px; resize: vertical; }
 .badge-pending { background: rgba(245,124,0,.12); color: var(--warning); }
 .badge-processing { background: rgba(25,118,210,.12); color: var(--info); }
 .badge-shipped { background: rgba(123,31,162,.12); color: #7B1FA2; }
+.badge-out-for-delivery { background: rgba(245,158,11,.15); color: #B45309; border: 1px solid rgba(245,158,11,.35); }
+.badge-ready-for-pickup { background: rgba(16,185,129,.15); color: #047857; border: 1px solid rgba(16,185,129,.35); }
 .badge-delivered { background: rgba(56,142,60,.12); color: var(--success); }
 .badge-cancelled { background: rgba(211,47,47,.12); color: var(--error); }
 

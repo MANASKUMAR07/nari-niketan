@@ -137,18 +137,23 @@ function fmtDate(ts) {
 }
 function statusBadge(status) {
   const map = {
-    'Pending':    'badge-pending',
-    'Processing': 'badge-processing',
-    'Shipped':    'badge-shipped',
-    'Delivered':  'badge-delivered',
-    'Cancelled':  'badge-cancelled',
-    'Approved':   'badge-approved',
-    'Rejected':   'badge-rejected',
-    'active':     'badge-active',
-    'inactive':   'badge-cancelled',
-    'pending':    'badge-pending',
-    'approved':   'badge-approved',
-    'rejected':   'badge-rejected',
+    'Pending':           'badge-pending',
+    'Processing':        'badge-processing',
+    'Shipped':           'badge-shipped',
+    'Out for Delivery':  'badge-out-for-delivery',
+    'out_for_delivery':  'badge-out-for-delivery',
+    'Ready for Pickup':  'badge-ready-for-pickup',
+    'ready_for_pickup':  'badge-ready-for-pickup',
+    'Collected':         'badge-delivered',
+    'Delivered':         'badge-delivered',
+    'Cancelled':         'badge-cancelled',
+    'Approved':          'badge-approved',
+    'Rejected':          'badge-rejected',
+    'active':            'badge-active',
+    'inactive':          'badge-cancelled',
+    'pending':           'badge-pending',
+    'approved':          'badge-approved',
+    'rejected':          'badge-rejected',
   };
   return `<span class="badge ${map[status] || 'badge-info'}">${status || '—'}</span>`;
 }

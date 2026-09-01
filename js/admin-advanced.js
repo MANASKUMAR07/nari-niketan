@@ -124,11 +124,11 @@ const shortId = id => id ? id.substring(0, 8).toUpperCase() : '—';
 
 const statusBadge = s => {
   const map = {
-    'Pending': 'pending', 'Processing': 'processing', 'Shipped': 'shipped', 'Delivered': 'delivered',
+    'Pending': 'pending', 'Processing': 'processing', 'Shipped': 'shipped', 'Out for Delivery': 'out-for-delivery', 'out_for_delivery': 'out-for-delivery', 'Delivered': 'delivered',
     'Cancelled': 'cancelled', 'Returned': 'returned', 'Return Requested': 'pending',
     'Return Approved': 'approved', 'approved': 'approved', 'Approved': 'approved',
     'Rejected': 'rejected', 'rejected': 'rejected', 'Processed': 'delivered',
-    'Ready for Pickup': 'delivered', 'ready_for_pickup': 'delivered', 'Collected': 'active', 'Preparing': 'processing',
+    'Ready for Pickup': 'ready-for-pickup', 'ready_for_pickup': 'ready-for-pickup', 'Collected': 'active', 'Preparing': 'processing',
     'Active': 'active', 'active': 'active', 'inactive': 'inactive', 'suspended': 'suspended',
     'Open': 'open', 'In Progress': 'inprogress', 'Resolved': 'resolved', 'Completed': 'delivered',
     'COD': 'cod', 'UPI': 'upi', 'Card': 'card', 'Online': 'upi'
@@ -1035,11 +1035,12 @@ const AdminOrders = {
               <option value="Pending">Pending</option>
               <option value="Processing">Processing</option>
               <option value="Shipped">Shipped</option>
+              <option value="Out for Delivery">🚚 Out for Delivery</option>
               <option value="Delivered">Delivered</option>
             </optgroup>
             <optgroup label="Pickup Order">
               <option value="Preparing">Preparing</option>
-              <option value="Ready for Pickup">Ready for Pickup</option>
+              <option value="Ready for Pickup">🏪 Ready for Pickup</option>
               <option value="Collected">Collected</option>
             </optgroup>
             <optgroup label="Other">
@@ -1069,6 +1070,25 @@ const AdminOrders = {
           <div class="info-item"><label>Status</label><span>${statusBadge(o.status)}</span></div>
           <div class="info-item"><label>Total</label><span style="color:var(--gold);font-weight:700">${fmt(o.totalAmount)}</span></div>
         </div>
+
+        ${o.deliveryOtp ? `
+          <div style="background:rgba(245,158,11,0.12);border:1.5px dashed #F59E0B;border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;">🔐 Customer Delivery / Pickup OTP</div>
+              <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:#FDE68A;letter-spacing:3px;">${o.deliveryOtp}</div>
+              <div style="font-size:0.72rem;color:${o.otpVerified ? '#10B981' : '#F59E0B'};font-weight:600;margin-top:2px;">
+                ${o.otpVerified ? '✅ OTP Verified by Agent/Admin' : '⏳ Pending Customer Verification'}
+              </div>
+            </div>
+            ${!o.otpVerified && o.status !== 'Delivered' && o.status !== 'Collected' && o.status !== 'Cancelled' ? `
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <input type="text" id="admin-advanced-verify-otp-input" placeholder="Enter Customer OTP" maxlength="6" style="width:140px;padding:6px 10px;font-size:0.85rem;border:1px solid #F59E0B;border-radius:6px;background:rgba(0,0,0,0.4);color:#fff;font-family:monospace;font-weight:700;text-align:center;">
+                <button type="button" class="btn btn-accent btn-sm" onclick="AdminOrders.verifyOtp('${o.id}')" style="font-size:0.78rem;font-weight:700;">
+                  Verify &amp; Deliver &rarr;
+                </button>
+              </div>` : ''}
+          </div>` : ''}
+
         ${(() => {
           if (o.fulfillmentType === 'pickup') {
             return `
@@ -1114,6 +1134,27 @@ const AdminOrders = {
     await Store.logAdminAction('Update Order Status', `Order #${shortId(id)} -> ${status}`);
     AdminToast.show(`Order #${shortId(id)} marked as ${status}`);
     this.load();
+  },
+  async verifyOtp(id) {
+    const input = document.getElementById("admin-advanced-verify-otp-input");
+    const entered = input ? input.value.trim() : "";
+    if (!entered) {
+      AdminToast.show("Please enter the customer OTP to verify delivery.", "warning");
+      return;
+    }
+    try {
+      const res = await Store.verifyDeliveryOtp(id, entered);
+      if (res.success) {
+        AdminToast.show(res.message, "success");
+        await Store.logAdminAction('Verify Delivery OTP', `Order #${shortId(id)} verified & marked as ${res.status}`);
+        this.load();
+        this.viewDetail(id);
+      } else {
+        AdminToast.show(res.message, "error");
+      }
+    } catch(e) {
+      AdminToast.show("Verification failed: " + e.message, "error");
+    }
   },
   async delete(id) {
     const ok = await AdminConfirm.show(`Permanently delete order #${shortId(id)}? This cannot be undone.`, 'Delete Order', '🗑️');

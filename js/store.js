@@ -157,8 +157,11 @@ const Store = {
 
   // ===== ORDERS =====
   async addOrder(data) {
+    const deliveryOtp = data.deliveryOtp || String(Math.floor(100000 + Math.random() * 900000));
     const ref = await db.collection("orders").add({
       ...data,
+      deliveryOtp,
+      otpVerified: false,
       status: "Pending",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -421,7 +424,62 @@ const Store = {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     if (note) update.adminNote = note;
+
+    if (status === "Delivered" || status === "Collected") {
+      update.deliveredAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
+
+    if (status === "Out for Delivery" || status === "out_for_delivery" || status === "Ready for Pickup" || status === "ready_for_pickup") {
+      try {
+        const doc = await db.collection("orders").doc(id).get();
+        if (doc.exists && !doc.data().deliveryOtp) {
+          update.deliveryOtp = String(Math.floor(100000 + Math.random() * 900000));
+          update.otpGeneratedAt = firebase.firestore.FieldValue.serverTimestamp();
+        }
+      } catch(e) {}
+    }
+
     return db.collection("orders").doc(id).update(update);
+  },
+
+  async verifyDeliveryOtp(orderId, enteredOtp) {
+    try {
+      const doc = await db.collection("orders").doc(orderId).get();
+      if (!doc.exists) {
+        return { success: false, message: "Order not found." };
+      }
+      const data = doc.data();
+      const expectedOtp = String(data.deliveryOtp || "").trim();
+      const cleanEntered = String(enteredOtp || "").trim();
+
+      if (!expectedOtp) {
+        return { success: false, message: "No verification OTP found for this order." };
+      }
+
+      if (cleanEntered !== expectedOtp) {
+        return { success: false, message: "Invalid OTP. Please ask the customer to check their My Orders screen." };
+      }
+
+      const isPickup = data.fulfillmentType === "pickup";
+      const newStatus = isPickup ? "Collected" : "Delivered";
+
+      await db.collection("orders").doc(orderId).update({
+        status: newStatus,
+        otpVerified: true,
+        otpVerifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        deliveredAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      return {
+        success: true,
+        message: `OTP Verified! Order #${orderId.substring(0,8).toUpperCase()} marked as ${newStatus}.`,
+        status: newStatus
+      };
+    } catch(e) {
+      console.error("verifyDeliveryOtp error:", e);
+      return { success: false, message: "Error verifying OTP: " + e.message };
+    }
   },
 
   async deleteOrder(id) {

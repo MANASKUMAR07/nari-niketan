@@ -498,6 +498,8 @@ input, select, textarea { font-family: var(--font); }
 .badge-pending   { background: var(--warning-dim); color: var(--warning); }
 .badge-processing { background: var(--info-dim); color: var(--info); }
 .badge-shipped   { background: var(--purple-dim); color: var(--purple); }
+.badge-out-for-delivery { background: rgba(245,158,11,.18); color: #FBBF24; border: 1px solid rgba(245,158,11,.4); }
+.badge-ready-for-pickup { background: rgba(16,185,129,.18); color: #34D399; border: 1px solid rgba(16,185,129,.4); }
 .badge-delivered { background: var(--success-dim); color: var(--success); }
 .badge-cancelled { background: var(--danger-dim); color: var(--danger); }
 .badge-returned  { background: var(--orange-dim); color: var(--orange); }

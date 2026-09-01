@@ -305,8 +305,10 @@
       Pending:             "badge-pending",
       Processing:          "badge-processing",
       Preparing:           "badge-processing",
-      "Ready for Pickup":  "badge-shipped",
-      ready_for_pickup:    "badge-shipped",
+      "Ready for Pickup":  "badge-ready-for-pickup",
+      ready_for_pickup:    "badge-ready-for-pickup",
+      "Out for Delivery":  "badge-out-for-delivery",
+      out_for_delivery:    "badge-out-for-delivery",
       Collected:           "badge-delivered",
       Shipped:             "badge-shipped",
       Delivered:           "badge-delivered",
@@ -315,6 +317,15 @@
       "Return Approved":    "badge-shipped",
       Returned:            "badge-pending"
     };
+
+    function copyDeliveryOtp(otp) {
+      if (!otp) return;
+      navigator.clipboard.writeText(otp).then(() => {
+        App.toast("OTP " + otp + " copied to clipboard!", "success");
+      }).catch(() => {
+        App.toast("OTP: " + otp, "info");
+      });
+    }
 
     const refundStatusStyle = {
       Pending:   { bg: 'rgba(245,158,11,.1)',  color: '#B45309', icon: '', label: 'Refund Pending' },
@@ -366,7 +377,8 @@
           const items = order.items || [];
           const isCancellable = order.status === "Pending" || order.status === "Processing" || !order.status;
           const isCancelled = order.status === "Cancelled";
-          const isDelivered = order.status === "Delivered";
+          const isDelivered = order.status === "Delivered" || order.status === "Collected";
+          const isOutForDelivery = order.status === "Out for Delivery" || order.status === "out_for_delivery";
           const isReturnPending = ['Return Requested','Return Approved','Returned'].includes(order.status);
           // Return window: 7 days from delivery date
           let inReturnWindow = false;
@@ -441,6 +453,10 @@
               </div>`;
           }
 
+          const isPickup = order.fulfillmentType === "pickup";
+          const isReadyPickup = isPickup && (order.status === "Ready for Pickup" || order.status === "ready_for_pickup");
+          const hasOtp = !!order.deliveryOtp;
+
           return `
             <div class="order-card" style="margin-bottom:1.5rem; opacity: ${isCancelled ? '0.9' : '1'};">
               <div class="order-card-header">
@@ -448,22 +464,67 @@
                   <p class="order-id">Order #${order.id.substring(0,8).toUpperCase()}</p>
                   <p class="order-date">${App.formatDateTime(order.createdAt || order.clientCreatedAt)}</p>
                 </div>
-                <span class="badge ${statusClass[order.status] || 'badge-pending'}">${order.status || 'Pending'}</span>
+                <span class="badge ${statusClass[order.status] || 'badge-pending'}">${order.status === 'out_for_delivery' ? 'Out for Delivery' : (order.status || 'Pending')}</span>
               </div>
 
               <div style="margin:1rem 0;">${itemsHtml}</div>
 
-              ${(() => {
-                const isPickup = order.fulfillmentType === "pickup";
-                const isReady = order.status === "Ready for Pickup" || order.status === "ready_for_pickup";
+              ${isOutForDelivery && hasOtp ? `
+                <div class="delivery-otp-card" style="background:linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%); border:2px solid #F59E0B; border-radius:12px; padding:1.1rem 1.25rem; margin:1rem 0; box-shadow:0 4px 14px rgba(245,158,11,0.18);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.85rem;">
+                    <div style="display:flex; align-items:center; gap:0.85rem;">
+                      <div style="width:46px; height:46px; border-radius:50%; background:#F59E0B; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 3px 8px rgba(245,158,11,0.35);">
+                        🚚
+                      </div>
+                      <div>
+                        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:#B45309; font-weight:800;">Out for Delivery Today</div>
+                        <p style="font-size:0.88rem; font-weight:700; color:#78350F; margin:0.15rem 0 0 0;">Share this OTP with your delivery executive at your doorstep:</p>
+                      </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; background:#fff; padding:0.45rem 0.95rem; border-radius:10px; border:2px dashed #D97706; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                      <span style="font-size:0.75rem; color:#92400E; font-weight:700;">DELIVERY OTP:</span>
+                      <strong style="font-size:1.55rem; letter-spacing:4px; color:#B45309; font-family:monospace; font-weight:900;">${order.deliveryOtp}</strong>
+                      <button onclick="copyDeliveryOtp('${order.deliveryOtp}')" title="Copy OTP" style="background:#FEF3C7; border:1px solid #D97706; border-radius:6px; padding:4px 8px; font-size:0.75rem; font-weight:700; color:#92400E; cursor:pointer; margin-left:4px;">📋 Copy</button>
+                    </div>
+                  </div>
+                  <div style="font-size:0.76rem; color:#92400E; margin-top:0.75rem; border-top:1px dashed rgba(245,158,11,0.45); padding-top:0.6rem; display:flex; align-items:center; gap:6px;">
+                    <span>🔒</span>
+                    <span><em>For your security, only share this OTP when the delivery agent physically arrives at your doorstep with your package.</em></span>
+                  </div>
+                </div>` : ''}
 
+              ${isReadyPickup && hasOtp ? `
+                <div class="delivery-otp-card" style="background:linear-gradient(135deg, #F0FDF4 0%, #D1FAE5 100%); border:2px solid #10B981; border-radius:12px; padding:1.1rem 1.25rem; margin:1rem 0; box-shadow:0 4px 14px rgba(16,185,129,0.18);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.85rem;">
+                    <div style="display:flex; align-items:center; gap:0.85rem;">
+                      <div style="width:46px; height:46px; border-radius:50%; background:#10B981; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 3px 8px rgba(16,185,129,0.35);">
+                        🏪
+                      </div>
+                      <div>
+                        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:#065F46; font-weight:800;">Ready For Store Pickup</div>
+                        <p style="font-size:0.88rem; font-weight:700; color:#047857; margin:0.15rem 0 0 0;">Show this Pickup OTP at the store counter to collect your order:</p>
+                      </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; background:#fff; padding:0.45rem 0.95rem; border-radius:10px; border:2px dashed #059669; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                      <span style="font-size:0.75rem; color:#064E3B; font-weight:700;">PICKUP OTP:</span>
+                      <strong style="font-size:1.55rem; letter-spacing:4px; color:#047857; font-family:monospace; font-weight:900;">${order.deliveryOtp}</strong>
+                      <button onclick="copyDeliveryOtp('${order.deliveryOtp}')" title="Copy OTP" style="background:#D1FAE5; border:1px solid #059669; border-radius:6px; padding:4px 8px; font-size:0.75rem; font-weight:700; color:#064E3B; cursor:pointer; margin-left:4px;">📋 Copy</button>
+                    </div>
+                  </div>
+                  <div style="font-size:0.76rem; color:#065F46; margin-top:0.75rem; border-top:1px dashed rgba(16,185,129,0.45); padding-top:0.6rem; display:flex; align-items:center; gap:6px;">
+                    <span>📍</span>
+                    <span><em>Store: ${order.pickupDetails?.storeName || 'Nari Niketan Retail Store'} &bull; Hours: 10:00 AM &ndash; 9:00 PM</em></span>
+                  </div>
+                </div>` : ''}
+
+              ${(() => {
                 if (isPickup) {
                   return `
-                    ${isReady ? `
+                    ${isReadyPickup ? `
                       <div class="pickup-ready-banner">
                         <div>
                           <p style="font-weight:700;font-size:0.95rem;margin:0 0 0.2rem 0;">🎉 Your order is ready for pickup!</p>
-                          <p style="font-size:0.8rem;margin:0;opacity:0.95;">Please visit our store with Order ID #${order.id.substring(0,8).toUpperCase()} to collect your outfit.</p>
+                          <p style="font-size:0.8rem;margin:0;opacity:0.95;">Please visit our store with Pickup OTP or Order ID #${order.id.substring(0,8).toUpperCase()} to collect your outfit.</p>
                         </div>
                         <a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener noreferrer" style="background:#fff;color:#15803D;font-weight:700;padding:6px 12px;border-radius:6px;font-size:0.8rem;text-decoration:none;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                           🧭 Get Directions &rarr;
@@ -513,8 +574,10 @@
                         : isDelivered && inReturnWindow && !returnReq
                           ? `<button class="btn btn-outline btn-sm" onclick="openReturnModal('${order.id}', '#${order.id.substring(0,8).toUpperCase()}')" style="color:var(--primary); border-color:rgba(139,26,74,.3);">&#8617; Return Order</button>`
                           : isDelivered
-                            ? `<span style="font-size:0.85rem;color:var(--success);font-weight:600;">&#10003; Delivered</span>`
-                            : `<span style="font-size:0.85rem;color:var(--success);font-weight:600;">&#10003; In Transit</span>`
+                            ? `<span style="font-size:0.85rem;color:var(--success);font-weight:600;">&#10003; Delivered ${order.otpVerified ? '(OTP Verified)' : ''}</span>`
+                            : isOutForDelivery
+                              ? `<span style="font-size:0.85rem;color:#B45309;font-weight:700;">🚚 Out for Delivery</span>`
+                              : `<span style="font-size:0.85rem;color:var(--success);font-weight:600;">&#10003; In Transit</span>`
                   }
                 </div>
               </div>

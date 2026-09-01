@@ -447,7 +447,16 @@ const AdminOrders = {
       container.innerHTML = `<tr><td colspan="7"><div class="table-empty"><div class="table-empty-icon">📭</div><p>No orders found</p></div></td></tr>`;
       return;
     }
-    const statusClasses = { Pending: "badge-pending", Processing: "badge-processing", Shipped: "badge-shipped", Delivered: "badge-delivered", Cancelled: "badge-cancelled" };
+    const statusClasses = {
+      Pending: "badge-pending",
+      Processing: "badge-processing",
+      Shipped: "badge-shipped",
+      "Out for Delivery": "badge-out-for-delivery",
+      "Ready for Pickup": "badge-ready-for-pickup",
+      Collected: "badge-delivered",
+      Delivered: "badge-delivered",
+      Cancelled: "badge-cancelled"
+    };
     container.innerHTML = this.filteredOrders.map(o => {
       const items = o.items || [];
       const dt = o.createdAt ? (o.createdAt.toDate ? o.createdAt.toDate() : new Date(o.createdAt)) : null;
@@ -467,11 +476,14 @@ const AdminOrders = {
           <td><span class="badge ${statusClasses[o.status] || "badge-pending"}">${o.status || "Pending"}</span></td>
           <td>
             <select class="status-select" onchange="AdminOrders.updateStatus('${o.id}', this.value, this)">
-              <option value="Pending"    ${(o.status||'Pending')==='Pending'   ?'selected':''}>Pending</option>
-              <option value="Processing" ${o.status==='Processing'?'selected':''}>Processing</option>
-              <option value="Shipped"    ${o.status==='Shipped'   ?'selected':''}>Shipped</option>
-              <option value="Delivered"  ${o.status==='Delivered' ?'selected':''}>Delivered</option>
-              <option value="Cancelled"  ${o.status==='Cancelled' ?'selected':''}>Cancelled</option>
+              <option value="Pending"          ${(o.status||'Pending')==='Pending'          ?'selected':''}>Pending</option>
+              <option value="Processing"       ${o.status==='Processing'                    ?'selected':''}>Processing</option>
+              <option value="Shipped"          ${o.status==='Shipped'                       ?'selected':''}>Shipped</option>
+              <option value="Out for Delivery" ${o.status==='Out for Delivery'              ?'selected':''}>🚚 Out for Delivery</option>
+              <option value="Ready for Pickup" ${o.status==='Ready for Pickup'              ?'selected':''}>🏪 Ready for Pickup</option>
+              <option value="Delivered"        ${o.status==='Delivered'                     ?'selected':''}>Delivered</option>
+              <option value="Collected"        ${o.status==='Collected'                     ?'selected':''}>Collected (Store)</option>
+              <option value="Cancelled"        ${o.status==='Cancelled'                     ?'selected':''}>Cancelled</option>
             </select>
           </td>
           <td>
@@ -538,11 +550,54 @@ const AdminOrders = {
           <span style="font-weight:600;color:var(--text-muted)">Total Amount</span>
           <span style="font-size:1.25rem;font-weight:800;color:var(--accent)">₹${Number(o.totalAmount||0).toLocaleString("en-IN")}</span>
         </div>
+        ${o.deliveryOtp ? `
+          <div style="background:rgba(245,158,11,0.12);border:1.5px dashed #F59E0B;border-radius:8px;padding:0.85rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;">🔐 Customer Delivery / Pickup OTP</div>
+              <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:#FDE68A;letter-spacing:3px;">${o.deliveryOtp}</div>
+              <div style="font-size:0.72rem;color:${o.otpVerified ? '#10B981' : '#F59E0B'};font-weight:600;margin-top:2px;">
+                ${o.otpVerified ? '✅ OTP Verified by Agent/Admin' : '⏳ Pending Customer Verification'}
+              </div>
+            </div>
+            ${!o.otpVerified && o.status !== 'Delivered' && o.status !== 'Collected' && o.status !== 'Cancelled' ? `
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <input type="text" id="admin-verify-otp-input" placeholder="Enter Customer OTP" maxlength="6" style="width:140px;padding:6px 10px;font-size:0.85rem;border:1px solid #F59E0B;border-radius:6px;background:rgba(0,0,0,0.4);color:#fff;font-family:monospace;font-weight:700;text-align:center;">
+                <button type="button" class="btn btn-accent btn-sm" onclick="AdminOrders.verifyOtp('${o.id}')" style="font-size:0.78rem;font-weight:700;">
+                  Verify &amp; Deliver &rarr;
+                </button>
+              </div>` : ''}
+          </div>` : ''}
         ${o.adminNote ? `<div style="background:rgba(212,175,55,.08);border:1px solid var(--border);border-radius:8px;padding:.75rem;font-size:.85rem"><strong>Admin Note:</strong> ${o.adminNote}</div>` : ''}
         ${o.cancellationReason ? `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:.75rem;font-size:.85rem;color:#FCA5A5"><strong>Cancellation Reason:</strong> ${o.cancellationReason}</div>` : ''}
       </div>
     `;
     document.getElementById("order-detail-modal").classList.remove("hidden");
+  },
+
+  async verifyOtp(orderId) {
+    const input = document.getElementById("admin-verify-otp-input");
+    const entered = input ? input.value.trim() : "";
+    if (!entered) {
+      AdminToast.show("Please enter the customer OTP to verify delivery.", "warning");
+      return;
+    }
+    try {
+      const res = await Store.verifyDeliveryOtp(orderId, entered);
+      if (res.success) {
+        AdminToast.show(res.message, "success");
+        const order = this.allOrders.find(o => o.id === orderId);
+        if (order) {
+          order.status = res.status;
+          order.otpVerified = true;
+        }
+        this.render();
+        this.viewDetails(orderId);
+      } else {
+        AdminToast.show(res.message, "error");
+      }
+    } catch(e) {
+      AdminToast.show("Verification failed: " + e.message, "error");
+    }
   }
 };
 
