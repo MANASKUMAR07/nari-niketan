@@ -1,5 +1,5 @@
 // =============================================
-// NARI NIKETAN — Product Display Logic
+// NARI NIKETAN — Product Display & Dedicated Image CDN Logic
 // =============================================
 
 // Instant local SVG placeholder — 0ms, zero network, works offline (replaces slow placehold.co)
@@ -7,15 +7,65 @@ const NO_IMAGE_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 
 const Products = {
 
-  renderCard(product) {
-    const fallback   = NO_IMAGE_SVG;
-    const rawImage   = product.imageUrl || (product.images && product.images[0]) || product.image || '';
+  // Dedicated Global Image CDN proxy (backed by Cloudflare Edge Network)
+  cdnUrl(rawUrl, options = {}) {
+    if (!rawUrl || typeof rawUrl !== 'string') return NO_IMAGE_SVG;
+    if (rawUrl.startsWith('data:') || rawUrl.startsWith('blob:')) return rawUrl;
+    if (rawUrl.includes('wsrv.nl')) return rawUrl; // already CDN
 
-    // If image is still old base64 (legacy products), keep the safe setAttribute path.
-    // New products uploaded after this update will have Firebase Storage https:// URLs.
-    const isBase64 = rawImage.startsWith('data:');
-    const imgSrc   = (rawImage && !isBase64) ? rawImage : fallback;
-    if (isBase64) this._imgStore[product.id] = rawImage;
+    const width   = options.width || (options.size === 'large' ? 1200 : options.size === 'medium' ? 800 : 400);
+    const height  = options.height ? `&h=${options.height}` : '';
+    const quality = options.quality || (options.size === 'large' ? 85 : 80);
+    const format  = options.format || 'webp';
+    const fit     = options.fit || 'cover';
+
+    return `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${width}${height}&fit=${fit}&output=${format}&q=${quality}&we=1`;
+  },
+
+  // Get raw direct origin URL (Firebase Storage)
+  getRawImageUrl(product, size = 'thumbnail') {
+    if (!product) return '';
+    const firstImg = Array.isArray(product.images) && product.images[0];
+    if (firstImg && typeof firstImg === 'object') {
+      if (size === 'thumbnail') return firstImg.thumbnail || firstImg.medium || firstImg.large || firstImg.original || '';
+      if (size === 'medium') return firstImg.medium || firstImg.large || firstImg.thumbnail || firstImg.original || '';
+      if (size === 'large') return firstImg.large || firstImg.medium || firstImg.original || firstImg.thumbnail || '';
+      return firstImg.original || firstImg.large || firstImg.medium || '';
+    }
+    return product.thumbnail || product.imageUrl || product.image || '';
+  },
+
+  // Extract optimized URL (Direct pre-generated WebP from Google Storage or Global CDN)
+  getImageUrl(product, size = 'thumbnail', useCdn = false) {
+    if (!product) return NO_IMAGE_SVG;
+
+    const rawUrl = this.getRawImageUrl(product, size);
+    if (!rawUrl || rawUrl.startsWith('data:') || rawUrl.includes('placehold.co')) {
+      return NO_IMAGE_SVG;
+    }
+
+    if (useCdn && rawUrl.startsWith('http')) {
+      return this.cdnUrl(rawUrl, { size });
+    }
+
+    return rawUrl;
+  },
+
+  // Generate responsive CDN srcset for multi-density displays
+  getImageSrcset(product) {
+    if (!product) return '';
+    const rawUrl = this.getRawImageUrl(product, 'large') || this.getRawImageUrl(product, 'thumbnail');
+    if (!rawUrl || !rawUrl.startsWith('http')) return '';
+
+    return `${this.cdnUrl(rawUrl, { width: 320, quality: 78 })} 320w, ${this.cdnUrl(rawUrl, { width: 480, quality: 80 })} 480w, ${this.cdnUrl(rawUrl, { width: 800, quality: 82 })} 800w`;
+  },
+
+  renderCard(product, index = 0) {
+    const fallback     = NO_IMAGE_SVG;
+    const rawDirectUrl = this.getRawImageUrl(product, 'thumbnail') || fallback;
+    const thumbUrl     = this.getImageUrl(product, 'thumbnail', true);
+    const srcset       = this.getImageSrcset(product);
+    const isLcp        = index === 0;
 
     // Discount badge: prefer stored discount%, else compute from salePrice/price
     const discount = product.discount
@@ -26,26 +76,32 @@ const Products = {
     const badge = product.featured
       ? `<span class="product-badge hot">Hot</span>`
       : discount >= 10 ? `<span class="product-badge sale">${discount}% OFF</span>` : '';
-    const displayPrice    = product.salePrice || product.price;
+    const displayPrice      = product.salePrice || product.price;
     const originalPriceHtml = (product.salePrice && product.price > product.salePrice)
       ? `<span class="product-original-price">${App.formatPrice(product.price)}</span>` : '';
-    const discountHtml    = discount > 0
+    const discountHtml      = discount > 0
       ? `<span class="product-discount">${discount}% off</span>` : '';
 
     return `
       <div class="product-card" data-id="${product.id}">
-        <div class="product-card-img">
+        <div class="product-card-img" style="aspect-ratio:3/4;position:relative;overflow:hidden;background:var(--cream-dark,#F5ECD8);">
           ${badge}
           <img class="product-img-el" data-product-id="${product.id}"
-            src="${imgSrc}"
-            alt="${product.name || 'Product'}" loading="lazy"
-            onerror="this.onerror=null;this.src='${fallback}'">
+            src="${thumbUrl}"
+            ${srcset ? `srcset="${srcset}" sizes="(max-width: 600px) 50vw, (max-width: 1024px) 33vw, 280px"` : ''}
+            alt="${product.name || 'Product'}"
+            width="300" height="400"
+            loading="${isLcp ? 'eager' : 'lazy'}"
+            ${isLcp ? 'fetchpriority="high"' : ''}
+            decoding="async"
+            style="width:100%;height:100%;object-fit:cover;display:block;"
+            onerror="if(!this.dataset.fallbackApplied){this.dataset.fallbackApplied='1';this.removeAttribute('srcset');this.src='${rawDirectUrl}';}else{this.src='${fallback}';}">
           <div class="product-card-overlay">
             <button class="product-quick-add" onclick="Products.quickView('${product.id}'); event.stopPropagation();">
               &#128065; Quick View
             </button>
           </div>
-          <button class="product-wishlist" title="Add to Wishlist">&#9825;</button>
+          <button class="product-wishlist" data-id="${product.id}" title="Add to Wishlist" onclick="if(window.Wishlist)Wishlist.toggleCard('${product.id}',event);event.stopPropagation();">&#9825;</button>
         </div>
         <div class="product-card-body">
           <p class="product-category">${product.category || ''}</p>
@@ -80,7 +136,7 @@ const Products = {
         </div>`;
       return;
     }
-    container.innerHTML = products.map(p => this.renderCard(p)).join('');
+    container.innerHTML = products.map((p, i) => this.renderCard(p, i)).join('');
 
     // Legacy: apply base64 images via setAttribute for any old products
     container.querySelectorAll('.product-img-el[data-product-id]').forEach(img => {
@@ -92,7 +148,6 @@ const Products = {
     });
   },
 
-
   quickView(productId) {
     window.location.href = `product.html?id=${productId}`;
   },
@@ -102,31 +157,32 @@ const Products = {
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(p =>
-        p.name?.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q) ||
-        p.category?.toLowerCase().includes(q)
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q)) ||
+        (p.fabric && p.fabric.toLowerCase().includes(q)) ||
+        (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
       );
     }
     if (category && category !== "All") {
       result = result.filter(p => p.category === category);
     }
-    if (minPrice !== undefined && minPrice !== null && !isNaN(minPrice)) {
-      result = result.filter(p => p.price >= minPrice);
+    if (minPrice) {
+      result = result.filter(p => (p.salePrice || p.price) >= Number(minPrice));
     }
-    if (maxPrice !== undefined && maxPrice !== null && !isNaN(maxPrice)) {
-      result = result.filter(p => p.price <= maxPrice);
+    if (maxPrice) {
+      result = result.filter(p => (p.salePrice || p.price) <= Number(maxPrice));
     }
     if (sizes && sizes.length) {
-      result = result.filter(p =>
-        p.sizes && sizes.some(s => p.sizes.includes(s))
-      );
+      result = result.filter(p => p.sizes && sizes.some(s => p.sizes.includes(s)));
     }
-    switch (sort) {
-      case "price-asc": result.sort((a, b) => a.price - b.price); break;
-      case "price-desc": result.sort((a, b) => b.price - a.price); break;
-      case "rating": result.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
-      case "newest": result.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)); break;
-      case "name": result.sort((a, b) => (a.name || "").localeCompare(b.name || "")); break;
+    if (sort === "price-asc") {
+      result.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
+    } else if (sort === "price-desc") {
+      result.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+    } else if (sort === "rating") {
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sort === "newest") {
+      result.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
     }
     return result;
   }

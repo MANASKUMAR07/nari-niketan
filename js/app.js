@@ -120,11 +120,11 @@ const App = {
     const userNameEl = document.getElementById("nav-user-name");
     const dropdown = document.getElementById("user-dropdown");
 
-    // Amazon-style layout elements (index.html & navbar.js)
-    const amzGreeting = document.getElementById("amz-user-greeting") || document.getElementById("nn-user-greeting");
-    const amzSignedIn = document.getElementById("amz-dropdown-signed-in") || document.getElementById("nn-dropdown-signed-in");
-    const amzSignedOut = document.getElementById("amz-dropdown-signed-out") || document.getElementById("nn-dropdown-signed-out");
-    const amzDropName = document.getElementById("amz-dropdown-name") || document.getElementById("nn-dropdown-name");
+    // Nari Niketan navbar elements (index.html & navbar.js)
+    const nnGreeting = document.getElementById("nn-user-greeting");
+    const nnSignedIn = document.getElementById("nn-dropdown-signed-in");
+    const nnSignedOut = document.getElementById("nn-dropdown-signed-out");
+    const nnDropName = document.getElementById("nn-dropdown-name");
 
     if (this.currentUser) {
       const name = this.userProfile?.name || this.currentUser.displayName || (this.currentUser.email ? this.currentUser.email.split('@')[0] : "User");
@@ -134,11 +134,11 @@ const App = {
       if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
       if (userNameEl) userNameEl.textContent = name;
 
-      // Update Amazon-style navbar
-      if (amzGreeting) amzGreeting.textContent = name;
-      if (amzDropName) amzDropName.textContent = name;
-      if (amzSignedIn) amzSignedIn.style.display = "";
-      if (amzSignedOut) amzSignedOut.style.display = "none";
+      // Update Nari Niketan navbar
+      if (nnGreeting) nnGreeting.textContent = name;
+      if (nnDropName) nnDropName.textContent = name;
+      if (nnSignedIn) nnSignedIn.style.display = "";
+      if (nnSignedOut) nnSignedOut.style.display = "none";
 
       // Inject Admin Panel link for admin users (only once)
       if (dropdown && !dropdown.querySelector(".admin-panel-link")) {
@@ -166,9 +166,9 @@ const App = {
       if (loginBtn) loginBtn.style.display = "flex";
       if (userMenu) userMenu.style.display = "none";
       
-      if (amzGreeting) amzGreeting.textContent = "Sign in";
-      if (amzSignedIn) amzSignedIn.style.display = "none";
-      if (amzSignedOut) amzSignedOut.style.display = "";
+      if (nnGreeting) nnGreeting.textContent = "Sign in";
+      if (nnSignedIn) nnSignedIn.style.display = "none";
+      if (nnSignedOut) nnSignedOut.style.display = "";
     }
   },
 
@@ -266,3 +266,4 @@ const App = {
 
 // Auto-init when DOM ready
 document.addEventListener("DOMContentLoaded", () => App.init());
+

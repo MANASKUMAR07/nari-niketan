@@ -42,7 +42,7 @@ body {
   background: #eaeded;
 }
 
-/* ===== AMZ HEADER WRAPPER ===== */
+/* ===== AMZ HEADER ===== */
 .amz-header {
   position: sticky;
   top: 0;
@@ -55,6 +55,38 @@ body {
   box-shadow: 0 2px 12px rgba(0,0,0,0.35);
 }
 
+/* ── Category Nav Strip (injected by navbar.js) ──
+   On desktop: horizontal scrollable bar below the main navbar.
+   On mobile (≤768px): hidden via the media query block — shop-cat-pills replaces it. */
+.amz-nav-strip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(0,0,0,0.25);
+  padding: 0 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.amz-nav-strip::-webkit-scrollbar { display: none; }
+.amz-nav-strip-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.88);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.amz-nav-strip-item:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
 
 /* ===== TOP NAVBAR ROW ===== */
 .amz-navbar {
@@ -118,13 +150,22 @@ body {
 .amz-small { font-size: 0.72rem; color: #ddd; }
 .amz-deliver strong { font-size: 0.88rem; }
 
+/* ---- Search Row (dedicated 2nd row) ---- */
+.amz-search-row {
+  background: rgba(0,0,0,0.18);
+  padding: 6px 16px 8px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
 /* ---- Search Bar ---- */
 .amz-search-wrap {
-  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   min-width: 0;
   display: flex;
-  height: 42px;
-  border-radius: 6px;
+  height: 40px;
+  border-radius: 8px;
   overflow: hidden;
   border: 2px solid transparent;
   transition: border-color 0.2s;
@@ -261,7 +302,16 @@ body {
   text-align: left;
   transition: background 0.15s, color 0.15s;
 }
-.amz-dropdown-signout:hover { background: #cc4444; color: #fff; }
+/* ---- Nav Actions (Cart & Wishlist Group) ---- */
+.amz-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#nn-account-btn {
+  margin-left: auto;
+}
 
 /* ---- Cart Button ---- */
 .amz-cart-btn {
@@ -629,22 +679,37 @@ body {
   transition: box-shadow 0.2s, transform 0.2s;
   background: #fff;
   text-align: center;
+  /* Ensure no accidental min-width breaks layout */
+  min-width: 0;
 }
 .amz-cat-card:hover {
   box-shadow: 0 6px 20px rgba(139,26,74,0.2);
   transform: translateY(-4px);
   color: #8B1A4A;
 }
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .amz-cat-card {
+    transition: box-shadow 0.2s;
+  }
+  .amz-cat-card:hover { transform: none; }
+  .amz-cat-card:hover .amz-cat-img-wrap img { transform: none; }
+}
 .amz-cat-img-wrap {
+  /* Portrait 4:5 looks best for ethnic fashion photography */
   aspect-ratio: 4/5;
   overflow: hidden;
   background: linear-gradient(145deg, #f9eee4, #f0d8c8);
+  /* Prevent image from overflowing outside rounded corners */
+  border-radius: 0;
 }
 .amz-cat-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   transition: transform 0.4s ease;
+  display: block;
 }
 .amz-cat-card:hover .amz-cat-img-wrap img { transform: scale(1.06); }
 .amz-cat-card h3 {
@@ -652,6 +717,11 @@ body {
   font-size: 0.9rem;
   font-weight: 600;
   padding: 10px 8px 2px;
+  /* Allow wrapping — do NOT truncate category names on desktop */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.3;
 }
 .amz-cat-card p {
   font-size: 0.75rem;
@@ -1074,20 +1144,21 @@ body {
 
 /* ===== COMPREHENSIVE RESPONSIVE DESIGN (MOBILE & TABLET) ===== */
 
-/* Large Tablets / Laptops */
+/* Large Tablets / Laptops (≤1200px) */
 @media (max-width: 1200px) {
-  .amz-product-grid { grid-template-columns: repeat(4, 1fr) !important; }
-  .amz-cat-grid     { grid-template-columns: repeat(4, 1fr) !important; }
-  .amz-footer-main  { padding: 32px 5% !important; }
+  .amz-product-grid { grid-template-columns: repeat(4, 1fr); }
+  .amz-cat-grid     { grid-template-columns: repeat(4, 1fr); }
+  .amz-footer-main  { padding: 32px 5%; }
 }
 
-/* Medium Tablets */
+/* Medium Tablets (≤900px) */
 @media (max-width: 900px) {
-  .amz-product-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 12px !important; }
-  .amz-cat-grid     { grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
-  .amz-features     { grid-template-columns: repeat(2, 1fr) !important; }
-  .amz-promo-inner  { padding: 28px 20px !important; }
-  .amz-footer-main  { grid-template-columns: repeat(2, 1fr) !important; gap: 20px !important; padding: 28px 5% !important; }
+  .amz-product-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  /* 3-col categories on medium tablets: cards are ~180-240px each — good */
+  .amz-cat-grid     { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .amz-features     { grid-template-columns: repeat(2, 1fr); }
+  .amz-promo-inner  { padding: 28px 20px; }
+  .amz-footer-main  { grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 28px 5%; }
 }
 
 /* Mobile Screens (≤ 768px) */
@@ -1132,32 +1203,47 @@ body {
     display: none !important; /* Hide tagline on mobile navbar to prevent crowding */
   }
 
+  /* Hide desktop-only elements on mobile — amz-menu gets its own rule
+     below so it's unambiguously hidden even if selector specificity shifts */
   .amz-deliver,
   .amz-nav-item,
   .amz-install-btn,
-  .amz-menu,
   .amz-search-cat {
     display: none !important;
   }
+  /* Category menu bar & nav strip: hidden on mobile — the shop-cat-pills strip
+     in shop.html provides mobile category navigation instead. */
+  .amz-menu,
+  .amz-nav-strip {
+    display: none !important;
+  }
 
+  /* Search row: full width on mobile, hide category dropdown */
+  .amz-search-row {
+    padding: 4px 10px 6px !important;
+  }
   .amz-search-wrap {
-    flex: 1 !important;
-    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: 38px !important;
     border-radius: 6px !important;
-    margin: 0 4px !important;
+    margin: 0 !important;
   }
-
   .amz-search-input {
     padding: 0 10px !important;
-    font-size: 0.85rem !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    font-size: 0.88rem !important;
+  }
+  .amz-search-btn {
+    width: 40px !important;
+    flex-shrink: 0 !important;
   }
 
-  .amz-search-btn {
-    width: 38px !important;
+  .amz-nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
     flex-shrink: 0 !important;
+    margin-left: auto !important;
   }
 
   .amz-cart-btn {
@@ -1168,7 +1254,8 @@ body {
     margin: 0 !important;
   }
 
-  .amz-cart-btn strong {
+  /* Hide cart/wishlist labels on mobile — icon only */
+  .amz-cart-label {
     display: none !important;
   }
 
@@ -1246,49 +1333,61 @@ body {
     font-size: 0.78rem !important;
   }
 
-  /* Category Grid (Clean 3-col on Mobile) */
+  /* ── Category Grid ──
+     768px viewport: section margin 8px*2=16px, inner padding 10px*2=20px
+     Available = 768-36 = 732px → 3 cols each ~228px — comfortable.
+     480-768px: 3 cols still fine (≥120px each).
+     Below 480px: switch to 2 cols for comfortable card size.
+  */
   .amz-cat-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px !important;
-    width: 100% !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
 
   .amz-cat-card {
-    min-width: 0 !important;
-    width: 100% !important;
-    padding: 8px 4px !important;
-    text-align: center !important;
-    border-radius: 8px !important;
+    min-width: 0;
+    /* Remove any inner padding — card uses overflow:hidden, padding interferes */
+    padding: 0;
+    border-radius: 8px;
+    text-align: center;
   }
 
+  /* Keep portrait aspect on mobile: fashion photography is portrait */
   .amz-cat-img-wrap {
-    width: 100% !important;
-    aspect-ratio: 1/1 !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
-    margin-bottom: 6px !important;
+    aspect-ratio: 3/4;
+    border-radius: 0;
+    overflow: hidden;
+    margin-bottom: 0;
   }
 
   .amz-cat-img-wrap img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block !important;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
   }
 
+  /* Category name: wrap onto 2 lines max, never truncate silently */
   .amz-cat-card h3 {
-    font-size: 0.78rem !important;
-    font-weight: 700 !important;
-    margin: 0 0 2px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 7px 6px 2px;
+    margin: 0;
+    /* 2-line clamp to handle long names gracefully */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+    word-break: break-word;
+    white-space: normal;
   }
 
   .amz-cat-card p {
-    font-size: 0.68rem !important;
-    margin: 0 !important;
+    font-size: 0.7rem;
+    padding: 0 6px 8px;
+    margin: 0;
   }
 
   /* Product Grids (Clean 2-col on Mobile) */
@@ -1455,15 +1554,103 @@ body {
   }
 }
 
+/* ── Narrow Phones (≤ 480px): 2-column category grid ──
+   At 480px: section margin 8px*2=16px, inner padding 10px*2=20px
+   Available = 480-36 = 444px → 2 cols each ~212px — perfect.
+   At 320px: Available = 320-36 = 284px → 2 cols each ~132px — good.
+*/
+@media (max-width: 480px) {
+  .amz-cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Slightly larger text since we have more card width */
+  .amz-cat-card h3 {
+    font-size: 0.82rem;
+    padding: 8px 6px 2px;
+  }
+
+  .amz-cat-card p {
+    font-size: 0.71rem;
+    padding: 0 6px 8px;
+  }
+}
+
 /* Very Small Phones (≤ 360px) */
 @media (max-width: 360px) {
+  /* 2-col already applied at ≤480px, just tune spacing */
   .amz-cat-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px;
   }
+  /* Brand name: shrink further on very small screens to prevent overflow */
   .amz-brand-name {
-    font-size: 0.88rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+  }
+  /* Search bar sits in its own full-width row — no extra margin needed */
+  .amz-search-row {
+    padding: 3px 8px 5px !important;
   }
   .amz-features {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
+  }
+  /* Compact section margins on very small phones */
+  .amz-section {
+    margin: 8px 6px;
+  }
+  .amz-section-inner {
+    padding: 10px 8px;
+  }
+}
+
+/* =============================================
+   MOBILE PERFORMANCE & RENDERING ACCELERATION
+   ============================================= */
+button, a, input, select, textarea,
+.amz-product-card, .amz-cat-card, .amz-btn-primary,
+.amz-add-cart-btn, .amz-nav-pill, .amz-hamburger {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* GPU Rendering & Layout Containment on Mobile.
+   NOTE: .amz-categories-section is near top-of-fold so we deliberately
+   exclude it from content-visibility to avoid layout shifts / paint delays. */
+@media (max-width: 768px) {
+  .amz-features,
+  .amz-seller-promo,
+  .amz-footer {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 350px;
+  }
+}
+
+/* ── Hero stats: prevent overflow on very narrow phones ── */
+@media (max-width: 420px) {
+  .amz-hero-stats {
+    padding: 10px 8px;
+    gap: 4px;
+  }
+  .amz-stat {
+    padding: 0 10px;
+  }
+  .amz-stat strong {
+    font-size: 1.1rem;
+  }
+  .amz-stat span {
+    font-size: 0.62rem;
+  }
+  .amz-stat-sep {
+    height: 24px;
+  }
+}
+
+/* ── iOS Safe Area Support ──
+   Ensure footer respects iPhone home indicator bar.
+   env() falls back gracefully on non-Safari browsers. */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .amz-footer {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }

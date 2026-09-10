@@ -542,7 +542,11 @@ const AdminOrders = {
               <img src="${i.imageUrl||'https://placehold.co/44x54/1A1225/D4AF37?text=P'}" style="width:44px;height:54px;object-fit:cover;border-radius:6px">
               <div style="flex:1">
                 <p style="font-weight:600;font-size:.88rem">${i.name}</p>
-                <p style="font-size:.75rem;color:var(--text-muted)">Size: ${i.size||'—'} | Color: ${i.color||'—'} | Qty: ${i.qty||1}</p>
+                <p style="font-size:.75rem;color:var(--text-muted)">
+                  Size: ${i.size||'—'} | Color: ${i.color||'—'}
+                  ${i.sku ? ` | <code style="font-size:0.72rem;background:rgba(255,255,255,0.08);padding:1px 4px;border-radius:3px;">${i.sku}</code>` : ''}
+                  | Qty: ${i.qty||1}
+                </p>
               </div>
               <span style="font-weight:700;color:var(--accent)">₹${Number((i.price||0)*(i.qty||1)).toLocaleString("en-IN")}</span>
             </div>
@@ -552,11 +556,20 @@ const AdminOrders = {
           <span style="font-weight:600;color:var(--text-muted)">Total Amount</span>
           <span style="font-size:1.25rem;font-weight:800;color:var(--accent)">₹${Number(o.totalAmount||0).toLocaleString("en-IN")}</span>
         </div>
-        ${o.deliveryOtp ? `
-          <div style="background:rgba(245,158,11,0.12);border:1.5px dashed #F59E0B;border-radius:8px;padding:0.85rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+        <div style="background:rgba(212,175,55,0.1);border:1.5px dashed #D4AF37;border-radius:8px;padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:0.5rem;">
             <div>
-              <div style="font-size:0.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;">🔐 Customer Delivery / Pickup OTP</div>
-              <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:#FDE68A;letter-spacing:3px;">${o.deliveryOtp}</div>
+              <div style="font-size:0.72rem;font-weight:700;color:#FDE68A;text-transform:uppercase;letter-spacing:1px;">🏪 Store Handover Code (Pickup OTP)</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">Store/Merchant gives to delivery agent upon pickup</div>
+            </div>
+            <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:var(--accent);letter-spacing:3px;background:rgba(0,0,0,0.35);padding:3px 10px;border-radius:6px;">
+              ${o.storeHandoverOtp || o.storePickupCode || o.deliveryOtp || '------'}
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;">🔐 Customer Delivery OTP</div>
+              <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:#FDE68A;letter-spacing:3px;">${o.deliveryOtp || '------'}</div>
               <div style="font-size:0.72rem;color:${o.otpVerified ? '#10B981' : '#F59E0B'};font-weight:600;margin-top:2px;">
                 ${o.otpVerified ? '✅ OTP Verified by Agent/Admin' : '⏳ Pending Customer Verification'}
               </div>
@@ -568,7 +581,8 @@ const AdminOrders = {
                   Verify &amp; Deliver &rarr;
                 </button>
               </div>` : ''}
-          </div>` : ''}
+          </div>
+        </div>
         ${o.adminNote ? `<div style="background:rgba(212,175,55,.08);border:1px solid var(--border);border-radius:8px;padding:.75rem;font-size:.85rem"><strong>Admin Note:</strong> ${o.adminNote}</div>` : ''}
         ${o.cancellationReason ? `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:.75rem;font-size:.85rem;color:#FCA5A5"><strong>Cancellation Reason:</strong> ${o.cancellationReason}</div>` : ''}
       </div>
@@ -641,7 +655,10 @@ const AdminProducts = {
           <div style="font-weight:700">₹${Number(p.salePrice || p.price || 0).toLocaleString("en-IN")}</div>
           ${p.salePrice && p.salePrice < p.price ? `<div style="font-size:.75rem;color:var(--text-dim);text-decoration:line-through">MRP ₹${Number(p.price).toLocaleString("en-IN")}</div>` : ''}
         </td>
-        <td><span style="font-weight:600;color:${(p.stock||0)<5?'var(--error)':'var(--text)'}">${p.stock ?? "—"}</span></td>
+        <td>
+          <span style="font-weight:700;color:${(p.stock||0)<5?'var(--error)':'var(--text)'}">${p.stock ?? "—"}</span>
+          ${Array.isArray(p.variants) && p.variants.length > 0 ? `<div style="font-size:0.7rem;color:var(--accent);font-weight:600;">${p.variants.length} variant${p.variants.length > 1 ? 's' : ''}</div>` : ''}
+        </td>
         <td>
           ${p.featured ? '<span class="badge badge-featured">Featured</span>' : '<span class="badge badge-inactive">Standard</span>'}
         </td>

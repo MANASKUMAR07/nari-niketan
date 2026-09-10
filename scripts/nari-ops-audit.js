@@ -1,4 +1,4 @@
-/**
+﻿/**
  * =========================================================================
  * NARI NIKETAN — Standalone Operations & QA Audit Suite
  * Automated Test Runner for Node.js / CI / Production Verification
@@ -51,14 +51,14 @@ coreRoutes.forEach(r => {
 // ── PILLAR 2: RESPONSIVE OVERFLOW & DRAWER BOUNDARIES ────────────────────────
 console.log('\n--- Pillar 2: Responsive Zero-Overflow Architecture ---');
 check('Layout CSS enforces transform-based drawer with visibility hidden', () => {
-  const layoutCss = fs.readFileSync(path.join(ROOT_DIR, 'css/amazon-layout.css'), 'utf8');
+  const layoutCss = fs.readFileSync(path.join(ROOT_DIR, 'css/nn-layout.css'), 'utf8');
   assert(layoutCss.includes('transform: translateX(-110%)'), 'Drawer must use translateX(-110%) when closed');
   assert(layoutCss.includes('visibility: hidden;'), 'Drawer must use visibility: hidden when closed');
   assert(layoutCss.includes('max-width: 85vw'), 'Drawer must be constrained with max-width: 85vw');
 });
 
 check('Global mobile overflow protection enabled on html and body', () => {
-  const layoutCss = fs.readFileSync(path.join(ROOT_DIR, 'css/amazon-layout.css'), 'utf8');
+  const layoutCss = fs.readFileSync(path.join(ROOT_DIR, 'css/nn-layout.css'), 'utf8');
   assert(layoutCss.includes('overflow-x: hidden !important;'), 'html, body must have overflow-x: hidden');
   assert(layoutCss.includes('max-width: 100vw !important;'), 'html, body must have max-width: 100vw');
 });
@@ -123,3 +123,4 @@ if (failedTests > 0) {
 } else {
   process.exit(0);
 }
+

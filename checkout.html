@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,9 +10,10 @@
   <meta name="apple-mobile-web-app-title" content="Nari Niketan">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="css/style.css?v=4.0">
-  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/nn-layout.css?v=2.1">
   <link rel="stylesheet" href="css/shop.css?v=4.0">
   <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="stylesheet" href="css/nari-agent.css?v=1.0">
   <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
   <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
   <style>
@@ -98,7 +99,7 @@
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
-        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <img src="images/logo-circle.webp?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
         <div class="nav-logo-text"><span class="brand-name">Nari Niketan</span></div>
       </a>
       <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;color:var(--text-muted)">
@@ -766,6 +767,8 @@
           },
           items: items.map(i => ({ 
             productId: i.productId, 
+            variantId: i.variantId || null,
+            sku: i.sku || null,
             name: i.name, 
             size: i.size, 
             color: i.color, 
@@ -803,5 +806,6 @@
   <script src="js/pwa-install.js" defer></script>
   <script src="js/nari-ai-stylist.js?v=1.0"></script>
   <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+  <script src="js/nari-agent.js?v=1.0" defer></script>
 </body>
 </html>

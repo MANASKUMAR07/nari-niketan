@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,19 +12,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=4.0">
-  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/nn-layout.css?v=2.1">
   <link rel="stylesheet" href="css/shop.css?v=4.0">
   <link rel="stylesheet" href="css/pwa.css?v=1.0">
   <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
   <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+  <link rel="stylesheet" href="css/nari-agent.css?v=1.0">
   <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
 </head>
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
-        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <img src="images/logo-circle.webp?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
         <div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div>
       </a>
       <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li></ul>
@@ -151,8 +152,8 @@
       const noImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 110'%3E%3Crect fill='%23F5ECD8' width='90' height='110'/%3E%3Ctext x='45' y='58' font-family='sans-serif' font-size='11' fill='%238B1A4A' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
       container.innerHTML = items.map(item => `
         <div class="cart-item">
-          <div class="cart-item-img">
-            <img src="${item.imageUrl || (item.images && item.images[0]) || noImg}" alt="${item.name}" onerror="this.onerror=null;this.src='${noImg}'">
+          <div class="cart-item-img" style="aspect-ratio:3/4;overflow:hidden;border-radius:var(--radius-sm,#4px);background:var(--cream,#F5ECD8);">
+            <img src="${item.thumbnail || item.imageUrl || (item.images && item.images[0]) || noImg}" alt="${item.name}" loading="lazy" width="80" height="100" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='${noImg}'">
           </div>
           <div class="cart-item-info">
             <h4 class="cart-item-name">${item.name}</h4>
@@ -238,5 +239,6 @@
   <script src="js/pwa-install.js" defer></script>
   <script src="js/nari-ai-stylist.js?v=1.0"></script>
   <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+  <script src="js/nari-agent.js?v=1.0" defer></script>
 </body>
 </html>

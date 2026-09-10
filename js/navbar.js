@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NARI NIKETAN - Shared E-Commerce Navbar & Footer Injector
  * js/navbar.js  v2.0  (ASCII-safe, no raw emoji in JS)
  *
@@ -29,32 +29,107 @@
     ];
 
     var menuLinks = menuItems.map(function(item) {
-      return '<a href="' + item.href + '"' + (item.gold ? ' class="amz-menu-highlight"' : '') + '>' + item.label + '</a>';
+      return '<a href="' + item.href + '"' + (item.gold ? ' class="nn-menu-highlight"' : '') + '>' + item.label + '</a>';
     }).join('');
 
     return (
-      '<header class="amz-header" id="amz-header">' +
+      '<header class="nn-header" id="nn-header">' +
 
-        '<div class="amz-navbar">' +
+        '<div class="nn-navbar">' +
 
           /* Brand Logo */
-          '<a href="index.html" class="amz-logo" title="Nari Niketan Home">' +
-            '<img src="images/logo-circle.png?v=4.0" alt="Nari Niketan" class="amz-logo-img" width="36" height="36">' +
-            '<div class="amz-logo-text">' +
-              '<span class="amz-brand-name">Nari Niketan</span>' +
-              '<span class="amz-brand-tag">Elegance Redefined</span>' +
+          '<a href="index.html" class="nn-logo" title="Nari Niketan Home">' +
+            '<img src="images/logo-circle.webp?v=4.0" onerror="this.onerror=null;this.src=\'images/logo-circle.png?v=4.0\'" alt="Nari Niketan" class="nn-logo-img" width="36" height="36">' +
+            '<div class="nn-logo-text">' +
+              '<span class="nn-brand-name">Nari Niketan</span>' +
+              '<span class="nn-brand-tag">Elegance Redefined</span>' +
             '</div>' +
           '</a>' +
 
           /* Delivery Location */
-          '<div class="amz-deliver">' +
-            '<span class="amz-small">Deliver to</span>' +
+          '<div class="nn-deliver">' +
+            '<span class="nn-small">Deliver to</span>' +
             '<strong>India</strong>' +
           '</div>' +
 
-          /* Search Bar */
-          '<div class="amz-search-wrap">' +
-            '<select class="amz-search-cat" id="nn-search-cat">' +
+          /* Account & Lists (follows logo directly now) */
+          '<div class="nn-nav-item" id="nn-account-btn">' +
+            '<span class="nn-small">Hello, <span id="nn-user-greeting">Sign in</span></span>' +
+            '<strong>Account &amp; Lists &#9660;</strong>' +
+            '<div class="nn-dropdown" id="nn-account-dropdown">' +
+              '<div id="nn-dropdown-signed-out">' +
+                '<div class="nn-dropdown-header">' +
+                  '<a href="login.html" class="nn-dropdown-signin-btn">Sign In</a>' +
+                  '<p>New customer? <a href="register.html">Start here.</a></p>' +
+                '</div>' +
+                '<div class="nn-dropdown-body">' +
+                  '<h4>Your Lists</h4>' +
+                  '<a href="my-orders.html">My Orders</a>' +
+                  '<a href="cart.html">Shopping Cart</a>' +
+                  '<hr class="nn-dropdown-divider">' +
+                  '<h4>Partner Portals</h4>' +
+                  '<a href="delivery/login.html" style="color:#8B1A4A;font-weight:700;">&#128757; Delivery Partner Sign In</a>' +
+                  '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Seller Portal Sign In</a>' +
+                '</div>' +
+              '</div>' +
+              '<div id="nn-dropdown-signed-in" style="display:none">' +
+                '<div class="nn-dropdown-header">' +
+                  '<p class="nn-dropdown-username">Signed in as <strong id="nn-dropdown-name">User</strong></p>' +
+                '</div>' +
+                '<div class="nn-dropdown-body">' +
+                  '<h4>Your Account</h4>' +
+                  '<a href="my-account.html">My Account</a>' +
+                  '<a href="my-orders.html">My Orders</a>' +
+                  '<hr class="nn-dropdown-divider">' +
+                  '<h4>Partner Portals</h4>' +
+                  '<a href="delivery/login.html" style="color:#8B1A4A;font-weight:700;">&#128757; Delivery Partner Portal</a>' +
+                  '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Seller Portal</a>' +
+                  '<hr class="nn-dropdown-divider">' +
+                  '<button onclick="if(window.App)App.signOut()" class="nn-dropdown-signout">Sign Out</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          /* Returns & Orders */
+          '<div class="nn-nav-item" onclick="window.location.href=\'my-orders.html\'" style="cursor:pointer">' +
+            '<span class="nn-small">Returns</span>' +
+            '<strong>&amp; Orders</strong>' +
+          '</div>' +
+
+          /* Cart & Wishlist Actions Group */
+          '<div class="nn-nav-actions">' +
+            '<a href="cart.html" class="nn-cart-btn" title="Shopping Cart">' +
+              '<div class="nn-cart-icon-wrap">' +
+                '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+                ' stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>' +
+                '<line x1="3" y1="6" x2="21" y2="6"/>' +
+                '<path d="M16 10a4 4 0 01-8 0"/>' +
+                '</svg>' +
+                '<span class="nn-cart-count" id="nn-cart-count">0</span>' +
+              '</div>' +
+              '<span class="nn-cart-label">Cart</span>' +
+            '</a>' +
+
+            /* Wishlist — compact icon-only, matches Cart style */
+            '<a href="#" class="nn-cart-btn nn-wl-trigger" onclick="if(window.Wishlist)Wishlist.openDrawer();return false;" title="My Wishlist" aria-label="My Wishlist">' +
+              '<div class="nn-cart-icon-wrap">' +
+                '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>' +
+                '</svg>' +
+                '<span class="nn-wl-nav-badge nn-cart-count" id="nn-wl-badge-header">0</span>' +
+              '</div>' +
+              '<span class="nn-cart-label">Wishlist</span>' +
+            '</a>' +
+          '</div>' +
+
+        '</div>' +
+
+        /* ── ROW 2: Full-width Search Bar ───────────────────── */
+        '<div class="nn-search-row">' +
+          '<div class="nn-search-wrap">' +
+            '<select class="nn-search-cat" id="nn-search-cat">' +
               '<option value="">All</option>' +
               '<option value="Sarees">Sarees</option>' +
               '<option value="Suits">Suits</option>' +
@@ -62,89 +137,29 @@
               '<option value="Kurtas">Kurtas</option>' +
               '<option value="Dupattas">Dupattas</option>' +
             '</select>' +
-            '<input type="text" class="amz-search-input" id="nn-search-input"' +
-              ' placeholder="Search Nari Niketan..."' +
+            '<input type="text" class="nn-search-input" id="nn-search-input"' +
+              ' placeholder="Search for sarees, lehengas, kurtas..."' +
               ' onkeydown="if(event.key===\'Enter\') NNNav.search()">' +
-            '<button class="amz-search-btn" onclick="NNNav.search()" aria-label="Search">' +
+            '<button class="nn-search-btn" onclick="NNNav.search()" aria-label="Search">' +
               '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
               ' stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
               '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>' +
               '</svg>' +
             '</button>' +
           '</div>' +
-
-          /* Account & Lists */
-          '<div class="amz-nav-item" id="nn-account-btn">' +
-            '<span class="amz-small">Hello, <span id="nn-user-greeting">Sign in</span></span>' +
-            '<strong>Account &amp; Lists &#9660;</strong>' +
-            '<div class="amz-dropdown" id="nn-account-dropdown">' +
-              '<div id="nn-dropdown-signed-out">' +
-                '<div class="amz-dropdown-header">' +
-                  '<a href="login.html" class="amz-dropdown-signin-btn">Sign In</a>' +
-                  '<p>New customer? <a href="register.html">Start here.</a></p>' +
-                '</div>' +
-                '<div class="amz-dropdown-body">' +
-                  '<h4>Your Lists</h4>' +
-                  '<a href="my-orders.html">My Orders</a>' +
-                  '<a href="cart.html">Shopping Cart</a>' +
-                  '<hr class="amz-dropdown-divider">' +
-                  '<h4>Partner Portals</h4>' +
-                  '<a href="delivery/login.html" style="color:#8B1A4A;font-weight:700;">&#128757; Delivery Partner Sign In</a>' +
-                  '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Seller Portal Sign In</a>' +
-                '</div>' +
-              '</div>' +
-              '<div id="nn-dropdown-signed-in" style="display:none">' +
-                '<div class="amz-dropdown-header">' +
-                  '<p class="amz-dropdown-username">Signed in as <strong id="nn-dropdown-name">User</strong></p>' +
-                '</div>' +
-                '<div class="amz-dropdown-body">' +
-                  '<h4>Your Account</h4>' +
-                  '<a href="my-account.html">My Account</a>' +
-                  '<a href="my-orders.html">My Orders</a>' +
-                  '<hr class="amz-dropdown-divider">' +
-                  '<h4>Partner Portals</h4>' +
-                  '<a href="delivery/login.html" style="color:#8B1A4A;font-weight:700;">&#128757; Delivery Partner Portal</a>' +
-                  '<a href="seller/login.html" style="color:#D4AF37;font-weight:700;">&#127978; Seller Portal</a>' +
-                  '<hr class="amz-dropdown-divider">' +
-                  '<button onclick="if(window.App)App.signOut()" class="amz-dropdown-signout">Sign Out</button>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-
-          /* Returns & Orders */
-          '<div class="amz-nav-item" onclick="window.location.href=\'my-orders.html\'" style="cursor:pointer">' +
-            '<span class="amz-small">Returns</span>' +
-            '<strong>&amp; Orders</strong>' +
-          '</div>' +
-
-          /* Cart */
-          '<a href="cart.html" class="amz-cart-btn" title="Shopping Cart">' +
-            '<div class="amz-cart-icon-wrap">' +
-              '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
-              ' stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-              '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>' +
-              '<line x1="3" y1="6" x2="21" y2="6"/>' +
-              '<path d="M16 10a4 4 0 01-8 0"/>' +
-              '</svg>' +
-              '<span class="amz-cart-count" id="nn-cart-count">0</span>' +
-            '</div>' +
-            '<span class="amz-cart-label">Cart</span>' +
-          '</a>' +
-
         '</div>' +
 
-        /* Category Nav Strip */
-        '<nav class="amz-nav-strip" aria-label="Quick Categories">' +
-          '<a href="shop.html" class="amz-nav-strip-item">&#9776; All</a>' +
-          '<a href="shop.html?cat=Sarees" class="amz-nav-strip-item">Sarees</a>' +
-          '<a href="shop.html?cat=Suits" class="amz-nav-strip-item">Salwar Suits</a>' +
-          '<a href="shop.html?cat=Lehengas" class="amz-nav-strip-item">Lehengas</a>' +
-          '<a href="shop.html?cat=Kurtas" class="amz-nav-strip-item">Kurtas</a>' +
-          '<a href="shop.html?cat=Dupattas" class="amz-nav-strip-item">Dupattas</a>' +
-          '<a href="shop.html?cat=Accessories" class="amz-nav-strip-item">Accessories</a>' +
-          '<a href="seller/login.html" class="amz-nav-strip-item" style="color:#D4AF37;font-weight:700;">&#127978; Sell</a>' +
-          '<a href="delivery/login.html" class="amz-nav-strip-item" style="color:#FFE082;font-weight:700;">&#128757; Delivery</a>' +
+        /* ── ROW 3: Category Nav Strip ───────────────────────── */
+        '<nav class="nn-nav-strip" aria-label="Quick Categories">' +
+          '<a href="shop.html" class="nn-nav-strip-item">&#9776; All</a>' +
+          '<a href="shop.html?cat=Sarees" class="nn-nav-strip-item">Sarees</a>' +
+          '<a href="shop.html?cat=Suits" class="nn-nav-strip-item">Salwar Suits</a>' +
+          '<a href="shop.html?cat=Lehengas" class="nn-nav-strip-item">Lehengas</a>' +
+          '<a href="shop.html?cat=Kurtas" class="nn-nav-strip-item">Kurtas</a>' +
+          '<a href="shop.html?cat=Dupattas" class="nn-nav-strip-item">Dupattas</a>' +
+          '<a href="shop.html?cat=Accessories" class="nn-nav-strip-item">Accessories</a>' +
+          '<a href="seller/login.html" class="nn-nav-strip-item" style="color:#D4AF37;font-weight:700;">&#127978; Sell</a>' +
+          '<a href="delivery/login.html" class="nn-nav-strip-item" style="color:#FFE082;font-weight:700;">&#128757; Delivery</a>' +
         '</nav>' +
 
       '</header>'
@@ -154,13 +169,13 @@
   /* --- 1b. BUILD MOBILE DRAWER HTML --- */
   function buildDrawer() {
     return (
-      '<div class="amz-mobile-drawer" id="nn-mobile-drawer">' +
-        '<div class="amz-drawer-header">' +
-          '<div class="amz-drawer-user">' +
-            '<span class="amz-drawer-user-icon">&#128100;</span>' +
-            '<span>Hello, <span id="nn-mobile-greeting" class="amz-drawer-greeting">Sign in</span></span>' +
+      '<div class="nn-mobile-drawer" id="nn-mobile-drawer">' +
+        '<div class="nn-drawer-header">' +
+          '<div class="nn-drawer-user">' +
+            '<span class="nn-drawer-user-icon">&#128100;</span>' +
+            '<span>Hello, <span id="nn-mobile-greeting" class="nn-drawer-greeting">Sign in</span></span>' +
           '</div>' +
-          '<button class="amz-drawer-close" id="nn-drawer-close" aria-label="Close menu">&times;</button>' +
+          '<button class="nn-drawer-close" id="nn-drawer-close" aria-label="Close menu">&times;</button>' +
         '</div>' +
         '<a href="index.html">Home</a>' +
         '<a href="shop.html">Shop All</a>' +
@@ -181,34 +196,34 @@
           'Install App' +
         '</button>' +
       '</div>' +
-      '<div class="amz-mobile-overlay" id="nn-mobile-overlay"></div>'
+      '<div class="nn-mobile-overlay" id="nn-mobile-overlay"></div>'
     );
   }
 
   /* --- 2. BUILD FOOTER HTML --- */
   function buildFooter() {
     return (
-      '<footer class="amz-footer">' +
-        '<div class="amz-back-top" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">&#8593; Back to top</div>' +
-        '<div class="amz-footer-main">' +
+      '<footer class="nn-footer">' +
+        '<div class="nn-back-top" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">&#8593; Back to top</div>' +
+        '<div class="nn-footer-main">' +
 
-          '<div class="amz-footer-col">' +
-            '<div class="amz-footer-brand">' +
-              '<img src="images/logo-circle.png?v=4.0" alt="Nari Niketan" width="42" height="42">' +
+          '<div class="nn-footer-col">' +
+            '<div class="nn-footer-brand">' +
+              '<img src="images/logo-circle.webp?v=4.0" onerror="this.onerror=null;this.src=\'images/logo-circle.png?v=4.0\'" alt="Nari Niketan" width="42" height="42">' +
               '<div>' +
-                '<span class="amz-footer-brand-name">Nari Niketan</span>' +
-                '<span class="amz-footer-brand-tag">Elegance Redefined</span>' +
+                '<span class="nn-footer-brand-name">Nari Niketan</span>' +
+                '<span class="nn-footer-brand-tag">Elegance Redefined</span>' +
               '</div>' +
             '</div>' +
-            '<p class="amz-footer-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>' +
-            '<div class="amz-footer-social">' +
+            '<p class="nn-footer-desc">Your premier destination for authentic Indian ethnic wear. Celebrating the grace and tradition of Indian fashion.</p>' +
+            '<div class="nn-footer-social">' +
               '<a href="#" aria-label="Facebook">FB</a>' +
               '<a href="#" aria-label="Instagram">IG</a>' +
               '<a href="#" aria-label="Twitter">TW</a>' +
             '</div>' +
           '</div>' +
 
-          '<div class="amz-footer-col">' +
+          '<div class="nn-footer-col">' +
             '<h3>Shop &amp; Join</h3>' +
             '<a href="shop.html">All Products</a>' +
             '<a href="shop.html?cat=Sarees">Sarees</a>' +
@@ -219,7 +234,7 @@
             '<a href="delivery/login.html" style="color:#FFE082;font-weight:600;">&#128757; Delivery Partner Portal</a>' +
           '</div>' +
 
-          '<div class="amz-footer-col">' +
+          '<div class="nn-footer-col">' +
             '<h3>Help &amp; Policies</h3>' +
             '<a href="my-account.html">Your Account</a>' +
             '<a href="my-orders.html">Your Orders</a>' +
@@ -229,9 +244,9 @@
             '<a href="privacy-policy.html">Privacy Policy</a>' +
           '</div>' +
 
-          '<div class="amz-footer-col">' +
+          '<div class="nn-footer-col">' +
             '<h3>Contact Us</h3>' +
-            '<div class="amz-footer-contact">' +
+            '<div class="nn-footer-contact">' +
               '<p><a href="https://maps.app.goo.gl/WCfYf5sqeQSv9ZCw9" target="_blank" rel="noopener">Nari Niketan, Rihand Nagar</a></p>' +
               '<p><a href="tel:+916307032042">+91 6307032042</a></p>' +
               '<p><a href="mailto:nariniketan07@gmail.com">nariniketan07@gmail.com</a></p>' +
@@ -240,7 +255,7 @@
           '</div>' +
 
         '</div>' +
-        '<div class="amz-footer-bottom">' +
+        '<div class="nn-footer-bottom">' +
           '<span>Nari Niketan</span>' +
           '<p>&copy; 2026 Nari Niketan. All rights reserved.</p>' +
           '<p>' +
@@ -263,8 +278,8 @@
       if (el) el.remove();
     });
 
-    /* Remove existing amz-header if already injected */
-    var existingHeader = document.getElementById('amz-header');
+    /* Remove existing nn-header if already injected */
+    var existingHeader = document.getElementById('nn-header');
     if (existingHeader) existingHeader.parentElement && existingHeader.parentElement.remove
       ? existingHeader.remove() : null;
 
@@ -309,7 +324,7 @@
       });
     }
 
-    var closeBtn = document.getElementById('nn-drawer-close') || document.getElementById('amz-drawer-close');
+    var closeBtn = document.getElementById('nn-drawer-close') || document.getElementById('nn-drawer-close');
     if (closeBtn) {
       closeBtn.addEventListener('click', function() {
         if (mobileNav) mobileNav.classList.remove('open');
@@ -337,30 +352,41 @@
 
     /* Sticky shadow on scroll */
     window.addEventListener('scroll', function() {
-      var h = document.getElementById('amz-header');
+      var h = document.getElementById('nn-header');
       if (h) h.classList.toggle('scrolled', window.scrollY > 10);
     }, { passive: true });
   }
 
   /* --- 5. CART COUNT --- */
   function updateCartBadge() {
-    var badge = document.getElementById('cart-count');
-    if (!badge) return;
+    var badges = [
+      document.getElementById('cart-count'),
+      document.getElementById('nn-cart-count')
+    ];
     try {
       var items = JSON.parse(localStorage.getItem('nn_cart') || '[]');
       var count = items.reduce(function(s, i) { return s + (i.qty || 1); }, 0);
-      badge.textContent = count > 99 ? '99+' : count;
-      badge.style.display = count > 0 ? '' : 'none';
-    } catch(e) { badge.style.display = 'none'; }
+      badges.forEach(function(badge) {
+        if (!badge) return;
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = count > 0 ? '' : 'none';
+      });
+    } catch(e) {
+      badges.forEach(function(badge) { if (badge) badge.style.display = 'none'; });
+    }
+    // Also sync wishlist badge if Wishlist is loaded
+    if (window.Wishlist && typeof Wishlist.updateBadge === 'function') {
+      Wishlist.updateBadge();
+    }
   }
 
   /* --- 6. AUTH STATE --- */
   function updateAuthUI(user) {
-    var greeting    = document.getElementById('nn-user-greeting') || document.getElementById('amz-user-greeting');
-    var signedIn    = document.getElementById('nn-dropdown-signed-in') || document.getElementById('amz-dropdown-signed-in');
-    var signedOut   = document.getElementById('nn-dropdown-signed-out') || document.getElementById('amz-dropdown-signed-out');
-    var dropName    = document.getElementById('nn-dropdown-name') || document.getElementById('amz-dropdown-name');
-    var mobileNav   = document.getElementById('nn-mobile-nav') || document.getElementById('amz-mobile-nav');
+    var greeting    = document.getElementById('nn-user-greeting') || document.getElementById('nn-user-greeting');
+    var signedIn    = document.getElementById('nn-dropdown-signed-in') || document.getElementById('nn-dropdown-signed-in');
+    var signedOut   = document.getElementById('nn-dropdown-signed-out') || document.getElementById('nn-dropdown-signed-out');
+    var dropName    = document.getElementById('nn-dropdown-name') || document.getElementById('nn-dropdown-name');
+    var mobileNav   = document.getElementById('nn-mobile-nav') || document.getElementById('nn-mobile-nav');
 
     if (!greeting) return;
     if (user) {
@@ -374,19 +400,19 @@
       if (window.Store && typeof Store.isUserAdmin === 'function') {
         Store.isUserAdmin(user.uid).then(function(isAdmin) {
           if (isAdmin && signedIn) {
-            var body = signedIn.querySelector('.amz-dropdown-body');
-            if (body && !body.querySelector('.amz-admin-link')) {
+            var body = signedIn.querySelector('.nn-dropdown-body');
+            if (body && !body.querySelector('.nn-admin-link')) {
               var adminLink = document.createElement('a');
               adminLink.href = 'admin/index.html';
-              adminLink.className = 'amz-admin-link';
+              adminLink.className = 'nn-admin-link';
               adminLink.innerHTML = '&#9881; Admin Dashboard';
               adminLink.style.cssText = 'color:#D4AF37!important;font-weight:700;display:block;margin-top:.4rem;padding-top:.4rem;border-top:1px dashed rgba(212,175,55,.3);';
               body.insertBefore(adminLink, body.firstChild);
             }
-            if (mobileNav && !mobileNav.querySelector('.amz-mobile-admin-link')) {
+            if (mobileNav && !mobileNav.querySelector('.nn-mobile-admin-link')) {
               var mAdmin = document.createElement('a');
               mAdmin.href = 'admin/index.html';
-              mAdmin.className = 'amz-mobile-admin-link';
+              mAdmin.className = 'nn-mobile-admin-link';
               mAdmin.innerHTML = '&#9881; Admin Dashboard';
               mAdmin.style.cssText = 'color:#D4AF37!important;font-weight:700;';
               mobileNav.insertBefore(mAdmin, mobileNav.firstChild);
@@ -399,9 +425,9 @@
       if (signedIn)  signedIn.style.display  = 'none';
       if (signedOut) signedOut.style.display = '';
       
-      var oldAdmin = document.querySelector('.amz-admin-link');
+      var oldAdmin = document.querySelector('.nn-admin-link');
       if (oldAdmin) oldAdmin.remove();
-      var oldMAdmin = document.querySelector('.amz-mobile-admin-link');
+      var oldMAdmin = document.querySelector('.nn-mobile-admin-link');
       if (oldMAdmin) oldMAdmin.remove();
     }
   }
@@ -447,3 +473,4 @@
   }
 
 })();
+

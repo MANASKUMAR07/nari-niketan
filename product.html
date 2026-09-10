@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,22 +9,36 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nari Niketan">
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://wsrv.nl" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com">
+  <link rel="dns-prefetch" href="https://wsrv.nl">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=4.0">
-  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
+  <link rel="stylesheet" href="css/style.css?v=5.0">
+  <link rel="stylesheet" href="css/nn-layout.css?v=2.1">
   <link rel="stylesheet" href="css/shop.css?v=4.0">
-  <link rel="stylesheet" href="css/pwa.css?v=1.0">
+  <link rel="stylesheet" href="css/pwa.css?v=2.0">
   <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
   <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
-  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+  <!-- Asynchronous Non-Blocking Feature Stylesheets -->
+  <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/nari-agent.css?v=1.0" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/wishlist.css?v=1.0">
+  <noscript>
+    <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
+    <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
+    <link rel="stylesheet" href="css/nari-agent.css?v=1.0">
+  </noscript>
 </head>
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="index.html" class="nav-logo"><img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;"><div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div></a>
+      <a href="index.html" class="nav-logo"><img src="images/logo-circle.webp?v=4.0" onerror="this.onerror=null;this.src='images/logo-circle.png?v=4.0'" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;"><div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div></a>
       <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html" class="active">Shop</a></li></ul>
       <div class="nav-actions">
         <button class="pwa-nav-btn pwa-install-trigger" onclick="window.triggerPWAInstall()" style="display:none" title="Install Nari Niketan App">
@@ -74,7 +88,7 @@
       <div class="footer-grid">
         <div>
           <div class="nav-logo" style="margin-bottom:1rem">
-            <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
+            <img src="images/logo-circle.webp?v=4.0" onerror="this.onerror=null;this.src='images/logo-circle.png?v=4.0'" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
             <div class="nav-logo-text">
               <span class="brand-name" style="color:var(--white)">Nari Niketan</span>
               <span class="brand-tagline">Elegance Redefined</span>
@@ -122,16 +136,18 @@
     </div>
   </footer>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/nari-monitor.js?v=1.1"></script>
-<script src="js/store.js?v=3.8"></script>
-  <script src="js/cart.js?v=3.8"></script>
-  <script src="js/app.js?v=3.8"></script>
-  <script src="js/products.js?v=3.8"></script>
-  <script src="js/nari-ai-ads.js?v=1.0"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+  <script src="js/firebase-config.js" defer></script>
+  <script src="js/nari-monitor.js?v=1.1" defer></script>
+  <script src="js/store.js?v=3.8" defer></script>
+  <script src="js/cart.js?v=3.8" defer></script>
+  <script src="js/app.js?v=3.8" defer></script>
+  <script src="js/products.js?v=3.8" defer></script>
+  <script src="js/nari-ai-ads.js?v=1.0" defer></script>
+  <script src="js/nari-agent.js?v=1.0" defer></script>
+  <script src="js/wishlist.js?v=1.0"></script>
   <script>
     let currentProduct = null;
     let selectedSize = null, selectedColor = null, qty = 1;
@@ -139,17 +155,38 @@
     async function loadProduct() {
       const id = new URLSearchParams(window.location.search).get("id");
       if (!id) { window.location.href = "shop.html"; return; }
-      const product = await Store.getProduct(id);
-      if (!product) { window.location.href = "shop.html"; return; }
-      currentProduct = product;
-      document.title = product.name + " &mdash; Nari Niketan";
-      document.getElementById("bread-name").textContent = product.name;
-      renderProduct(product);
-      const related = await Store.getProducts({ category: product.category });
-      Products.renderGrid(related.filter(p => p.id !== id).slice(0, 4), "related-products");
+
+      // ⚡ 0ms INSTANT HYDRATION: Check local cache immediately
+      const cached = (typeof Store !== 'undefined' && Store.getCachedProducts) ? Store.getCachedProducts() : [];
+      const localProduct = cached.find(p => p.id === id);
+      if (localProduct) {
+        currentProduct = localProduct;
+        document.title = localProduct.name + " \u2014 Nari Niketan";
+        const bread = document.getElementById("bread-name");
+        if (bread) bread.textContent = localProduct.name;
+        renderProduct(localProduct);
+      }
+
+      // Fetch fresh details from Firestore in background
+      try {
+        const product = await Store.getProduct(id);
+        if (product) {
+          currentProduct = product;
+          document.title = product.name + " \u2014 Nari Niketan";
+          const bread = document.getElementById("bread-name");
+          if (bread) bread.textContent = product.name;
+          renderProduct(product);
+          const related = await Store.getProducts({ category: product.category });
+          Products.renderGrid(related.filter(p => p.id !== id).slice(0, 4), "related-products");
+        } else if (!localProduct) {
+          window.location.href = "shop.html";
+        }
+      } catch (e) {
+        console.warn("loadProduct error:", e);
+      }
     }
 
-        function renderProduct(p) {
+    function renderProduct(p) {
       // Seller saves: price = MRP, salePrice = discounted selling price
       const hasSale     = p.salePrice && Number(p.salePrice) < Number(p.price);
       const displayPrice = hasSale ? Number(p.salePrice) : Number(p.price);
@@ -157,14 +194,60 @@
         ? (p.discount || Math.round(((p.price - p.salePrice) / p.price) * 100))
         : 0;
       const noImg   = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 520'%3E%3Crect fill='%23F5ECD8' width='400' height='520'/%3E%3Ctext x='200' y='240' font-family='Georgia%2Cserif' font-size='16' fill='%238B1A4A' text-anchor='middle'%3E%F0%9F%9B%8D%EF%B8%8F%3C/text%3E%3Ctext x='200' y='270' font-family='Georgia%2Cserif' font-size='14' fill='%238B1A4A' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
-      const mainImg = (p.images && p.images[0]) || p.imageUrl || noImg;
-      const images  = (p.images && p.images.length > 0) ? p.images : (p.imageUrl ? [p.imageUrl] : [mainImg]);
+
+      const rawList = (p.images && p.images.length > 0) ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+      const imageList = rawList.map(item => {
+        if (typeof item === 'object' && item) {
+          const rawLarge = item.large || item.medium || item.original || item.thumbnail || noImg;
+          const rawMed   = item.medium || item.large || item.thumbnail || rawLarge;
+          const rawThumb = item.thumbnail || item.medium || rawLarge;
+          return {
+            thumb: rawThumb,
+            medium: rawMed,
+            large: rawLarge,
+            rawDirect: rawLarge,
+            rawThumb: rawThumb,
+            alt: item.alt || p.name || 'Product Image'
+          };
+        }
+        const strUrl = item || noImg;
+        return {
+          thumb: strUrl,
+          medium: strUrl,
+          large: strUrl,
+          rawDirect: strUrl,
+          rawThumb: strUrl,
+          alt: p.name || 'Product Image'
+        };
+      });
+
+      if (imageList.length === 0) {
+        imageList.push({ thumb: noImg, large: noImg, medium: noImg, rawDirect: noImg, rawThumb: noImg, alt: p.name || 'Product Image' });
+      }
+
+      const mainImage = imageList[0];
 
       document.getElementById("product-detail").innerHTML = `
         <div class="product-gallery">
-          <div class="gallery-main"><img src="${mainImg}" alt="${p.name}" id="main-img" onerror="this.onerror=null;this.src='${noImg}'"></div>
-          <div class="gallery-thumbs">
-            ${images.map((img,i) => `<div class="gallery-thumb ${i===0?'active':''}" onclick="switchImg('${img}',this)"><img src="${img}" alt="" onerror="this.onerror=null;this.src='${noImg}'"></div>`).join("")}
+          <div class="gallery-main" style="aspect-ratio:3/4;overflow:hidden;background:var(--cream,#F5ECD8);border-radius:var(--radius-md,#8px);">
+            <img src="${mainImage.large}"
+              srcset="${mainImage.medium} 800w, ${mainImage.large} 1400w"
+              sizes="(max-width: 768px) 100vw, 550px"
+              alt="${mainImage.alt}"
+              id="main-img"
+              width="550" height="733"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              style="width:100%;height:100%;object-fit:cover;display:block;"
+              onerror="if(!this.dataset.fallbackApplied){this.dataset.fallbackApplied='1';this.removeAttribute('srcset');this.src='${mainImage.rawDirect}';}else{this.src='${noImg}';}">
+          </div>
+          <div class="gallery-thumbs" style="display:flex;gap:0.5rem;margin-top:0.75rem;overflow-x:auto;">
+            ${imageList.map((imgObj, i) => `
+              <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="switchImg('${imgObj.large.replace(/'/g, "\\'")}', this)" style="cursor:pointer;aspect-ratio:1;width:64px;height:64px;flex-shrink:0;overflow:hidden;border-radius:4px;border:2px solid ${i === 0 ? 'var(--primary,#8B1A4A)' : 'transparent'};">
+                <img src="${imgObj.thumb}" alt="${imgObj.alt}" width="64" height="64" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='${imgObj.rawThumb||noImg}'">
+              </div>
+            `).join("")}
           </div>
         </div>
         <div class="product-info">
@@ -173,33 +256,33 @@
           <div class="product-rating-row">
             <span class="stars" style="font-size:1rem">${App.getStars(p.rating||4)}</span>
             <span style="font-size:0.9rem;color:var(--text-light)">${(p.rating||4).toFixed(1)} (${p.reviews||0} reviews)</span>
-            <span style="margin-left:auto;font-size:0.82rem;color:${p.stock>0?'var(--success)':'var(--error)'}">
+            <span id="product-stock-badge" style="margin-left:auto;font-size:0.85rem;font-weight:700;color:${p.stock>0?'var(--success,#15803D)':'var(--error,#c62828)'}">
               ${p.stock>10?'&#9989; In Stock':p.stock>0?`&#9888; Only ${p.stock} left`:'&#10060; Out of Stock'}
             </span>
           </div>
           <div class="product-big-price" style="display:flex;align-items:baseline;gap:0.6rem;margin:1rem 0;">
-            <span style="font-size:1.6rem;font-weight:700;color:var(--primary);">&#8377;${displayPrice.toLocaleString('en-IN')}</span>
-            ${hasSale ? `<span class="original" style="font-size:1rem;color:#88707A;text-decoration:line-through;">&#8377;${Number(p.price).toLocaleString('en-IN')}</span>` : ''}
-            ${hasSale ? `<span class="save-tag" style="font-size:0.8rem;color:#2E7D32;font-weight:700;background:rgba(46,125,50,0.1);padding:2px 8px;border-radius:4px;">${discount}% OFF</span>` : ''}
+            <span id="product-display-price" style="font-size:1.6rem;font-weight:700;color:var(--primary);">&#8377;${displayPrice.toLocaleString('en-IN')}</span>
+            ${hasSale ? `<span id="product-original-price" class="original" style="font-size:1rem;color:#88707A;text-decoration:line-through;">&#8377;${Number(p.price).toLocaleString('en-IN')}</span>` : '<span id="product-original-price" style="display:none"></span>'}
+            ${hasSale ? `<span id="product-discount-tag" class="save-tag" style="font-size:0.8rem;color:#2E7D32;font-weight:700;background:rgba(46,125,50,0.1);padding:2px 8px;border-radius:4px;">${discount}% OFF</span>` : '<span id="product-discount-tag" style="display:none"></span>'}
           </div>
-
-          ${p.sizes&&p.sizes.length?`
-          <div class="product-option-section">
-            <p class="product-option-label">Size <span id="selected-size-label">${selectedSize?'&mdash; '+selectedSize:''}</span></p>
-            <div class="size-selector">
-              ${p.sizes.map(s=>`<button class="size-option" onclick="selectSize('${s}',this)">${s}</button>`).join("")}
-            </div>
-          </div>`:''}
 
           ${p.colors&&p.colors.length?`
           <div class="product-option-section">
             <p class="product-option-label">Color <span id="selected-color-label">${selectedColor?'&mdash; '+selectedColor:''}</span></p>
-            <div class="color-selector">
-              ${p.colors.map((c,i)=>{
+            <div class="color-selector" id="color-selector-wrap">
+              ${p.colors.map((c)=>{
                 const colorMap={'Red':'#D32F2F','Blue':'#1976D2','Green':'#388E3C','Navy Blue':'#1A237E','Bottle Green':'#1B5E20','Peach':'#FFAB91','Sky Blue':'#81D4FA','Mint':'#80CBC4','Maroon':'#880E4F','Pink':'#F48FB1','Gold':'#FFD700','Wine':'#7B0D1E','Black':'#212121','Royal Blue':'#1565C0','Teal':'#00695C','Coral':'#FF5252','Lavender':'#CE93D8','Yellow':'#FBC02D','Orange':'#F57C00','Purple':'#7B1FA2','Beige':'#D7CCC8','Silver':'#9E9E9E','Multicolor':'linear-gradient(135deg,#f00,#ff0,#0f0,#00f)'};
                 const bg=colorMap[c]||'var(--primary)';
-                return `<button class="color-option" title="${c}" style="background:${bg};border:3px solid rgba(255,255,255,0.5)" onclick="selectColor('${c}',this)"></button>`;
+                return `<button class="color-option ${selectedColor===c?'selected':''}" title="${c}" data-color="${c}" style="background:${bg};border:3px solid rgba(255,255,255,0.5)" onclick="selectColor('${c}',this)"></button>`;
               }).join("")}
+            </div>
+          </div>`:''}
+
+          ${p.sizes&&p.sizes.length?`
+          <div class="product-option-section">
+            <p class="product-option-label">Size <span id="selected-size-label">${selectedSize?'&mdash; '+selectedSize:''}</span></p>
+            <div class="size-selector" id="size-selector-wrap">
+              ${p.sizes.map(s=>`<button class="size-option ${selectedSize===s?'selected':''}" data-size="${s}" onclick="selectSize('${s}',this)">${s}</button>`).join("")}
             </div>
           </div>`:''}
 
@@ -213,10 +296,10 @@
           </div>
 
           <div class="add-to-cart-row">
-            <button class="btn btn-primary btn-lg" onclick="addToCart()" ${p.stock<=0?'disabled':''}>
+            <button class="btn btn-primary btn-lg" id="btn-add-to-cart" onclick="addToCart()" ${p.stock<=0?'disabled':''}>
               Add to Cart
             </button>
-            <button class="btn btn-secondary btn-lg" onclick="buyNow()" ${p.stock<=0?'disabled':''}>
+            <button class="btn btn-secondary btn-lg" id="btn-buy-now" onclick="buyNow()" ${p.stock<=0?'disabled':''}>
               &#9889; Buy Now
             </button>
           </div>
@@ -224,6 +307,23 @@
           <button class="btn-tryon-launch" onclick="if(window.VirtualTryOn) VirtualTryOn.open(currentProduct)" title="Try this outfit on your photo or model avatar">
             👗 ✨ AI Virtual Try-On (Try It On Me)
           </button>
+
+          <!-- WhatsApp Ask Family & Wishlist -->
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.25rem;">
+            <div class="nn-wa-consult-wrap" style="flex:1;min-width:200px;">
+              <button class="nn-wa-consult-btn" id="btn-wa-consult" onclick="shareProductOnWhatsApp()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <div class="nn-wa-consult-text">
+                  Ask Family on WhatsApp
+                  <small>Share with mom or friends for advice</small>
+                </div>
+              </button>
+            </div>
+            <button id="btn-page-wishlist" onclick="togglePageWishlist()" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0.6rem 1rem;background:#fff;border:2px solid rgba(139,26,74,.25);border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;font-size:0.78rem;font-weight:700;color:#8B1A4A;" title="Save to Wishlist">
+              <span id="page-wl-heart" style="font-size:1.4rem;">&#9825;</span>
+              <span id="page-wl-label">Wishlist</span>
+            </button>
+          </div>
 
           <div class="product-meta">
             ${p.fabric?`<div class="product-meta-item"><strong>Fabric:</strong>${p.fabric}</div>`:''}
@@ -249,13 +349,174 @@
 
       selectedSize = p.sizes && p.sizes.length === 1 ? p.sizes[0] : null;
       selectedColor = p.colors && p.colors.length === 1 ? p.colors[0] : null;
+      updateVariantState();
       if (window.NariAIAds) NariAIAds.renderCompleteTheLook(p, "nari-ai-pair-container");
+
+      // Sync wishlist heart state for this product page
+      updatePageWishlistBtn(p.id);
+    }
+
+    function updatePageWishlistBtn(productId) {
+      const heart = document.getElementById('page-wl-heart');
+      const label = document.getElementById('page-wl-label');
+      const btn   = document.getElementById('btn-page-wishlist');
+      if (!heart || !label || !btn) return;
+      const inWl = window.Wishlist && Wishlist.has(productId);
+      heart.textContent = inWl ? '❤️' : '♡';
+      label.textContent = inWl ? 'Saved!' : 'Wishlist';
+      btn.style.borderColor = inWl ? '#cc1144' : 'rgba(139,26,74,.25)';
+      btn.style.background  = inWl ? '#fff0f5' : '#fff';
+    }
+
+    function togglePageWishlist() {
+      if (!currentProduct) return;
+      if (window.Wishlist) {
+        var added = Wishlist.toggle(currentProduct);
+        updatePageWishlistBtn(currentProduct.id);
+        if (window.App && App.toast) {
+          App.toast(added ? '❤️ Saved to Wishlist!' : 'Removed from Wishlist', added ? 'success' : 'info', 2000);
+        }
+      }
+    }
+
+    function shareProductOnWhatsApp() {
+      if (!currentProduct) return;
+      var p = currentProduct;
+      var price = p.salePrice || p.price || 0;
+      var url = window.location.href;
+      var msg = 'Hey! \uD83D\uDC9B I found this beautiful outfit on Nari Niketan and I\'d love your opinion!\n\n' +
+                '\uD83D\uDC57 ' + p.name + '\n' +
+                '\uD83D\uDCB0 \u20B9' + Number(price).toLocaleString('en-IN') + '\n' +
+                (p.category ? '\uD83C\uDFF7\uFE0F Category: ' + p.category + '\n' : '') +
+                '\nShould I get it? What do you think? \uD83D\uDE0D\n' +
+                '\uD83D\uDED2 View here: ' + url;
+      var encoded = encodeURIComponent(msg);
+      // Use native share on mobile if available
+      if (navigator.share) {
+        navigator.share({ title: p.name, text: 'Check this outfit from Nari Niketan!', url: url }).catch(function(){});
+      } else {
+        window.open('https://api.whatsapp.com/send?text=' + encoded, '_blank');
+      }
     }
 
     function switchImg(src, thumb) {
-      document.getElementById("main-img").src = src;
-      document.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("active"));
-      thumb.classList.add("active");
+      const mainImg = document.getElementById("main-img");
+      if (mainImg) {
+        mainImg.src = src;
+        mainImg.removeAttribute("srcset");
+      }
+      document.querySelectorAll(".gallery-thumb").forEach(t => {
+        t.classList.remove("active");
+        t.style.borderColor = "transparent";
+      });
+      if (thumb) {
+        thumb.classList.add("active");
+        thumb.style.borderColor = "var(--primary, #8B1A4A)";
+      }
+    }
+
+    function getSelectedVariant() {
+      if (!currentProduct || !Array.isArray(currentProduct.variants) || currentProduct.variants.length === 0) {
+        return null;
+      }
+      return currentProduct.variants.find(v => {
+        const matchCol = !selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase();
+        const matchSz  = !selectedSize  || String(v.size || '').toLowerCase() === String(selectedSize).toLowerCase();
+        return matchCol && matchSz;
+      }) || null;
+    }
+
+    function updateVariantState() {
+      if (!currentProduct) return;
+      const p = currentProduct;
+      const badge = document.getElementById("product-stock-badge");
+      const addBtn = document.getElementById("btn-add-to-cart");
+      const buyBtn = document.getElementById("btn-buy-now");
+      const priceEl = document.getElementById("product-display-price");
+
+      const hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
+
+      if (!hasVariants) {
+        const inStock = (p.stock || 0) > 0;
+        if (badge) {
+          badge.style.color = inStock ? 'var(--success, #15803D)' : 'var(--error, #c62828)';
+          badge.innerHTML = (p.stock > 10) ? '&#9989; In Stock' : (p.stock > 0 ? `&#9888; Only ${p.stock} left` : '&#10060; Out of Stock');
+        }
+        if (addBtn) addBtn.disabled = !inStock;
+        if (buyBtn) buyBtn.disabled = !inStock;
+        return;
+      }
+
+      // Update cross-availability indicators on size buttons
+      if (selectedColor) {
+        document.querySelectorAll("#size-selector-wrap .size-option").forEach(btn => {
+          const sz = btn.getAttribute("data-size");
+          const v = p.variants.find(x => String(x.color || '').toLowerCase() === selectedColor.toLowerCase() && String(x.size || '').toLowerCase() === sz.toLowerCase());
+          const isAvail = v && Number(v.quantity || 0) > 0;
+          if (!isAvail) {
+            btn.classList.add("out-of-stock");
+            btn.title = "Out of Stock in " + selectedColor;
+          } else {
+            btn.classList.remove("out-of-stock");
+            btn.title = `${v.quantity} in stock`;
+          }
+        });
+      }
+
+      const match = getSelectedVariant();
+      const colorReq = p.colors && p.colors.length > 0;
+      const sizeReq = p.sizes && p.sizes.length > 0;
+
+      if ((colorReq && !selectedColor) || (sizeReq && !selectedSize)) {
+        // Need user to finish selection
+        const totalAvail = p.stock || 0;
+        if (badge) {
+          badge.style.color = totalAvail > 0 ? 'var(--text-dim, #666)' : 'var(--error, #c62828)';
+          badge.innerHTML = totalAvail > 0 ? 'Please select color and size' : '&#10060; Out of Stock';
+        }
+        if (addBtn) addBtn.disabled = totalAvail <= 0;
+        if (buyBtn) buyBtn.disabled = totalAvail <= 0;
+        return;
+      }
+
+      if (match) {
+        const qty = Number(match.quantity || 0);
+        const threshold = match.lowStockThreshold || p.lowStockThreshold || 5;
+
+        if (priceEl && match.price) {
+          priceEl.innerHTML = `&#8377;${Number(match.price).toLocaleString('en-IN')}`;
+        }
+
+        if (qty <= 0) {
+          if (badge) {
+            badge.style.color = 'var(--error, #c62828)';
+            badge.innerHTML = '&#10060; OUT OF STOCK';
+          }
+          if (addBtn) addBtn.disabled = true;
+          if (buyBtn) buyBtn.disabled = true;
+        } else if (qty <= threshold) {
+          if (badge) {
+            badge.style.color = '#E65100';
+            badge.innerHTML = `&#9888; Only ${qty} left in stock!`;
+          }
+          if (addBtn) addBtn.disabled = false;
+          if (buyBtn) buyBtn.disabled = false;
+        } else {
+          if (badge) {
+            badge.style.color = 'var(--success, #15803D)';
+            badge.innerHTML = `&#9989; In Stock (${qty} available)`;
+          }
+          if (addBtn) addBtn.disabled = false;
+          if (buyBtn) buyBtn.disabled = false;
+        }
+      } else {
+        if (badge) {
+          badge.style.color = 'var(--error, #c62828)';
+          badge.innerHTML = '&#10060; Combination Unavailable';
+        }
+        if (addBtn) addBtn.disabled = true;
+        if (buyBtn) buyBtn.disabled = true;
+      }
     }
 
     function selectSize(size, btn) {
@@ -264,6 +525,7 @@
       selectedSize = size;
       const lbl = document.getElementById("selected-size-label");
       if (lbl) lbl.textContent = "&mdash; " + size;
+      updateVariantState();
     }
 
     function selectColor(color, btn) {
@@ -272,20 +534,51 @@
       selectedColor = color;
       const lbl = document.getElementById("selected-color-label");
       if (lbl) lbl.textContent = "&mdash; " + color;
+      updateVariantState();
     }
 
     function changeQty(delta) {
-      qty = Math.max(1, Math.min(qty + delta, currentProduct?.stock || 99));
+      const match = getSelectedVariant();
+      const maxLimit = match ? Number(match.quantity || 0) : (currentProduct?.stock || 99);
+      qty = Math.max(1, Math.min(qty + delta, maxLimit > 0 ? maxLimit : 1));
       document.getElementById("qty-display").value = qty;
     }
 
     function addToCart() {
       if (!currentProduct) return false;
-      const sizesReq = currentProduct.sizes && currentProduct.sizes.length > 0 && !currentProduct.sizes.includes("Free Size");
+      const p = currentProduct;
+      const hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
+
+      const sizesReq = p.sizes && p.sizes.length > 0 && !p.sizes.includes("Free Size");
       if (sizesReq && !selectedSize) { App.toast("Please select a size.", "warning"); return false; }
-      Cart.add(currentProduct, selectedSize || "Free Size", selectedColor || "Default", qty);
-      App.toast("Added to cart! ", "success");
-      return true;
+
+      const colorsReq = p.colors && p.colors.length > 0;
+      if (colorsReq && !selectedColor) { App.toast("Please select a color.", "warning"); return false; }
+
+      let match = null;
+      if (hasVariants) {
+        match = getSelectedVariant();
+        if (!match || Number(match.quantity || 0) <= 0) {
+          App.toast("This variant is currently out of stock.", "error");
+          return false;
+        }
+      }
+
+      const success = Cart.add(
+        p,
+        selectedSize || (p.sizes && p.sizes[0]) || "Free Size",
+        selectedColor || (p.colors && p.colors[0]) || "Standard",
+        qty,
+        match?.variantId || null,
+        match?.sku || null,
+        match ? match.quantity : p.stock,
+        match?.price || null
+      );
+
+      if (success) {
+        App.toast("Added to cart! 🛍️", "success");
+      }
+      return success;
     }
 
     function buyNow() {
@@ -309,3 +602,4 @@
   <script src="js/nari-virtual-tryon.js?v=1.0"></script>
 </body>
 </html>
+

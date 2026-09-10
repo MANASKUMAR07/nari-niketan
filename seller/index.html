@@ -33,7 +33,7 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="seller-sidebar" id="seller-sidebar">
       <div class="sidebar-brand">
-        <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan" class="sidebar-brand-logo">
+        <img src="../images/logo-circle.webp?v=4.0" alt="Nari Niketan" class="sidebar-brand-logo">
         <div>
           <div class="sidebar-brand-name">Nari Niketan</div>
           <div class="sidebar-brand-sub">Seller Portal</div>
@@ -53,6 +53,10 @@
         </button>
         <button class="sidebar-link" data-section="add-product" onclick="SellerNav.go('add-product')">
           <span class="icon">➕</span> Add Product
+        </button>
+        <button class="sidebar-link" data-section="inventory" onclick="SellerNav.go('inventory')">
+          <span class="icon">📦</span> Inventory &amp; Stock
+          <span class="badge-count warning" id="badge-inventory-low" style="display:none">0</span>
         </button>
 
         <div class="sidebar-section-label">Sales</div>
@@ -229,13 +233,18 @@
                   <span class="search-icon">🔍</span>
                   <input type="text" class="search-input" id="product-search" placeholder="Search products…" oninput="SellerProducts.filter()">
                 </div>
-                <select class="filter-select" id="product-cat-filter" onchange="SellerProducts.filter()">
+                <select class="filter-select" id="product-cat-filter" onchange="SellerProducts.onFilterCategoryChange(this.value)">
                   <option value="">All Categories</option>
                   <option value="Sarees">Sarees</option>
                   <option value="Suits">Suits</option>
                   <option value="Lehengas">Lehengas</option>
                   <option value="Kurtas">Kurtas</option>
+                  <option value="Western">Western</option>
                   <option value="Accessories">Accessories</option>
+                  <option value="Jewellery">Jewellery</option>
+                </select>
+                <select class="filter-select" id="product-subcat-filter" onchange="SellerProducts.filter()" style="display:none">
+                  <option value="">All Subcategories</option>
                 </select>
                 <select class="filter-select" id="product-status-filter" onchange="SellerProducts.filter()">
                   <option value="">All Status</option>
@@ -270,15 +279,19 @@
                 <!-- ====================================================
              SECTION: ADD / EDIT PRODUCT (4-STEP AI WIZARD)
              ==================================================== -->
+        <!-- ====================================================
+             SECTION: ADD / EDIT PRODUCT (6-STEP GUIDED WIZARD)
+             ==================================================== -->
         <section class="seller-section" id="section-add-product">
           <div class="page-header" style="margin-bottom:1rem">
             <div>
               <h2 id="add-product-title">Add New Product</h2>
-              <p>Create a beautiful, high-converting product listing in 4 simple steps</p>
+              <p>Create a verified, high-converting product listing with variant-based inventory control</p>
             </div>
-            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-              <button class="btn btn-accent btn-sm" onclick="SellerWizard.openQuickAdd()" style="display:inline-flex;align-items:center;gap:6px">
-                ⚡ Quick Add with AI
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+              <span class="autosave-pill" id="autosave-status-pill">💾 Draft autosaved</span>
+              <button class="btn btn-accent btn-sm" onclick="SellerWizard.openAiDescModal()" style="display:inline-flex;align-items:center;gap:6px">
+                ✨ AI Copywriter
               </button>
               <button class="btn btn-ghost btn-sm" onclick="SellerNav.go('products')">← Back to Products</button>
             </div>
@@ -287,7 +300,7 @@
           <div class="wizard-container">
             <input type="hidden" id="product-edit-id">
 
-            <!-- Stepper Progress Header -->
+            <!-- Stepper Progress Header (6 Steps) -->
             <div class="wizard-stepper-wrap">
               <div class="wizard-stepper">
                 <div class="wizard-progress-track">
@@ -296,7 +309,7 @@
                 
                 <div class="wizard-step-item active" id="step-nav-1" onclick="SellerWizard.goToStep(1)">
                   <div class="wizard-step-bubble" id="step-bubble-1">1</div>
-                  <span class="wizard-step-label">Details</span>
+                  <span class="wizard-step-label">Basic Info</span>
                 </div>
 
                 <div class="wizard-step-item" id="step-nav-2" onclick="SellerWizard.goToStep(2)">
@@ -306,12 +319,22 @@
 
                 <div class="wizard-step-item" id="step-nav-3" onclick="SellerWizard.goToStep(3)">
                   <div class="wizard-step-bubble" id="step-bubble-3">3</div>
-                  <span class="wizard-step-label">AI Description</span>
+                  <span class="wizard-step-label">Sizes &amp; Stock</span>
                 </div>
 
                 <div class="wizard-step-item" id="step-nav-4" onclick="SellerWizard.goToStep(4)">
                   <div class="wizard-step-bubble" id="step-bubble-4">4</div>
-                  <span class="wizard-step-label">Preview &amp; Publish</span>
+                  <span class="wizard-step-label">Pricing</span>
+                </div>
+
+                <div class="wizard-step-item" id="step-nav-5" onclick="SellerWizard.goToStep(5)">
+                  <div class="wizard-step-bubble" id="step-bubble-5">5</div>
+                  <span class="wizard-step-label">Shipping</span>
+                </div>
+
+                <div class="wizard-step-item" id="step-nav-6" onclick="SellerWizard.goToStep(6)">
+                  <div class="wizard-step-bubble" id="step-bubble-6">6</div>
+                  <span class="wizard-step-label">Preview</span>
                 </div>
               </div>
             </div>
@@ -320,19 +343,19 @@
             <div class="quality-score-card">
               <div class="quality-score-info">
                 <span>✨ Listing Quality:</span>
-                <strong id="quality-score-val">25%</strong>
-                <span style="font-size:0.75rem;color:var(--text-dim)" id="quality-score-tip">— Enter product details to improve listing</span>
+                <strong id="quality-score-val">20%</strong>
+                <span style="font-size:0.75rem;color:var(--text-dim)" id="quality-score-tip">— Enter product details to improve listing quality</span>
               </div>
               <div class="quality-score-meter">
-                <div class="quality-score-fill" id="quality-score-fill" style="width:25%"></div>
+                <div class="quality-score-fill" id="quality-score-fill" style="width:20%"></div>
               </div>
             </div>
 
             <!-- ==============================================
-                 STEP 1: PRODUCT DETAILS
+                 STEP 1: BASIC INFORMATION & CATEGORIES
                  ============================================== -->
             <div class="wizard-step-panel active" id="wizard-step-1">
-              <!-- AI Suggestions Box (Populated dynamically) -->
+              <!-- AI Suggestions Box -->
               <div class="ai-suggestions-box" id="ai-suggestions-box" style="display:none">
                 <div class="ai-suggestions-header">
                   <div class="ai-suggestions-title">✨ AI Field Suggestions</div>
@@ -341,126 +364,106 @@
                 <div class="ai-chip-grid" id="ai-suggestions-chips"></div>
               </div>
 
-              <!-- Basic Information Card -->
               <div class="step-card">
                 <div class="step-card-header">
                   <div>
-                    <h3 class="step-card-title">📝 Basic Information</h3>
-                    <p class="step-card-sub">Important information buyers use to search for your outfit</p>
+                    <h3 class="step-card-title">📝 Product Identity</h3>
+                    <p class="step-card-sub">Accurate titles and categories ensure high search placement on Nari Niketan</p>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="p-name">Product Name *</label>
-                  <input class="form-control" type="text" id="p-name" placeholder="e.g. Banarasi Silk Wedding Saree with Zari Border" required oninput="SellerWizard.onTitleChange()">
-                  <div class="form-hint">Use a clear, descriptive name (e.g. fabric + outfit type + color + occasion)</div>
+                  <label for="p-name">Product Title *</label>
+                  <input class="form-control" type="text" id="p-name" placeholder="e.g. Pure Banarasi Katan Silk Saree with Antique Zari Work" required oninput="SellerWizard.onTitleChange()">
+                  <div class="form-hint">Tip: Include outfit type + fabric + primary color + key detail for best buyer visibility</div>
                 </div>
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label for="p-category">Category *</label>
+                    <label for="p-category">Main Category *</label>
                     <select class="form-control" id="p-category" required onchange="SellerWizard.onCategoryChange(this.value)">
                       <option value="">Select Category…</option>
                       <option value="Sarees">Sarees</option>
-                      <option value="Suits">Suits / Salwar Kameez</option>
+                      <option value="Suits">Suits &amp; Salwar Kameez</option>
                       <option value="Lehengas">Lehengas</option>
-                      <option value="Kurtas">Kurtas</option>
-                      <option value="Accessories">Accessories</option>
+                      <option value="Kurtas">Kurtas &amp; Kurtis</option>
+                      <option value="Western">Western &amp; Indo-Western</option>
+                      <option value="Accessories">Accessories &amp; Dupattas</option>
                       <option value="Jewellery">Jewellery</option>
-                      <option value="__other__">✏️ Other (type your own)</option>
+                      <option value="__other__">✏️ Other Category</option>
                     </select>
                     <div id="p-category-custom-wrap" style="display:none;margin-top:.5rem">
-                      <input class="form-control" type="text" id="p-category-custom" placeholder="e.g. Dupattas, Blouses, Ethnic Gowns…">
+                      <input class="form-control" type="text" id="p-category-custom" placeholder="Type custom category…">
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label for="p-fabric">Fabric / Material</label>
-                    <input class="form-control" type="text" id="p-fabric" placeholder="e.g. Banarasi Silk, Georgette, Chanderi Cotton" oninput="SellerWizard.updateQualityScore()">
-                  </div>
-                </div>
-
-                <div class="form-row-3">
-                  <div class="form-group">
-                    <label for="p-price">MRP Price (₹) *</label>
-                    <input class="form-control" type="number" id="p-price" placeholder="2499" min="0" required oninput="SellerWizard.updateQualityScore()">
-                    <div class="form-hint">Original printed price</div>
-                  </div>
-                  <div class="form-group">
-                    <label for="p-sale-price">Selling Price (₹)</label>
-                    <input class="form-control" type="number" id="p-sale-price" placeholder="1999" min="0" oninput="SellerWizard.updateQualityScore()">
-                    <div class="form-hint">Final price customer pays</div>
-                  </div>
-                  <div class="form-group">
-                    <label for="p-stock">Stock Quantity *</label>
-                    <input class="form-control" type="number" id="p-stock" placeholder="25" min="0" required oninput="SellerWizard.updateQualityScore()">
-                  </div>
-                </div>
-              </div>
-
-              <!-- Ethnic Attributes & Variants (Clean Card) -->
-              <div class="step-card">
-                <div class="step-card-header">
-                  <div>
-                    <h3 class="step-card-title">👗 Colors, Sizes &amp; Occasion (Optional)</h3>
-                    <p class="step-card-sub">Help buyers filter by occasion, size, and color</p>
-                  </div>
-                </div>
-
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label for="p-occasion">Occasion</label>
-                    <select class="form-control" id="p-occasion" onchange="SellerWizard.updateQualityScore()">
-                      <option value="">Select Occasion…</option>
-                      <option value="Wedding / Bridal">Wedding / Bridal</option>
-                      <option value="Festival">Festival (Diwali, Eid, Puja)</option>
-                      <option value="Party / Evening">Party / Reception</option>
-                      <option value="Casual / Daily">Casual / Daily</option>
-                      <option value="Office / Formal">Office / Formal</option>
-                      <option value="Religious">Religious / Ceremony</option>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
+                      <label for="p-subcategory" style="margin:0">Subcategory</label>
+                      <button type="button" class="btn btn-ghost btn-xs" onclick="SellerWizard.toggleCustomSubcategory()" id="btn-toggle-custom-sub" style="font-size:0.75rem;color:var(--accent);">+ Custom Subcategory</button>
+                    </div>
+                    <select class="form-control" id="p-subcategory" onchange="SellerWizard.onSubcategoryChange(this.value)">
+                      <option value="">Select Category first…</option>
                     </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="p-color">Color(s)</label>
-                    <input class="form-control" type="text" id="p-color" placeholder="e.g. Ruby Red, Royal Blue, Mustard Gold">
+                    <div id="p-subcategory-custom-wrap" style="display:none;margin-top:.5rem">
+                      <input class="form-control" type="text" id="p-subcategory-custom" placeholder="Type custom subcategory (e.g. Bandhani Silk, Indo-Western Fusion)…" oninput="SellerWizard.updateQualityScore()">
+                    </div>
+                    <div id="p-subcategory-quick-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:0.45rem;"></div>
                   </div>
                 </div>
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label for="p-sizes">Available Sizes</label>
-                    <input class="form-control" type="text" id="p-sizes" placeholder="e.g. S, M, L, XL, Free Size">
+                    <label for="p-brand">Brand / Boutique Label</label>
+                    <input class="form-control" type="text" id="p-brand" placeholder="e.g. Nari Niketan Heritage, Anshu Silks">
                   </div>
                   <div class="form-group">
-                    <label for="p-sku">SKU / Product Code</label>
-                    <input class="form-control" type="text" id="p-sku" placeholder="e.g. NN-SAR-001">
+                    <label for="p-slug">URL Handle / Slug</label>
+                    <div style="display:flex;gap:6px">
+                      <input class="form-control" type="text" id="p-slug" placeholder="banarasi-katan-silk-saree">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="SellerWizard.generateSlug()">Auto</button>
+                    </div>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="p-tags">Search Tags (comma-separated)</label>
-                  <input class="form-control" type="text" id="p-tags" placeholder="e.g. wedding, festive, silk, traditional, zari">
-                  <div class="form-hint">Keywords to help customers discover your outfit in search</div>
+                  <label for="p-short-desc">Short Summary (1-2 sentences)</label>
+                  <input class="form-control" type="text" id="p-short-desc" placeholder="A regal bridal saree in crimson red with handwoven golden zari pallu.">
+                </div>
+
+                <div class="form-group">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                    <label for="p-desc" style="margin:0">Full Product Story &amp; Details *</label>
+                    <button type="button" class="btn btn-accent btn-xs" onclick="SellerWizard.openAiDescModal()">
+                      ✨ Write with AI Assistant
+                    </button>
+                  </div>
+                  <textarea class="form-control" id="p-desc" placeholder="Detailed product story, craftsmanship, fabric texture, and styling advice..." style="min-height:120px" required oninput="SellerWizard.updateQualityScore()"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="p-tags">Search Tags &amp; Keywords (comma-separated)</label>
+                  <input class="form-control" type="text" id="p-tags" placeholder="e.g. banarasi, silk saree, bridal, zari border, wedding, puja">
                 </div>
               </div>
             </div>
 
             <!-- ==============================================
-                 STEP 2: PRODUCT PHOTOS
+                 STEP 2: PHOTOS & MEDIA
                  ============================================== -->
             <div class="wizard-step-panel" id="wizard-step-2">
               <div class="step-card">
                 <div class="step-card-header">
                   <div>
                     <h3 class="step-card-title">📸 Product Photos (Up to 6)</h3>
-                    <p class="step-card-sub">Clear photos on plain or festive backgrounds sell 3x faster</p>
+                    <p class="step-card-sub">High-resolution photos with accurate color representation sell 3x faster</p>
                   </div>
                   <button type="button" class="btn btn-accent btn-sm" onclick="SellerWizard.analyzeMainImage()" id="btn-ai-analyze-img">
                     ✨ Analyze Photo with AI
                   </button>
                 </div>
 
-                <!-- Large Drag & Drop Upload Zone -->
+                <!-- Drag & Drop Upload Zone -->
                 <div class="upload-dropzone-large" id="upload-zone-large"
                      onclick="document.getElementById('img-file-input').click()"
                      ondragover="SellerProducts.dragOver(event)"
@@ -468,117 +471,367 @@
                      ondrop="SellerProducts.drop(event)">
                   <div class="upload-icon-large">🖼️</div>
                   <h4 style="color:#fff;font-size:1.1rem;margin-bottom:0.3rem">Upload Product Images</h4>
-                  <p style="color:#FFE082;font-weight:600;font-size:0.9rem">Drag &amp; drop or choose from device</p>
-                  <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.4rem">JPG, PNG, WEBP &bull; Max 5MB per image &bull; Up to 6 photos</p>
+                  <p style="color:#FFE082;font-weight:600;font-size:0.9rem">Drag &amp; drop or click to choose from device</p>
+                  <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.4rem">JPG, PNG, WEBP &bull; Max 5MB each &bull; Auto-optimized to WebP</p>
                 </div>
                 <input type="file" id="img-file-input" multiple accept="image/*" style="display:none" onchange="SellerProducts.handleImageFiles(this.files)">
 
-                <!-- Photo Count Indicator -->
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;margin-bottom:0.5rem;flex-wrap:wrap;gap:6px;">
-                  <span style="font-size:0.85rem;font-weight:700;color:#FFE082;">Your Product Images:</span>
+                  <span style="font-size:0.85rem;font-weight:700;color:#FFE082;">Active Images:</span>
                   <span class="ai-photo-counter-badge" id="photo-count-badge">0 / 6 images</span>
                 </div>
 
-                <!-- Interactive Photo Manager Grid -->
+                <!-- Photo Manager Grid -->
                 <div class="photo-grid-manager" id="photo-grid-manager"></div>
 
-                <!-- ✨ AI PRODUCT PHOTO ASSISTANT PANEL -->
-                <div class="ai-photo-assistant-card" id="ai-photo-assistant-card">
-                  <!-- Rendered dynamically by SellerProducts.renderAiPhotoAssistant() -->
-                </div>
+                <!-- AI Photo Assistant -->
+                <div class="ai-photo-assistant-card" id="ai-photo-assistant-card"></div>
 
-                <!-- Pending AI Candidate Review Tray -->
+                <!-- AI Review Tray -->
                 <div class="ai-review-tray" id="ai-review-tray" style="display:none;">
                   <div class="ai-review-tray-header">
                     <div class="ai-review-tray-title">
-                      <span>🤖 AI Generated Views — Review Before Using</span>
+                      <span>🤖 AI Generated Angles — Review Before Applying</span>
                     </div>
-                    <span style="font-size:0.75rem;color:var(--text-dim);">Approve or regenerate each view individually</span>
                   </div>
                   <div class="ai-candidates-grid" id="ai-candidates-grid"></div>
-                </div>
-
-                <!-- Visual AI Detection Notice Box -->
-                <div id="visual-ai-result-box" style="display:none;margin-top:1.25rem;background:rgba(212,175,55,0.08);border:1px solid #D4AF37;border-radius:10px;padding:1rem;">
-                  <div style="font-weight:700;color:#FFE082;font-size:0.88rem;margin-bottom:0.4rem">✨ Visual AI Photo Insights</div>
-                  <div id="visual-ai-result-content" style="font-size:0.82rem;color:#ECE0E6;line-height:1.5;"></div>
                 </div>
               </div>
             </div>
 
             <!-- ==============================================
-                 STEP 3: AI PRODUCT DESCRIPTION STUDIO
+                 STEP 3: SIZES, COLORS & 2D VARIANT MATRIX
                  ============================================== -->
             <div class="wizard-step-panel" id="wizard-step-3">
               <div class="step-card">
                 <div class="step-card-header">
                   <div>
-                    <h3 class="step-card-title">✨ AI Product Description Studio</h3>
-                    <p class="step-card-sub">Generate a boutique-quality product description tailored to your brand voice in seconds</p>
+                    <h3 class="step-card-title">📦 Size, Color &amp; Variant-Level Inventory</h3>
+                    <p class="step-card-sub">Manage exact stock quantity for each individual size and color combination</p>
                   </div>
                 </div>
 
-                <!-- Style Selector -->
-                <label style="font-size:0.85rem;font-weight:700;color:#FFE082;margin-bottom:0.6rem;display:block">
-                  1. Select Writing Style:
+                <!-- Product Type Selector -->
+                <label style="font-size:0.85rem;font-weight:700;color:#FFE082;margin-bottom:0.6rem;display:block;">
+                  1. Choose Variant Configuration:
                 </label>
-                <div class="ai-style-grid" id="ai-style-selector-grid">
-                  <!-- Dynamically populated style cards -->
+                <div class="product-type-toggle">
+                  <div class="product-type-card selected" id="ptype-size_color" onclick="SellerVariants.setProductType('size_color')">
+                    <div class="product-type-icon">👗</div>
+                    <div class="product-type-title">Size + Color Matrix</div>
+                    <div class="product-type-sub">For sarees, suits, lehengas with multiple sizes and shades</div>
+                  </div>
+                  <div class="product-type-card" id="ptype-size_only" onclick="SellerVariants.setProductType('size_only')">
+                    <div class="product-type-icon">📏</div>
+                    <div class="product-type-title">Size Only</div>
+                    <div class="product-type-sub">Single color outfit with multiple sizing options</div>
+                  </div>
+                  <div class="product-type-card" id="ptype-color_only" onclick="SellerVariants.setProductType('color_only')">
+                    <div class="product-type-icon">🎨</div>
+                    <div class="product-type-title">Color Only</div>
+                    <div class="product-type-sub">Free size or unstitched items with color variations</div>
+                  </div>
+                  <div class="product-type-card" id="ptype-single" onclick="SellerVariants.setProductType('single')">
+                    <div class="product-type-icon">📦</div>
+                    <div class="product-type-title">Single Product</div>
+                    <div class="product-type-sub">One size, one color, single inventory count</div>
+                  </div>
                 </div>
 
-                <!-- Generate Trigger Button -->
-                <div style="text-align:center;margin:1.25rem 0">
-                  <button type="button" class="btn btn-primary btn-lg" id="btn-generate-ai-desc" onclick="SellerWizard.generateAiDescription()" style="min-width:240px;box-shadow:0 4px 20px rgba(139,26,74,0.4)">
-                    ✨ Generate Description with AI
-                  </button>
+                <!-- Variant Options Selectors (Hidden if single) -->
+                <div id="variant-builder-controls">
+                  <!-- Color Presets -->
+                  <div id="color-picker-section" style="margin-top:1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                      <label style="font-size:0.85rem;font-weight:700;color:#FFE082;">
+                        2. Select Available Colors:
+                      </label>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <input type="text" id="custom-color-name" class="form-control form-control-sm" placeholder="Custom color name" style="width:140px;padding:4px 8px;font-size:0.8rem">
+                        <input type="color" id="custom-color-hex" value="#8B1A4A" style="width:32px;height:30px;padding:0;border:none;border-radius:4px;cursor:pointer">
+                        <button type="button" class="btn btn-outline btn-xs" onclick="SellerVariants.addCustomColor()">+ Add</button>
+                      </div>
+                    </div>
+                    <div class="chip-group-wrap" id="preset-colors-chips"></div>
+                  </div>
+
+                  <!-- Size Presets -->
+                  <div id="size-picker-section" style="margin-top:1.25rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                      <label style="font-size:0.85rem;font-weight:700;color:#FFE082;">
+                        3. Select Available Sizes:
+                      </label>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <input type="text" id="custom-size-name" class="form-control form-control-sm" placeholder="e.g. 4XL or 48" style="width:100px;padding:4px 8px;font-size:0.8rem">
+                        <button type="button" class="btn btn-outline btn-xs" onclick="SellerVariants.addCustomSize()">+ Add</button>
+                      </div>
+                    </div>
+                    <div class="chip-group-wrap" id="preset-sizes-chips"></div>
+                  </div>
+
+                  <!-- Generate Matrix Action -->
+                  <div style="margin-top:1.25rem;text-align:right;">
+                    <button type="button" class="btn btn-accent btn-sm" onclick="SellerVariants.generateMatrixFromSelection()">
+                      ⚡ Generate / Refresh Variant Matrix
+                    </button>
+                  </div>
                 </div>
 
-                <!-- AI Quick Refinement Toolbar -->
-                <div class="ai-action-toolbar" id="ai-refine-toolbar" style="display:none">
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('shorter')">✂ Make Shorter</button>
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('detailed')">📖 Make Detailed</button>
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('premium')">💎 Make Premium</button>
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('simpler')">😊 Make Simpler</button>
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('festive')">🎉 Make Festive</button>
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.refineDescription('seo')">🔎 SEO Optimize</button>
-                  <button type="button" class="ai-tool-btn" onclick="SellerWizard.generateAiDescription()">🔄 Regenerate</button>
+                <!-- Single Product Simple Stock (Shown only when type is single) -->
+                <div id="single-stock-section" style="display:none;margin-top:1.25rem;background:rgba(255,255,255,0.03);padding:1.25rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
+                  <div class="form-row-3">
+                    <div class="form-group">
+                      <label for="p-stock">Total Stock Quantity *</label>
+                      <input class="form-control" type="number" id="p-stock" placeholder="25" min="0" value="10" oninput="SellerWizard.updateQualityScore()">
+                    </div>
+                    <div class="form-group">
+                      <label for="p-single-sku">Product SKU</label>
+                      <input class="form-control" type="text" id="p-single-sku" placeholder="NN-ETH-001">
+                    </div>
+                    <div class="form-group">
+                      <label for="p-single-low-stock">Low Stock Threshold</label>
+                      <input class="form-control" type="number" id="p-single-low-stock" placeholder="5" value="5" min="1">
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Editable Description Fields -->
-                <div class="form-group" style="margin-top:1rem">
-                  <label for="p-short-desc">Short Description (Summary)</label>
-                  <input class="form-control" type="text" id="p-short-desc" placeholder="1-sentence highlight of your product...">
-                </div>
+                <!-- 2D Matrix Table Section -->
+                <div id="variant-matrix-section" style="margin-top:1.5rem;">
+                  <!-- Bulk Actions Toolbar -->
+                  <div class="matrix-toolbar">
+                    <div class="matrix-toolbar-left">
+                      <span style="font-size:0.82rem;font-weight:700;color:#FFE082;">⚡ Bulk Actions:</span>
+                      <div class="bulk-input-group">
+                        <input type="number" id="bulk-stock-val" placeholder="Qty" value="10" min="0">
+                        <button type="button" onclick="SellerVariants.applyBulkStock()">Set Stock All</button>
+                      </div>
+                      <div class="bulk-input-group">
+                        <input type="number" id="bulk-threshold-val" placeholder="Alert" value="5" min="1">
+                        <button type="button" onclick="SellerVariants.applyBulkThreshold()">Set Alert All</button>
+                      </div>
+                      <button type="button" class="btn btn-outline btn-xs" onclick="SellerVariants.autoGenerateSkus()">
+                        🏷️ Auto SKUs
+                      </button>
+                    </div>
 
-                <div class="form-group">
-                  <label for="p-desc">Full Product Description *</label>
-                  <textarea class="form-control" id="p-desc" placeholder="Detailed product story, fabric feel, occasions, and styling notes..." style="min-height:140px" required></textarea>
-                </div>
+                    <div class="matrix-toolbar-right">
+                      <div class="live-stock-pill">
+                        <span>Total Inventory:</span>
+                        <strong id="live-total-stock-display">0</strong>
+                        <span style="font-size:0.75rem">units</span>
+                      </div>
+                    </div>
+                  </div>
 
-                <div class="form-group">
-                  <label for="p-highlights">Key Product Highlights (One per line)</label>
-                  <textarea class="form-control" id="p-highlights" placeholder="• Premium fabric&#10;• Traditional handloom zari border&#10;• Perfect for festive celebrations" style="min-height:90px"></textarea>
+                  <!-- Variant Matrix Table -->
+                  <div class="matrix-table-wrap">
+                    <table class="matrix-table">
+                      <thead>
+                        <tr>
+                          <th>Color</th>
+                          <th>Size</th>
+                          <th>SKU</th>
+                          <th style="width:110px">Stock Qty *</th>
+                          <th>Reserved</th>
+                          <th>Available</th>
+                          <th style="width:90px">Low Alert</th>
+                          <th>Price Override (₹)</th>
+                          <th style="text-align:center">Active</th>
+                          <th style="text-align:center">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="variant-matrix-tbody">
+                        <tr>
+                          <td colspan="10" style="text-align:center;padding:2rem;color:var(--text-dim);">
+                            Select colors and sizes above, then click "Generate / Refresh Variant Matrix".
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.75rem;flex-wrap:wrap;gap:8px;">
+                    <span style="font-size:0.75rem;color:var(--text-dim);">
+                      🛡️ Individual stock levels are atomically verified during customer checkout to prevent overselling.
+                    </span>
+                    <button type="button" class="btn btn-ghost btn-xs" onclick="SellerVariants.addEmptyVariantRow()" style="color:#FFE082;">
+                      + Add Custom Row
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- ==============================================
-                 STEP 4: CUSTOMER PREVIEW & PUBLISH
+                 STEP 4: PRICING & CATEGORY ATTRIBUTES
                  ============================================== -->
             <div class="wizard-step-panel" id="wizard-step-4">
               <div class="step-card">
                 <div class="step-card-header">
                   <div>
-                    <h3 class="step-card-title">👁️ Live Customer Preview</h3>
-                    <p class="step-card-sub">This is exactly how buyers will see your outfit on the Nari Niketan storefront</p>
+                    <h3 class="step-card-title">💰 Pricing &amp; Fabric Details</h3>
+                    <p class="step-card-sub">Set transparent prices, discounts, and category-specific attributes</p>
+                  </div>
+                </div>
+
+                <div class="form-row-3">
+                  <div class="form-group">
+                    <label for="p-price">MRP Price (₹) *</label>
+                    <input class="form-control" type="number" id="p-price" placeholder="3999" min="1" required oninput="SellerWizard.onPriceChange()">
+                    <div class="form-hint">Original printed price</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="p-sale-price">Selling Price (₹) *</label>
+                    <input class="form-control" type="number" id="p-sale-price" placeholder="2499" min="1" required oninput="SellerWizard.onPriceChange()">
+                    <div class="form-hint">Final customer price (must be &le; MRP)</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="p-discount-pct">Discount (%)</label>
+                    <input class="form-control" type="text" id="p-discount-pct" placeholder="0%" readonly style="background:rgba(255,255,255,0.05);color:#4CAF50;font-weight:700">
+                  </div>
+                </div>
+
+                <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:1.25rem 0">
+
+                <h4 style="color:#FFE082;font-size:0.95rem;margin-bottom:0.9rem">👗 Ethnic Wear Craftsmanship Attributes</h4>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="p-fabric">Fabric / Material</label>
+                    <input class="form-control" type="text" id="p-fabric" placeholder="e.g. Pure Katan Silk, Organza, Georgette" oninput="SellerWizard.updateQualityScore()">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-occasion">Occasion</label>
+                    <select class="form-control" id="p-occasion" onchange="SellerWizard.updateQualityScore()">
+                      <option value="">Select Occasion…</option>
+                      <option value="Wedding / Bridal">Wedding / Bridal</option>
+                      <option value="Festival">Festival (Diwali, Eid, Puja, Karwa Chauth)</option>
+                      <option value="Party / Reception">Party / Reception / Sangeet</option>
+                      <option value="Casual / Daily">Casual / Everyday Elegance</option>
+                      <option value="Office / Formal">Office / Formal Ethnic</option>
+                      <option value="Ceremony / Traditional">Religious Ceremony</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row-3">
+                  <div class="form-group">
+                    <label for="p-work">Work / Embroidery</label>
+                    <input class="form-control" type="text" id="p-work" placeholder="e.g. Zari Weaving, Gota Patti, Resham Thread">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-pattern">Pattern</label>
+                    <input class="form-control" type="text" id="p-pattern" placeholder="e.g. Floral Jaal, Paisley, Solid with Border">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-stitch">Stitch / Type</label>
+                    <select class="form-control" id="p-stitch">
+                      <option value="Ready to Wear">Ready to Wear</option>
+                      <option value="Semi-Stitched">Semi-Stitched</option>
+                      <option value="Unstitched Fabric">Unstitched Fabric</option>
+                      <option value="Pre-Draped">Pre-Draped / Pre-Pleated</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="p-neckline">Neckline / Blouse Details</label>
+                    <input class="form-control" type="text" id="p-neckline" placeholder="e.g. Sweetheart Neck, Round Neck, Includes 0.8m Blouse Piece">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-care">Care Instructions</label>
+                    <input class="form-control" type="text" id="p-care" placeholder="e.g. Dry Clean Only, Gentle Hand Wash in Cold Water">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==============================================
+                 STEP 5: SHIPPING & PACKAGING
+                 ============================================== -->
+            <div class="wizard-step-panel" id="wizard-step-5">
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">📦 Shipping, Weight &amp; Fulfillment</h3>
+                    <p class="step-card-sub">Accurate package dimensions ensure smooth courier pickup and rider handover</p>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="p-weight">Gross Weight (kg) *</label>
+                    <input class="form-control" type="number" id="p-weight" placeholder="0.6" step="0.05" min="0.1" value="0.5" required>
+                    <div class="form-hint">Approximate weight including package box</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="p-shipping-class">Shipping Class</label>
+                    <select class="form-control" id="p-shipping-class">
+                      <option value="Standard">Standard Apparel (3-5 days)</option>
+                      <option value="Express">Express Air (1-2 days)</option>
+                      <option value="Heavy">Heavy / Bridal Lehenga (5-7 days)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row-3">
+                  <div class="form-group">
+                    <label for="p-length">Length (cm)</label>
+                    <input class="form-control" type="number" id="p-length" value="30" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-width">Width (cm)</label>
+                    <input class="form-control" type="number" id="p-width" value="25" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label for="p-height">Height (cm)</label>
+                    <input class="form-control" type="number" id="p-height" value="5" min="1">
+                  </div>
+                </div>
+
+                <div style="margin-top:1.5rem;background:rgba(255,255,255,0.03);padding:1rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
+                  <h4 style="color:#FFE082;font-size:0.88rem;margin-bottom:0.75rem;">Fulfillment Channels:</h4>
+                  <div style="display:flex;gap:20px;flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.85rem">
+                      <input type="checkbox" id="p-delivery-available" checked style="width:18px;height:18px;accent-color:#8B1A4A">
+                      Doorstep Courier Delivery
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.85rem">
+                      <input type="checkbox" id="p-pickup-available" checked style="width:18px;height:18px;accent-color:#8B1A4A">
+                      Store Pickup / Counter Collection
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==============================================
+                 STEP 6: LIVE PREVIEW & PRE-PUBLISH VALIDATION
+                 ============================================== -->
+            <div class="wizard-step-panel" id="wizard-step-6">
+              <div class="step-card">
+                <div class="step-card-header">
+                  <div>
+                    <h3 class="step-card-title">👁️ Live Storefront Preview</h3>
+                    <p class="step-card-sub">Experience your product exactly as customers see and interact with it</p>
                   </div>
                   <button type="button" class="btn btn-ghost btn-sm" onclick="SellerWizard.goToStep(1)">✏ Edit Details</button>
                 </div>
 
-                <!-- Customer View Mock -->
-                <div class="preview-mock-layout" id="customer-preview-mock">
-                  <!-- Populated by JS -->
+                <!-- Pre-publish Validation Checklist -->
+                <div class="publish-checklist">
+                  <div class="checklist-title">
+                    <span>📋 Pre-Publish Checklist:</span>
+                    <span id="checklist-summary-badge" style="font-size:0.75rem;padding:2px 8px;border-radius:10px;background:rgba(212,175,55,0.2);color:#FFE082">Checking...</span>
+                  </div>
+                  <div class="checklist-items" id="publish-checklist-items">
+                    <!-- Populated dynamically by SellerWizard.renderChecklist() -->
+                  </div>
                 </div>
+
+                <!-- Customer View Mock -->
+                <div class="preview-mock-layout" id="customer-preview-mock"></div>
               </div>
             </div>
 
@@ -606,13 +859,127 @@
         </section>
 
         <!-- ====================================================
+             SECTION: INVENTORY & STOCK MANAGEMENT
+             ==================================================== -->
+        <section class="seller-section" id="section-inventory">
+          <div class="page-header">
+            <div>
+              <h2>📦 Inventory &amp; Variant Stock Control</h2>
+              <p>Monitor size-and-color stock levels, track restock alerts, and update inventory instantly</p>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="SellerInventory.openLogsModal()">
+                📋 Audit Trail
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="SellerInventory.load()">
+                🔄 Refresh Stock
+              </button>
+            </div>
+          </div>
+
+          <!-- Catalog Summary Stat Cards -->
+          <div class="inv-summary-grid">
+            <div class="inv-stat-card">
+              <div class="inv-stat-label">Total Products</div>
+              <div class="inv-stat-val" id="inv-stat-products">0</div>
+            </div>
+            <div class="inv-stat-card">
+              <div class="inv-stat-label">Total Variants</div>
+              <div class="inv-stat-val" id="inv-stat-variants">0</div>
+            </div>
+            <div class="inv-stat-card">
+              <div class="inv-stat-label">Total Stock Units</div>
+              <div class="inv-stat-val" id="inv-stat-stock">0</div>
+            </div>
+            <div class="inv-stat-card warning">
+              <div class="inv-stat-label">⚠️ Low Stock Alerts</div>
+              <div class="inv-stat-val" id="inv-stat-low" style="color:#FFB74D">0</div>
+            </div>
+            <div class="inv-stat-card danger">
+              <div class="inv-stat-label">❌ Out of Stock</div>
+              <div class="inv-stat-val" id="inv-stat-out" style="color:#E57373">0</div>
+            </div>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="card" style="margin-bottom:1.25rem;padding:1rem;">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;">
+              <div style="display:flex;gap:10px;flex-wrap:wrap;flex:1;min-width:280px;">
+                <input type="text" id="inv-search-input" class="form-control" placeholder="Search by product name or SKU..." style="max-width:320px;" oninput="SellerInventory.filterTable()">
+                <select id="inv-cat-filter" class="form-control" style="max-width:200px;" onchange="SellerInventory.filterTable()">
+                  <option value="">All Categories</option>
+                  <option value="Sarees">Sarees</option>
+                  <option value="Suits">Suits</option>
+                  <option value="Lehengas">Lehengas</option>
+                  <option value="Kurtas">Kurtas</option>
+                  <option value="Western">Western</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Jewellery">Jewellery</option>
+                </select>
+              </div>
+
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button type="button" class="btn btn-ghost btn-sm active" id="filter-btn-all" onclick="SellerInventory.setStatusFilter('all')">All</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="filter-btn-in_stock" onclick="SellerInventory.setStatusFilter('in_stock')">In Stock</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="filter-btn-low_stock" onclick="SellerInventory.setStatusFilter('low_stock')">⚠️ Low Stock</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="filter-btn-out_of_stock" onclick="SellerInventory.setStatusFilter('out_of_stock')">❌ Out of Stock</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flattened Inventory Table -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Color</th>
+                  <th>Size</th>
+                  <th>SKU</th>
+                  <th>Price (₹)</th>
+                  <th>Stock Available</th>
+                  <th>Status</th>
+                  <th style="text-align:right">Quick Action</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-table-body">
+                <tr>
+                  <td colspan="9" style="text-align:center;padding:2rem;">
+                    <div class="empty-state"><div class="empty-icon">⏳</div><p>Loading inventory...</p></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ====================================================
              SECTION: ORDERS
              ==================================================== -->
         <section class="seller-section" id="section-orders">
           <div class="page-header">
             <div>
               <h2>Orders</h2>
-              <p>Orders containing your products</p>
+              <p>Orders containing your products &amp; delivery rider handover</p>
+            </div>
+          </div>
+
+          <!-- Quick Delivery Agent Handover Verification Banner -->
+          <div class="seller-handover-banner" style="background:linear-gradient(135deg, rgba(212,175,55,0.14), rgba(139,26,74,0.18)); border:1.5px solid rgba(212,175,55,0.45); border-radius:12px; padding:1.15rem 1.25rem; margin-bottom:1.25rem; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; box-shadow:0 4px 20px rgba(0,0,0,0.25);">
+            <div style="flex:1; min-width:260px;">
+              <div style="font-size:0.88rem; font-weight:800; color:#FFE082; text-transform:uppercase; letter-spacing:0.06em; display:flex; align-items:center; gap:8px;">
+                <span>🏪</span> Delivery Agent Handover &amp; OTP Verification
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.35rem; line-height:1.45;">
+                When a delivery agent arrives at your shop to collect a parcel, ask for their <strong>6-digit Handover OTP</strong> and verify it below to confirm that the package is safely handed over for delivery.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input type="text" id="seller-quick-otp-input" class="form-control" placeholder="Rider OTP (6 digits)" maxlength="6" inputmode="numeric" style="width:190px; text-align:center; font-family:monospace; font-size:1.1rem; font-weight:800; letter-spacing:3px; background:var(--bg-card); border-color:rgba(212,175,55,0.6); color:#FFE082;">
+              <button class="btn btn-accent" id="btn-seller-quick-verify" onclick="SellerOrders.quickVerifyRiderOtp()" style="box-shadow:0 4px 15px rgba(212,175,55,0.35); font-weight:700;">
+                ✓ Verify &amp; Hand Over
+              </button>
             </div>
           </div>
 
@@ -948,6 +1315,163 @@
     </div>
   </div>
 
+  <!-- ===== SELLER HANDOVER OTP VERIFICATION MODAL ===== -->
+  <div class="modal-overlay" id="modal-seller-handover-otp">
+    <div class="modal" style="max-width:440px; border:1.5px solid var(--gold); background:linear-gradient(145deg, #1C0F1B 0%, #120711 100%); border-radius:14px; box-shadow:0 16px 48px rgba(0,0,0,0.8);">
+      <div class="modal-header" style="border-bottom:1px solid rgba(212,175,55,0.25); padding:1rem 1.25rem;">
+        <h3 id="seller-handover-modal-title" style="color:#FFE082; font-size:1.15rem; display:flex; align-items:center; gap:8px;">
+          🏪 Delivery Agent Handover Verification
+        </h3>
+        <button class="modal-close" onclick="SellerOrders.closeHandoverModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:1.25rem;">
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem;">
+          Ask the delivery agent for their <strong>6-digit Handover OTP</strong> to confirm they have physically received the package from your shop.
+        </p>
+
+        <div id="seller-handover-order-badge" style="background:var(--bg-card); border:1px solid var(--border-soft); border-radius:8px; padding:0.75rem; margin-bottom:1rem; font-size:0.83rem;">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.25rem;">
+          <label style="font-size:0.82rem; font-weight:700; color:#FFE082; margin-bottom:0.4rem; display:block;">Enter 6-Digit Agent Handover OTP:</label>
+          <input type="text" id="seller-modal-otp-input" class="form-control" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="text-align:center; font-family:monospace; font-size:1.4rem; font-weight:900; letter-spacing:6px; background:var(--bg-card2); border:1.5px solid rgba(212,175,55,0.6); color:#FFE082;">
+        </div>
+
+        <button class="btn btn-accent btn-lg" id="btn-seller-modal-verify" onclick="SellerOrders.submitModalHandoverVerification()" style="width:100%; font-weight:800; box-shadow:0 4px 18px rgba(212,175,55,0.4);">
+          ✓ Confirm Package Handed Over to Agent
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Quick Stock Edit -->
+  <div class="seller-modal-overlay" id="modal-quick-stock">
+    <div class="seller-modal-card">
+      <div class="seller-modal-header">
+        <h3>📦 Quick Stock Update</h3>
+        <button class="modal-close" onclick="SellerInventory.closeQuickStockModal()">✕</button>
+      </div>
+      <div class="seller-modal-body">
+        <input type="hidden" id="qs-product-id">
+        <input type="hidden" id="qs-variant-id">
+
+        <div style="display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
+          <img id="qs-product-img" src="" alt="" style="width:48px;height:48px;border-radius:6px;object-fit:cover;background:#222;">
+          <div>
+            <h4 id="qs-product-name" style="font-size:0.88rem;color:#fff;margin:0 0 3px 0;">Product Title</h4>
+            <div id="qs-variant-info" style="font-size:0.78rem;color:#FFE082;">Color: Ruby Red | Size: M</div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Current Stock</label>
+            <input type="text" id="qs-current-stock" class="form-control" readonly style="background:rgba(255,255,255,0.05);color:#999;font-weight:700">
+          </div>
+          <div class="form-group">
+            <label>New Stock Quantity *</label>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="SellerInventory.changeQsQty(-1)" style="padding:6px 12px">&minus;</button>
+              <input type="number" id="qs-new-stock" class="form-control" min="0" value="10" style="text-align:center;font-weight:700;font-size:1.1rem;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="SellerInventory.changeQsQty(1)" style="padding:6px 12px">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Update Reason *</label>
+          <select id="qs-reason" class="form-control">
+            <option value="RESTOCK">📦 Restock / New Shipment Received</option>
+            <option value="DAMAGE">⚠️ Damaged / Defective Item Removed</option>
+            <option value="RETURN">↩️ Customer Return Added Back</option>
+            <option value="CORRECTION">🔍 Physical Inventory Audit / Correction</option>
+            <option value="SELLER_MANUAL_UPDATE">✏️ Manual Adjustment</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Audit Note (Optional)</label>
+          <input type="text" id="qs-note" class="form-control" placeholder="e.g. Batch #4 received from Surat handloom vendor">
+        </div>
+      </div>
+      <div class="seller-modal-footer">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="SellerInventory.closeQuickStockModal()">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-save-quick-stock" onclick="SellerInventory.submitQuickStockUpdate()">
+          Save Stock Update ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Inventory Audit Logs -->
+  <div class="seller-modal-overlay" id="modal-inventory-logs">
+    <div class="seller-modal-card" style="max-width:700px;">
+      <div class="seller-modal-header">
+        <h3>📋 Inventory Change Audit Trail</h3>
+        <button class="modal-close" onclick="SellerInventory.closeLogsModal()">✕</button>
+      </div>
+      <div class="seller-modal-body" style="max-height:65vh;overflow-y:auto;">
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:0.75rem;">
+          Verified chronological ledger recording every stock deduction, cancellation restock, and manual update.
+        </p>
+        <div class="table-container">
+          <table class="data-table" style="font-size:0.8rem">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Product / SKU</th>
+                <th>Variant</th>
+                <th>Change</th>
+                <th>New Qty</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-logs-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:1.5rem">Loading audit trail...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="seller-modal-footer">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="SellerInventory.closeLogsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: AI Copywriting Studio -->
+  <div class="seller-modal-overlay" id="modal-ai-desc">
+    <div class="seller-modal-card" style="max-width:650px;">
+      <div class="seller-modal-header">
+        <h3>✨ AI Product Description Studio</h3>
+        <button class="modal-close" onclick="SellerWizard.closeAiDescModal()">✕</button>
+      </div>
+      <div class="seller-modal-body">
+        <label style="font-size:0.82rem;font-weight:700;color:#FFE082;margin-bottom:0.5rem;display:block;">
+          Select Brand Voice:
+        </label>
+        <div class="ai-style-grid" id="ai-style-selector-grid"></div>
+
+        <div style="text-align:center;margin:1rem 0;">
+          <button type="button" class="btn btn-primary" id="btn-modal-ai-gen" onclick="SellerWizard.generateAiDescription()">
+            ✨ Generate Boutique Description
+          </button>
+        </div>
+
+        <div id="ai-modal-preview-box" style="display:none;background:rgba(255,255,255,0.04);padding:1rem;border-radius:8px;border:1px solid rgba(212,175,55,0.25);">
+          <div style="font-size:0.82rem;font-weight:700;color:#FFE082;margin-bottom:0.4rem">Generated Preview:</div>
+          <div id="ai-modal-preview-text" style="font-size:0.84rem;color:#ECE0E6;line-height:1.6;white-space:pre-wrap;"></div>
+        </div>
+      </div>
+      <div class="seller-modal-footer">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="SellerWizard.closeAiDescModal()">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-modal-ai-apply" onclick="SellerWizard.applyAiGeneratedCopy()" style="display:none">
+          Use This Copy ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast container -->
   <div id="seller-toast-container"></div>
 
@@ -956,10 +1480,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-  <script src="../js/firebase-config.js"></script>
+  <script src="../js/firebase-config.js?v=4.3"></script>
+  <script src="../js/store.js?v=4.3"></script>
   <script src="../js/nari-ai-ads.js?v=1.0"></script>
   <script src="seller-ai.js?v=2.1"></script>
-  <script src="seller.js?v=2.1"></script>
+  <script src="seller.js?v=2.2"></script>
   <script src="../js/pwa-install.js" defer></script>
 </body>
 </html>

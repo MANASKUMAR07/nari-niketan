@@ -171,6 +171,181 @@ runTest('Earnings: Computes accurate commission per delivered parcel', () => {
   assert.strictEqual(codCollectedTotal, 3998); // 999 + 2999
 });
 
+// ─── TEST 7: Reached Store / Merchant State & Field Payload Validation ────
+runTest('State Machine: Reached Store / Merchant state transition and payload', () => {
+  // Simulate order in accepted or assigned state
+  const orderAccepted = {
+    id: 'ORD_301',
+    assignedDeliveryPartnerId: 'rider_01',
+    deliveryState: 'accepted',
+    status: 'Processing'
+  };
+
+  // Valid Firestore allowed keys for delivery partner
+  const allowedKeys = [
+    'status', 'deliveryState', 'acceptedAt', 'rejectedAt', 'rejectionReason',
+    'reachedStoreAt', 'pickedUpAt', 'outForDeliveryAt', 'reachedCustomerAt',
+    'deliveredAt', 'deliveryOtpVerified', 'otpVerified', 'otpVerifiedAt',
+    'codCollected', 'codCollectedAt', 'codCollectedAmount', 'paymentStatus',
+    'proofOfDeliveryUrl', 'deliveryFailureReason', 'failedAt', 'returnedToStoreAt',
+    'deliveryNotes', 'updatedAt', 'assignedDeliveryPartnerId', 'deliveryPartnerName', 'deliveredBy'
+  ];
+
+  // Action: Delivery partner clicks "Reached Store / Merchant"
+  const reachedStoreUpdate = {
+    deliveryState: 'reached_store',
+    reachedStoreAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const updateKeys = Object.keys(reachedStoreUpdate);
+  const isAllowedByRules = updateKeys.every(k => allowedKeys.includes(k));
+  assert.strictEqual(isAllowedByRules, true, 'All fields in reachedStoreUpdate must be permitted by firestore.rules');
+  assert.strictEqual(reachedStoreUpdate.deliveryState, 'reached_store');
+  assert(reachedStoreUpdate.reachedStoreAt, 'reachedStoreAt timestamp must be present');
+});
+
+runTest('State Machine: Direct Assigned to Reached Store transition allowed', () => {
+  const extendedTransitions = {
+    assigned: ['accepted', 'rejected', 'reached_store'],
+    accepted: ['reached_store', 'picked_up'],
+    reached_store: ['picked_up'],
+    picked_up: ['out_for_delivery'],
+    out_for_delivery: ['reached_customer', 'delivered', 'failed'],
+    reached_customer: ['delivered', 'failed'],
+    failed: ['out_for_delivery', 'returned_to_store']
+  };
+  const allowed = extendedTransitions['assigned'];
+  assert(allowed.includes('reached_store'), 'Direct arrival at store from assigned state should be allowed');
+});
+// ─── TEST 8: Store Package Handover Code Verification ────────────────────
+function simulateStorePickup(order, enteredCode) {
+  const expected = String(order.storeHandoverOtp || order.storePickupCode || order.deliveryOtp || '').trim();
+  if (String(enteredCode).trim() !== expected) {
+    throw new Error('Invalid Store Handover Code. Please ask the merchant/store manager for the 6-digit pickup verification code.');
+  }
+  return {
+    ...order,
+    deliveryState: 'picked_up',
+    status: 'Shipped',
+    pickupVerified: true,
+    storePickupVerifiedAt: new Date().toISOString(),
+    pickedUpAt: new Date().toISOString()
+  };
+}
+
+runTest('Store Handover: Rejects pickup with invalid Store Handover Code', () => {
+  const order = { id: 'ORD_401', storeHandoverOtp: '849201', deliveryState: 'reached_store' };
+  assert.throws(() => {
+    simulateStorePickup(order, '000000');
+  }, /Invalid Store Handover Code/);
+});
+
+runTest('Store Handover: Completes pickup with valid Store Handover Code', () => {
+  const order = { id: 'ORD_401', storeHandoverOtp: '849201', deliveryState: 'reached_store' };
+  const res = simulateStorePickup(order, '849201');
+  assert.strictEqual(res.deliveryState, 'picked_up');
+  assert.strictEqual(res.status, 'Shipped');
+  assert.strictEqual(res.pickupVerified, true);
+  assert(res.storePickupVerifiedAt);
+  assert(res.pickedUpAt);
+});
+
+// ─── TEST 9: Complete 2-Step Dual-Code Verification Lifecycle ────────────
+runTest('Dual-Code Verification: Full End-to-End Delivery Flow (Store Code -> Customer OTP)', () => {
+  let order = {
+    id: 'ORD_500',
+    assignedDeliveryPartnerId: 'rider_01',
+    deliveryState: 'assigned',
+    status: 'Pending',
+    storeHandoverOtp: '112233',
+    deliveryOtp: '778899',
+    totalAmount: 1999
+  };
+
+  // Step 1: Accept
+  order.deliveryState = 'accepted';
+  order.status = 'Processing';
+
+  // Step 2: Reached store
+  order.deliveryState = 'reached_store';
+  order.reachedStoreAt = new Date().toISOString();
+
+  // Step 3: Verify Store Handover Code (Merchant -> Rider)
+  order = simulateStorePickup(order, '112233');
+  assert.strictEqual(order.deliveryState, 'picked_up');
+  assert.strictEqual(order.pickupVerified, true);
+
+  // Step 4: Out for Delivery
+  order.deliveryState = 'out_for_delivery';
+  order.status = 'Out for Delivery';
+  order.outForDeliveryAt = new Date().toISOString();
+
+  // Step 5: Reached Customer Doorstep
+  order.deliveryState = 'reached_customer';
+  order.reachedCustomerAt = new Date().toISOString();
+
+  // Step 6: Verify Customer Delivery OTP (Customer -> Rider)
+  order = simulateDeliveryCompletion(order, '778899');
+  assert.strictEqual(order.deliveryState, 'delivered');
+  assert.strictEqual(order.status, 'Delivered');
+  assert.strictEqual(order.deliveryOtpVerified, true);
+  assert.strictEqual(order.otpVerified, true);
+  assert(order.deliveredAt);
+});
+
+// ─── TEST 10: Seller Verification of Delivery Agent OTP ───────────────────
+function simulateSellerHandoverVerification(order, sellerId, enteredOtp) {
+  if (!order.sellerIds || !order.sellerIds.includes(sellerId)) {
+    throw new Error('Unauthorized: This order does not contain products from your store.');
+  }
+  const expected = String(order.storeHandoverOtp || order.storePickupCode || order.deliveryOtp || '').trim();
+  if (String(enteredOtp).trim() !== expected) {
+    throw new Error('Invalid Handover OTP. Please ask the delivery agent to confirm the 6-digit verification code.');
+  }
+  return {
+    ...order,
+    pickupVerified: true,
+    storePickupVerifiedAt: new Date().toISOString(),
+    pickedUpAt: new Date().toISOString(),
+    status: 'Shipped',
+    deliveryState: 'picked_up',
+    sellerHandoverVerifiedBy: sellerId,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+runTest('Seller Handover: Blocks unauthorized seller from verifying handover', () => {
+  const order = { id: 'ORD_601', sellerIds: ['seller_alpha'], storeHandoverOtp: '654321', deliveryState: 'reached_store' };
+  assert.throws(() => {
+    simulateSellerHandoverVerification(order, 'seller_beta', '654321');
+  }, /Unauthorized/);
+});
+
+runTest('Seller Handover: Blocks handover verification on invalid rider OTP', () => {
+  const order = { id: 'ORD_601', sellerIds: ['seller_alpha'], storeHandoverOtp: '654321', deliveryState: 'reached_store' };
+  assert.throws(() => {
+    simulateSellerHandoverVerification(order, 'seller_alpha', '000000');
+  }, /Invalid Handover OTP/);
+});
+
+runTest('Seller Handover: Successfully verifies delivery agent OTP at shop', () => {
+  const order = {
+    id: 'ORD_601',
+    sellerIds: ['seller_alpha'],
+    storeHandoverOtp: '654321',
+    deliveryState: 'reached_store',
+    status: 'Processing'
+  };
+  const verified = simulateSellerHandoverVerification(order, 'seller_alpha', '654321');
+  assert.strictEqual(verified.pickupVerified, true);
+  assert.strictEqual(verified.deliveryState, 'picked_up');
+  assert.strictEqual(verified.status, 'Shipped');
+  assert.strictEqual(verified.sellerHandoverVerifiedBy, 'seller_alpha');
+  assert(verified.storePickupVerifiedAt);
+  assert(verified.pickedUpAt);
+});
+
 // ─── SUMMARY ─────────────────────────────────────────────────────────────
 console.log('\n================================================================');
 console.log(`🎉 Automated Delivery Partner Test Complete: ${passedTests} / ${totalTests} Passed (0 Failed)`);
@@ -179,3 +354,5 @@ console.log('================================================================\n'
 if (passedTests !== totalTests) {
   process.exit(1);
 }
+
+

@@ -48,47 +48,39 @@ const Cart = {
       return { success: false, message: "Add items to your bag before applying a coupon." };
     }
 
-    // 1. Check dynamic Firestore coupons
+    // Server-side authoritative coupon validation
     try {
-      if (typeof Store !== 'undefined' && Store.getCouponByCode) {
-        const liveCoupon = await Store.getCouponByCode(code);
-        if (liveCoupon) {
-          if (liveCoupon.minOrder && sub < liveCoupon.minOrder) {
-            return { 
-              success: false, 
-              message: `Minimum order amount for ${code} is ₹${liveCoupon.minOrder.toLocaleString('en-IN')}.` 
-            };
-          }
+      if (typeof Store !== "undefined" && Store.validateCouponViaApi) {
+        const res = await Store.validateCouponViaApi(code, sub);
+        if (res && res.valid) {
           const couponData = {
-            code: liveCoupon.code,
-            discount: liveCoupon.discount,
-            type: liveCoupon.type,
-            label: liveCoupon.label || (liveCoupon.type === 'percent' ? `${liveCoupon.discount}% OFF` : `₹${liveCoupon.discount} OFF`),
-            minOrder: liveCoupon.minOrder || 0
+            code: res.couponCode || code,
+            discount: res.discountAmount || 0,
+            discountAmount: res.discountAmount || 0,
+            type: res.discountType || "flat",
+            freeShipping: res.freeShipping === true,
+            label: res.label || `Coupon ${code}`
           };
           localStorage.setItem(this.COUPON_KEY, JSON.stringify(couponData));
-          return { success: true, coupon: couponData, message: `Coupon "${code}" applied successfully!` };
+          return { success: true, coupon: couponData, message: res.message || `Coupon "${code}" applied successfully!` };
+        } else {
+          return { success: false, message: (res && res.error) || "Invalid coupon code." };
         }
       }
     } catch(e) {
-      console.warn("Firestore coupon check fallback:", e);
+      return { success: false, message: e.message || "Failed to validate coupon code." };
     }
 
-    // 2. Check default built-in coupons
-    const coupon = this.COUPONS[code];
-    if (!coupon) {
-      return { success: false, message: "Invalid coupon code. Please check and try again." };
-    }
-
-    const couponData = { code, ...coupon };
-    localStorage.setItem(this.COUPON_KEY, JSON.stringify(couponData));
-    return { success: true, coupon: couponData, message: `Coupon "${code}" applied! ${coupon.label}` };
+    return { success: false, message: "Unable to connect to verification server." };
   },
 
   discountAmount() {
     const coupon = this.getCoupon();
     if (!coupon) return 0;
     const sub = this.subtotal();
+    if (typeof coupon.discountAmount === "number") {
+      return Math.min(sub, coupon.discountAmount);
+    }
     if (coupon.type === "percent") {
       return Math.round(sub * (coupon.discount / 100));
     } else if (coupon.type === "flat") {
@@ -97,25 +89,56 @@ const Cart = {
     return 0;
   },
 
-  add(product, size, color, qty = 1) {
+  add(product, size, color, qty = 1, variantId = null, sku = null, variantStock = null, variantPrice = null) {
     const cart = this.get();
-    const key = `${product.id}_${size}_${color}`;
+    const effectiveVariantId = variantId || `${size || 'default'}_${color || 'default'}`;
+    const key = `${product.id}_${effectiveVariantId}`;
     const existing = cart.find(i => i.key === key);
-    // Use salePrice (selling price) if available, otherwise MRP
-    const sellingPrice = (product.salePrice && product.salePrice < product.price)
+
+    // Determine variant-specific or product-level stock limit
+    let maxStock = 99;
+    if (typeof variantStock === 'number') {
+      maxStock = variantStock;
+    } else if (typeof product.stock === 'number') {
+      maxStock = product.stock;
+    }
+
+    if (maxStock <= 0) {
+      if (typeof App !== 'undefined' && App.toast) {
+        App.toast('Selected variant is out of stock.', 'error');
+      }
+      return false;
+    }
+
+    // Use variant price if provided, otherwise salePrice or price
+    let sellingPrice = (product.salePrice && product.salePrice < product.price)
       ? product.salePrice : product.price;
+    if (typeof variantPrice === 'number' && variantPrice > 0) {
+      sellingPrice = variantPrice;
+    }
+
     if (existing) {
-      existing.qty = Math.min(existing.qty + qty, product.stock || 99);
+      existing.qty = Math.min(existing.qty + qty, maxStock);
+      existing.stock = maxStock;
+      if (variantId) existing.variantId = variantId;
+      if (sku) existing.sku = sku;
     } else {
       cart.push({
-        key, productId: product.id,
-        name: product.name, category: product.category,
+        key,
+        productId: product.id,
+        variantId: variantId || null,
+        sku: sku || product.sku || '',
+        name: product.name,
+        category: product.category,
         price: sellingPrice,           // selling price (what customer pays)
         mrp: product.price,            // original MRP (for display strikethrough)
-        imageUrl: product.imageUrl || (product.images && product.images[0]) || product.image || "",
+        thumbnail: (typeof Products !== 'undefined' && Products.getImageUrl) ? Products.getImageUrl(product, 'thumbnail') : (product.thumbnail || (typeof product.images?.[0] === 'object' ? product.images[0].thumbnail : (product.imageUrl || product.images?.[0] || ''))),
+        imageUrl: (typeof Products !== 'undefined' && Products.getImageUrl) ? Products.getImageUrl(product, 'thumbnail') : (product.imageUrl || (product.images && product.images[0]) || product.image || ""),
         images: product.images || [],
-        size, color, qty,
-        stock: product.stock || 99
+        size: size || '',
+        color: color || '',
+        qty: Math.min(qty, maxStock),
+        stock: maxStock
       });
     }
     this.save(cart);

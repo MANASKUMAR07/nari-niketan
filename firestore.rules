@@ -7,43 +7,35 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Helper: Check if requesting user is a permanent Owner (by email from auth token)
-    // Owner emails bypass all permission checks — highest privilege
+    // Helper: Check if requesting user is a permanent Owner (Custom Claims or verified email)
     function isOwner() {
       return isAuthenticated() && (
+        request.auth.token.owner == true ||
         request.auth.token.email == 'manasku2007@gmail.com' ||
         request.auth.token.email == 'nariniketan07@gmail.com'
       );
     }
 
-    // Helper: Check if requesting user is Admin
-    // Owners are always admin; others must have isAdmin: true in their Firestore user doc
+    // Helper: Check if requesting user is Admin (Custom Claim, Owner, or Firestore document)
     function isAdmin() {
       return isOwner() ||
-        (isAuthenticated() &&
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+        (isAuthenticated() && (
+          request.auth.token.admin == true ||
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true)
+        ));
     }
 
-    // Helper: Check if requesting user is an approved Seller
+    // Helper: Check if requesting user is an approved Seller (Custom Claim or Firestore document)
     function isSeller() {
-      return isAuthenticated() &&
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        (
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSeller == true ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.sellerStatus == 'approved'
-        );
-    }
-
-    // Helper: Check if requesting user is an approved Delivery Partner
-    function isDeliveryPartner() {
-      return isAuthenticated() &&
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        (
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isDeliveryPartner == true ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.deliveryPartnerStatus == 'approved' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.deliveryPartnerStatus == 'active'
-        );
+      return isAuthenticated() && (
+        request.auth.token.seller == true ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          (
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSeller == true ||
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.sellerStatus == 'approved'
+          ))
+      );
     }
 
     // 1. PRODUCTS COLLECTION
@@ -58,17 +50,20 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow read: if isAdmin() ||
         (isAuthenticated() && resource.data.userId == request.auth.uid) ||
-        (isSeller() && resource.data.keys().hasAll(['sellerIds']) && request.auth.uid in resource.data.sellerIds) ||
-        (isDeliveryPartner() && resource.data.assignedDeliveryPartnerId == request.auth.uid);
+        (isSeller() && 'sellerIds' in resource.data && request.auth.uid in resource.data.sellerIds) ||
+        (isAuthenticated() && resource.data.assignedDeliveryPartnerId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin() ||
         (isAuthenticated() && resource.data.userId == request.auth.uid && (
           request.resource.data.status == "Cancelled" ||
           request.resource.data.status == "Return Requested"
         )) ||
-        (isDeliveryPartner() && resource.data.assignedDeliveryPartnerId == request.auth.uid &&
+        (isSeller() && 'sellerIds' in resource.data && request.auth.uid in resource.data.sellerIds &&
           request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['status', 'deliveryState', 'acceptedAt', 'rejectedAt', 'rejectionReason', 'pickedUpAt', 'outForDeliveryAt', 'reachedCustomerAt', 'deliveredAt', 'deliveryOtpVerified', 'otpVerified', 'otpVerifiedAt', 'codCollected', 'codCollectedAt', 'codCollectedAmount', 'proofOfDeliveryUrl', 'deliveryNotes', 'updatedAt']));
+            .hasOnly(['status', 'deliveryState', 'pickedUpAt', 'pickupVerified', 'storePickupVerifiedAt', 'storeHandoverOtp', 'storePickupCode', 'sellerHandoverVerifiedBy', 'updatedAt'])) ||
+        (isAuthenticated() && resource.data.assignedDeliveryPartnerId == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'deliveryState', 'acceptedAt', 'rejectedAt', 'rejectionReason', 'reachedStoreAt', 'storeHandoverOtp', 'storePickupCode', 'pickupVerified', 'storePickupVerifiedAt', 'pickedUpAt', 'outForDeliveryAt', 'reachedCustomerAt', 'deliveredAt', 'deliveryOtpVerified', 'otpVerified', 'otpVerifiedAt', 'codCollected', 'codCollectedAt', 'codCollectedAmount', 'paymentStatus', 'proofOfDeliveryUrl', 'deliveryFailureReason', 'failedAt', 'returnedToStoreAt', 'deliveryNotes', 'updatedAt', 'assignedDeliveryPartnerId', 'deliveryPartnerName', 'deliveredBy']));
       allow delete: if isAdmin();
     }
 
@@ -175,6 +170,13 @@ service cloud.firestore {
     // 13. AUDIT LOGS COLLECTION
     match /auditLogs/{logId} {
       allow read, create, update, delete: if isAdmin();
+    }
+
+    // 13b. INVENTORY AUDIT LOGS COLLECTION
+    match /inventoryAuditLogs/{logId} {
+      allow read: if isAdmin() || (isSeller() && resource.data.sellerId == request.auth.uid);
+      allow create: if isAdmin() || (isSeller() && request.resource.data.sellerId == request.auth.uid);
+      allow update, delete: if isAdmin();
     }
 
     // 14. SETTINGS COLLECTION

@@ -1073,11 +1073,20 @@ const AdminOrders = {
           <div class="info-item"><label>Total</label><span style="color:var(--gold);font-weight:700">${fmt(o.totalAmount)}</span></div>
         </div>
 
-        ${o.deliveryOtp ? `
-          <div style="background:rgba(245,158,11,0.12);border:1.5px dashed #F59E0B;border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+        <div style="background:rgba(212,175,55,0.1);border:1.5px dashed #D4AF37;border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:0.5rem;">
             <div>
-              <div style="font-size:0.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;">🔐 Customer Delivery / Pickup OTP</div>
-              <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:#FDE68A;letter-spacing:3px;">${o.deliveryOtp}</div>
+              <div style="font-size:0.72rem;font-weight:700;color:#FDE68A;text-transform:uppercase;letter-spacing:1px;">🏪 Store Handover Code (Pickup OTP)</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">Share with delivery agent to authorize package pickup</div>
+            </div>
+            <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:var(--gold);letter-spacing:3px;background:rgba(0,0,0,0.35);padding:3px 10px;border-radius:6px;">
+              ${o.storeHandoverOtp || o.storePickupCode || o.deliveryOtp || '------'}
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;">🔐 Customer Delivery OTP</div>
+              <div style="font-size:1.35rem;font-family:monospace;font-weight:900;color:#FDE68A;letter-spacing:3px;">${o.deliveryOtp || '------'}</div>
               <div style="font-size:0.72rem;color:${o.otpVerified ? '#10B981' : '#F59E0B'};font-weight:600;margin-top:2px;">
                 ${o.otpVerified ? '✅ OTP Verified by Agent/Admin' : '⏳ Pending Customer Verification'}
               </div>
@@ -1089,7 +1098,8 @@ const AdminOrders = {
                   Verify &amp; Deliver &rarr;
                 </button>
               </div>` : ''}
-          </div>` : ''}
+          </div>
+        </div>
 
         ${o.fulfillmentType !== 'pickup' ? `
           <div style="background:rgba(59,130,246,0.1);border:1.5px solid rgba(59,130,246,0.35);border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;">
@@ -3054,6 +3064,90 @@ const AdminAIStylist = {
       `;
     } catch (e) {
       container.innerHTML = `<div style="color:var(--danger);font-size:.82rem">Simulator Error: ${e.message}</div>`;
+    }
+  },
+
+  async askCopilot() {
+    const input = document.getElementById('ai-copilot-query');
+    const container = document.getElementById('ai-copilot-results');
+    const btn = document.getElementById('btn-ask-copilot');
+    if (!input || !container) return;
+
+    const query = input.value.trim();
+    if (!query) {
+      AdminToast.show('Please enter a question for the Copilot', 'warning');
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '✨ Analyzing Telemetry...';
+    }
+    container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-muted)"><div class="spinner-admin"></div> Querying Nari AI Business Intelligence &amp; Gemini Copilot...</div>';
+
+    try {
+      const endpoints = [
+        window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8080/api/v1/agent/admin-copilot' : null,
+        '/api/v1/agent/admin-copilot',
+        'https://nari-niketan-api-997712460310.asia-south1.run.app/api/v1/agent/admin-copilot'
+      ].filter(Boolean);
+
+      let copilotResult = null;
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.reply) {
+              copilotResult = data.reply;
+              break;
+            }
+          }
+        } catch (e) {
+          // try next
+        }
+      }
+
+      if (!copilotResult) {
+        // Client-side Firestore aggregation fallback
+        const orders = await Store.getOrders();
+        const products = await Store.getProducts();
+        let rev = 0;
+        let delivered = 0, outForDelivery = 0, pending = 0;
+        orders.forEach(o => {
+          rev += Number(o.totalAmount || o.finalTotal || o.total || 0);
+          if (o.status === 'Delivered') delivered++;
+          else if (o.status === 'Out for Delivery') outForDelivery++;
+          else pending++;
+        });
+
+        copilotResult = `📊 **Nari Niketan Executive Business Summary**:
+- **Total Revenue**: ₹${rev.toLocaleString('en-IN')} across ${orders.length} orders
+- **Fulfillment Pipeline**: ${delivered} Delivered, ${outForDelivery} Out for Delivery, ${pending} Pending Dispatch
+- **Active Products**: ${products.length} items cataloged
+- **Strategic Recommendation**: Address ${pending} pending orders to ensure customer delivery OTP fulfillment within 24 hours.`;
+      }
+
+      const formatted = copilotResult
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+
+      container.innerHTML = `
+        <div style="font-size:0.95rem;color:var(--text);line-height:1.6;">
+          ${formatted}
+        </div>
+      `;
+    } catch (e) {
+      container.innerHTML = `<div style="color:var(--danger);font-size:.85rem">Copilot Error: ${e.message}</div>`;
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '✨ Ask Copilot';
+      }
     }
   }
 };

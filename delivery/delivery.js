@@ -138,6 +138,46 @@ const DeliveryShift = {
   }
 };
 
+// Helper: Extract customer contact details, phone, address, and navigation links robustly
+function extractCustomerContact(order) {
+  const o = order || {};
+  const addr = o.deliveryAddress || o.shippingAddress || o.address || {};
+
+  // Name
+  const name = addr.fullName || addr.name || o.customerName || o.shippingAddress?.fullName || 'Customer';
+
+  // Phone: check root, customerPhone, address, and userPhone
+  const rawPhone = o.phone || o.customerPhone || addr.phone || o.userPhone || o.shippingAddress?.phone || '';
+  const cleanPhone = String(rawPhone).replace(/[^\d+]/g, '');
+  const displayPhone = rawPhone || '';
+
+  // Address: check line1/line2, addressLine, address, city, state, pincode
+  const parts = [];
+  if (addr.line1) parts.push(addr.line1);
+  if (addr.line2) parts.push(addr.line2);
+  if (addr.addressLine && !addr.line1) parts.push(addr.addressLine);
+  if (addr.address && !addr.line1 && !addr.addressLine) parts.push(addr.address);
+  if (addr.city) parts.push(addr.city);
+  if (addr.state) parts.push(addr.state);
+  if (addr.pincode || addr.pin) parts.push(addr.pincode || addr.pin);
+
+  const fullAddress = parts.join(', ') || 'Address provided on file';
+
+  // Maps URL: prefer exact GPS coords if available, fallback to fullAddress
+  let mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
+  if (addr.latitude && addr.longitude) {
+    mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${addr.latitude},${addr.longitude}`;
+  }
+
+  return {
+    name,
+    phone: cleanPhone,
+    displayPhone,
+    fullAddress,
+    mapsUrl
+  };
+}
+
 // ─── DASHBOARD MODULE ─────────────────────────────────
 const DeliveryDashboard = {
   async load() {
@@ -171,7 +211,7 @@ const DeliveryDashboard = {
           outCount++;
           activeOrder = o; // Prioritize out for delivery order
         }
-        if (o.status === 'Delivered') {
+        if (o.status === 'Delivered' || o.deliveryState === 'delivered') {
           const dMs = o.deliveredAt?.toMillis?.() || (o.deliveredAt?.seconds ? o.deliveredAt.seconds * 1000 : 0);
           if (dMs >= startOfDay) completedToday++;
         }
@@ -201,6 +241,9 @@ const DeliveryDashboard = {
       const heroBox = document.getElementById('dashboard-active-hero');
       if (heroBox) {
         if (activeOrder) {
+          const contact = extractCustomerContact(activeOrder);
+          const isCod = String(activeOrder.paymentMethod || '').toLowerCase().includes('cash') || String(activeOrder.paymentMethod || '').toLowerCase() === 'cod';
+
           heroBox.style.display = 'block';
           heroBox.innerHTML = `
             <div class="active-delivery-card">
@@ -209,13 +252,13 @@ const DeliveryDashboard = {
                   <span class="active-order-id">#${activeOrder.id.substring(0,8).toUpperCase()}</span>
                   <div style="font-size:0.75rem; color:var(--text-muted);">Assigned Delivery</div>
                 </div>
-                <span class="delivery-badge badge-${activeOrder.deliveryState || 'assigned'}">${(activeOrder.deliveryState || 'assigned').replace('_', ' ')}</span>
+                <span class="delivery-badge badge-${activeOrder.deliveryState || 'assigned'}">${(activeOrder.deliveryState || 'assigned').replace(/_/g, ' ')}</span>
               </div>
-              <div class="customer-name">👤 ${activeOrder.shippingAddress?.fullName || activeOrder.customerName || 'Customer'}</div>
-              <div class="customer-address">📍 ${activeOrder.shippingAddress?.addressLine || activeOrder.shippingAddress?.address || 'Address provided on file'}, ${activeOrder.shippingAddress?.city || ''} (${activeOrder.shippingAddress?.pincode || ''})</div>
+              <div class="customer-name">👤 ${contact.name}</div>
+              <div class="customer-address">📍 ${contact.fullAddress}</div>
               
               <div class="cod-badge-box">
-                <span class="cod-badge-label">Payment Method: ${activeOrder.paymentMethod === 'cod' ? '💵 Cash on Delivery' : '💳 Prepaid (Online)'}</span>
+                <span class="cod-badge-label">Payment Method: ${isCod ? '💵 Cash on Delivery' : '💳 Prepaid (Online)'}</span>
                 <span class="cod-badge-amount">₹${activeOrder.totalAmount || 0}</span>
               </div>
 
@@ -252,7 +295,15 @@ const DeliveryQueue = {
       this.render();
     } catch (e) {
       console.error('Error loading queue:', e);
-      container.innerHTML = '<div style="text-align:center; padding:2rem; color:#F87171;">Failed to load deliveries.</div>';
+      container.innerHTML = `
+        <div style="text-align:center; padding:2.5rem 1rem; color:#F87171;">
+          <div style="font-size:2rem; margin-bottom:0.5rem;">⚠️</div>
+          <div style="font-weight:700; margin-bottom:0.5rem;">Failed to load deliveries</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">${e.message || 'Please check your connection and retry.'}</div>
+          <button class="btn-delivery btn-delivery-outline" onclick="DeliveryQueue.load()" style="display:inline-block; width:auto; padding:0.5rem 1.5rem;">
+            🔄 Retry Loading
+          </button>
+        </div>`;
     }
   },
 
@@ -270,7 +321,7 @@ const DeliveryQueue = {
 
     let filtered = this.allOrders;
     if (this.currentTab === 'new') {
-      filtered = this.allOrders.filter(o => o.deliveryState === 'assigned');
+      filtered = this.allOrders.filter(o => !o.deliveryState || o.deliveryState === 'assigned');
     } else if (this.currentTab === 'accepted') {
       filtered = this.allOrders.filter(o => ['accepted', 'reached_store', 'picked_up'].includes(o.deliveryState));
     } else if (this.currentTab === 'out') {
@@ -294,8 +345,9 @@ const DeliveryQueue = {
 
     container.innerHTML = filtered.map(o => {
       const state = o.deliveryState || 'assigned';
-      const isCod = o.paymentMethod === 'cod';
-      const itemsCount = (o.items || []).reduce((sum, item) => sum + (item.quantity || 1), 0);
+      const isCod = String(o.paymentMethod || '').toLowerCase().includes('cash') || String(o.paymentMethod || '').toLowerCase() === 'cod';
+      const itemsCount = (o.items || []).reduce((sum, item) => sum + (item.quantity || item.qty || 1), 0);
+      const contact = extractCustomerContact(o);
 
       return `
         <div class="delivery-card">
@@ -305,11 +357,11 @@ const DeliveryQueue = {
           </div>
 
           <div style="font-size:1rem; font-weight:800; color:#fff; margin-bottom:0.25rem;">
-            👤 ${o.shippingAddress?.fullName || o.customerName || 'Customer'}
+            👤 ${contact.name}
           </div>
 
           <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.5rem; line-height:1.4;">
-            📍 ${o.shippingAddress?.addressLine || o.shippingAddress?.address || 'Address on file'}, ${o.shippingAddress?.city || ''} (${o.shippingAddress?.pincode || ''})
+            📍 ${contact.fullAddress}
           </div>
 
           <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:0.5rem; margin-bottom:0.75rem;">
@@ -321,7 +373,7 @@ const DeliveryQueue = {
 
           ${state === 'assigned' ? `
             <div class="action-row">
-              <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.acceptOrder('${o.id}')">
+              <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.acceptOrder('${o.id}', event)">
                 ✓ Accept
               </button>
               <button class="btn-delivery btn-delivery-danger" onclick="DeliveryActive.openRejectModal('${o.id}')">
@@ -349,13 +401,26 @@ const DeliveryActive = {
   },
 
   async load() {
-    if (!this.currentOrder && DeliveryGuard.currentUser) {
-      const orders = await Store.getAssignedDeliveries(DeliveryGuard.currentUser.uid);
-      const active = orders.find(o => !['delivered', 'rejected', 'returned_to_store'].includes(o.deliveryState));
-      if (active) {
-        await this.loadOrder(active.id);
-      } else {
-        this.renderEmpty();
+    if (DeliveryGuard.currentUser) {
+      try {
+        const orders = await Store.getAssignedDeliveries(DeliveryGuard.currentUser.uid);
+        if (this.currentOrder) {
+          const refreshed = orders.find(o => o.id === this.currentOrder.id);
+          if (refreshed && !['delivered', 'rejected', 'returned_to_store'].includes(String(refreshed.deliveryState || '').toLowerCase())) {
+            this.currentOrder = refreshed;
+            this.render();
+            return;
+          }
+        }
+        const active = orders.find(o => !['delivered', 'rejected', 'returned_to_store'].includes(String(o.deliveryState || '').toLowerCase()));
+        if (active) {
+          await this.loadOrder(active.id);
+        } else {
+          this.currentOrder = null;
+          this.renderEmpty();
+        }
+      } catch (e) {
+        console.error('DeliveryActive.load error:', e);
       }
     }
   },
@@ -402,9 +467,8 @@ const DeliveryActive = {
 
     const o = this.currentOrder;
     const state = o.deliveryState || 'assigned';
-    const isCod = o.paymentMethod === 'cod';
-    const phone = o.shippingAddress?.phone || o.customerPhone || '';
-    const fullAddress = `${o.shippingAddress?.addressLine || o.shippingAddress?.address || ''}, ${o.shippingAddress?.city || ''}, ${o.shippingAddress?.state || ''} - ${o.shippingAddress?.pincode || ''}`;
+    const isCod = String(o.paymentMethod || '').toLowerCase().includes('cash') || String(o.paymentMethod || '').toLowerCase() === 'cod';
+    const contact = extractCustomerContact(o);
 
     wrap.innerHTML = `
       <div class="active-delivery-card" style="margin-top:0.5rem;">
@@ -417,21 +481,27 @@ const DeliveryActive = {
         </div>
 
         <div style="font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:0.25rem;">
-          👤 ${o.shippingAddress?.fullName || o.customerName || 'Customer'}
+          👤 ${contact.name}
         </div>
 
         <div style="font-size:0.88rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.45;">
-          📍 ${fullAddress}
+          📍 ${contact.fullAddress}
         </div>
 
         <!-- CONTACT & NAVIGATION ACTIONS -->
         <div class="action-row" style="margin-bottom:1rem;">
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}" target="_blank" rel="noopener" class="btn-delivery btn-delivery-outline">
+          <a href="${contact.mapsUrl}" target="_blank" rel="noopener" class="btn-delivery btn-delivery-outline" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
             🧭 Navigate in Maps
           </a>
-          <a href="tel:${phone}" class="btn-delivery btn-delivery-outline">
-            📞 Call Customer
-          </a>
+          ${contact.phone ? `
+            <a href="tel:${contact.phone}" class="btn-delivery btn-delivery-outline" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+              📞 Call Customer (${contact.displayPhone})
+            </a>
+          ` : `
+            <button type="button" class="btn-delivery btn-delivery-outline" onclick="DeliveryToast.show('Customer phone number not on file', 'warning')" style="opacity:0.6; display:flex; align-items:center; justify-content:center; gap:6px;">
+              📞 Phone Not on File
+            </button>
+          `}
         </div>
 
         <!-- PAYMENT STATUS -->
@@ -448,7 +518,7 @@ const DeliveryActive = {
           <div style="font-size:0.75rem; font-weight:700; color:var(--gold); text-transform:uppercase; margin-bottom:0.5rem;">Package Items (${(o.items || []).length})</div>
           ${(o.items || []).map(i => `
             <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem; color:#fff;">
-              <span>${i.name || i.title || 'Ethnic Product'} × ${i.quantity || 1}</span>
+              <span>${i.name || i.title || i.productName || 'Ethnic Product'} × ${i.quantity || 1}</span>
               <span style="font-weight:700; color:var(--gold);">₹${(i.price || 0) * (i.quantity || 1)}</span>
             </div>
           `).join('')}
@@ -457,7 +527,7 @@ const DeliveryActive = {
         <!-- STATE TRANSITION ACTIONS -->
         <div style="display:flex; flex-direction:column; gap:0.65rem;">
           ${state === 'assigned' ? `
-            <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.acceptOrder('${o.id}')">
+            <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.acceptOrder('${o.id}', event)">
               ✓ Accept Delivery Assignment
             </button>
             <button class="btn-delivery btn-delivery-danger" onclick="DeliveryActive.openRejectModal('${o.id}')">
@@ -466,32 +536,71 @@ const DeliveryActive = {
           ` : ''}
 
           ${state === 'accepted' ? `
-            <button class="btn-delivery btn-delivery-warning" onclick="DeliveryActive.updateState('${o.id}', 'reached_store')">
-              🏪 Reached Store / Merchant
+            <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:var(--radius-sm); padding:0.85rem; font-size:0.83rem; color:var(--text-muted); line-height:1.4;">
+              📍 Drive to the merchant hub/store counter to collect this package.
+            </div>
+            <button class="btn-delivery btn-delivery-warning" onclick="DeliveryActive.updateState('${o.id}', 'reached_store', {}, event)">
+              🏪 Reached Store / Merchant Hub
             </button>
           ` : ''}
 
           ${state === 'reached_store' ? `
-            <button class="btn-delivery btn-delivery-primary" onclick="DeliveryActive.updateState('${o.id}', 'picked_up')">
-              📦 Confirm Package Picked Up
+            <div style="background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.35); border-radius:var(--radius-sm); padding:0.85rem;">
+              <div style="font-size:0.78rem; font-weight:800; color:#FDE68A; text-transform:uppercase; margin-bottom:0.25rem;">
+                🏪 Step 1: Store Package Handover Verification
+              </div>
+              <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.4; margin-bottom:0.6rem;">
+                Give this <strong>6-digit OTP</strong> to the shop merchant, or enter the merchant's code to confirm physical package receipt:
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.35); border-radius:6px; padding:0.5rem 0.75rem;">
+                <span style="font-size:0.75rem; color:var(--text-muted);">Handover OTP:</span>
+                <span style="font-family:monospace; font-size:1.25rem; font-weight:900; color:var(--gold); letter-spacing:3px;">
+                  ${o.storeHandoverOtp || o.storePickupCode || o.deliveryOtp || '------'}
+                </span>
+              </div>
+            </div>
+            <button class="btn-delivery btn-delivery-primary" onclick="DeliveryActive.openStorePickupModal('${o.id}')">
+              📦 Enter Store Handover Code &amp; Pick Up Package
             </button>
           ` : ''}
 
           ${state === 'picked_up' ? `
-            <button class="btn-delivery btn-delivery-primary" onclick="DeliveryActive.updateState('${o.id}', 'out_for_delivery')">
+            <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); border-radius:var(--radius-sm); padding:0.85rem;">
+              <div style="font-size:0.78rem; font-weight:800; color:#34D399; text-transform:uppercase; margin-bottom:0.25rem;">
+                ✅ Package in Rider Custody
+              </div>
+              <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                Package successfully received and verified from store. Start delivery trip to customer doorstep.
+              </div>
+            </div>
+            <button class="btn-delivery btn-delivery-primary" onclick="DeliveryActive.updateState('${o.id}', 'out_for_delivery', {}, event)">
               🛵 Start Journey (Out for Delivery)
             </button>
           ` : ''}
 
           ${state === 'out_for_delivery' ? `
-            <button class="btn-delivery btn-delivery-warning" onclick="DeliveryActive.updateState('${o.id}', 'reached_customer')">
+            <button class="btn-delivery btn-delivery-warning" onclick="DeliveryActive.updateState('${o.id}', 'reached_customer', {}, event)">
               📍 Reached Customer Doorstep
+            </button>
+            <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.openOtpKeypad('${o.id}', ${isCod})">
+              🔐 Verify Customer OTP &amp; Complete Delivery
+            </button>
+            <button class="btn-delivery btn-delivery-danger" onclick="DeliveryActive.openFailureModal('${o.id}')">
+              ⚠️ Report Delivery Issue / Unavailable
             </button>
           ` : ''}
 
-          ${state === 'reached_customer' || state === 'out_for_delivery' ? `
+          ${state === 'reached_customer' ? `
+            <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); border-radius:var(--radius-sm); padding:0.85rem;">
+              <div style="font-size:0.78rem; font-weight:800; color:#34D399; text-transform:uppercase; margin-bottom:0.25rem;">
+                🔐 Step 2: Customer Delivery OTP
+              </div>
+              <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                Ask the customer for their <strong>6-digit Delivery OTP</strong> displayed in their 'My Orders' screen.
+              </div>
+            </div>
             <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.openOtpKeypad('${o.id}', ${isCod})">
-              🔐 Verify Customer OTP & Complete Delivery
+              🔐 Verify Customer OTP &amp; Complete Delivery
             </button>
             <button class="btn-delivery btn-delivery-danger" onclick="DeliveryActive.openFailureModal('${o.id}')">
               ⚠️ Report Delivery Issue / Unavailable
@@ -500,7 +609,7 @@ const DeliveryActive = {
 
           ${state === 'delivered' ? `
             <div style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); border-radius:var(--radius-md); padding:1rem; text-align:center; color:#34D399; font-weight:800;">
-              🎉 Order Successfully Delivered & Verified
+              🎉 Order Successfully Delivered &amp; Verified
             </div>
           ` : ''}
         </div>
@@ -508,25 +617,62 @@ const DeliveryActive = {
     `;
   },
 
-  async acceptOrder(orderId) {
+  async acceptOrder(orderId, event = null) {
+    let btn = null;
+    let originalText = '';
+    if (event && event.currentTarget) {
+      btn = event.currentTarget;
+    } else if (window.event && window.event.currentTarget) {
+      btn = window.event.currentTarget;
+    }
+    if (btn) {
+      btn.disabled = true;
+      originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Accepting...';
+    }
+
     try {
       await Store.updateDeliveryState(orderId, DeliveryGuard.currentUser.uid, 'accepted');
       DeliveryToast.show('Order accepted! Proceed to pickup store.', 'success');
+      DeliveryNav.go('active');
       await this.loadOrder(orderId);
       DeliveryDashboard.load();
     } catch (e) {
+      console.error('DeliveryActive.acceptOrder error:', e);
       DeliveryToast.show(e.message || 'Failed to accept order', 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
   },
 
-  async updateState(orderId, nextState, metadata = {}) {
+  async updateState(orderId, nextState, metadata = {}, event = null) {
+    let btn = null;
+    let originalText = '';
+    if (event && event.currentTarget) {
+      btn = event.currentTarget;
+    } else if (window.event && window.event.currentTarget) {
+      btn = window.event.currentTarget;
+    }
+    if (btn) {
+      btn.disabled = true;
+      originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Updating...';
+    }
+
     try {
       await Store.updateDeliveryState(orderId, DeliveryGuard.currentUser.uid, nextState, metadata);
       DeliveryToast.show(`Status updated to ${nextState.replace(/_/g, ' ').toUpperCase()}`, 'success');
       await this.loadOrder(orderId);
       DeliveryDashboard.load();
     } catch (e) {
-      DeliveryToast.show(e.message || 'State update failed', 'error');
+      console.error('DeliveryActive.updateState error:', e);
+      DeliveryToast.show(e.message || 'State update failed. Please retry.', 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
   },
 
@@ -579,6 +725,60 @@ const DeliveryActive = {
     }
   },
 
+  // ─── STEP 1: STORE PACKAGE HANDOVER CODE MODAL & SUBMIT ─────────
+  openStorePickupModal(orderId) {
+    const modal = document.getElementById('modal-store-pickup-otp');
+    if (!modal) return;
+    modal.dataset.orderId = orderId;
+    const input = document.getElementById('store-otp-code-input');
+    if (input) input.value = '';
+    modal.classList.add('open');
+    setTimeout(() => {
+      if (input) input.focus();
+    }, 200);
+  },
+
+  async submitStorePickupVerification() {
+    const modal = document.getElementById('modal-store-pickup-otp');
+    if (!modal) return;
+    const orderId = modal.dataset.orderId;
+    const input = document.getElementById('store-otp-code-input');
+    const otp = input ? input.value.trim() : '';
+    const btn = document.getElementById('btn-submit-store-otp');
+
+    if (!otp || otp.length < 4) {
+      DeliveryToast.show('Please enter the 6-digit Store Handover Code from the merchant.', 'error');
+      return;
+    }
+
+    let originalText = '';
+    if (btn) {
+      btn.disabled = true;
+      originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Verifying Store Code...';
+    }
+
+    try {
+      await Store.updateDeliveryState(orderId, DeliveryGuard.currentUser.uid, 'picked_up', {
+        enteredStoreOtp: otp
+      });
+
+      modal.classList.remove('open');
+      DeliveryToast.show('✅ Store Handover Verified! Package marked as Picked Up.', 'success');
+      await this.loadOrder(orderId);
+      DeliveryDashboard.load();
+    } catch (e) {
+      console.error('submitStorePickupVerification error:', e);
+      DeliveryToast.show(e.message || 'Invalid Store Handover Code. Please verify with merchant.', 'error');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText || '✓ Verify Store Code & Pick Up Package';
+      }
+    }
+  },
+
+  // ─── STEP 2: CUSTOMER DELIVERY OTP KEYPAD & SUBMIT ──────────────
   openOtpKeypad(orderId, isCod) {
     const modal = document.getElementById('modal-otp-keypad');
     if (!modal) return;
@@ -595,10 +795,12 @@ const DeliveryActive = {
 
   async submitOtpVerification() {
     const modal = document.getElementById('modal-otp-keypad');
+    if (!modal) return;
     const orderId = modal.dataset.orderId;
     const isCod = modal.dataset.isCod === '1';
     const otp = document.getElementById('otp-code-input').value.trim();
     const codCheckbox = document.getElementById('otp-cod-collected-checkbox');
+    const btn = document.getElementById('btn-submit-customer-otp');
 
     if (!otp || otp.length < 4) {
       DeliveryToast.show('Please enter the 6-digit OTP from customer', 'error');
@@ -608,6 +810,13 @@ const DeliveryActive = {
     if (isCod && codCheckbox && !codCheckbox.checked) {
       DeliveryToast.show('Please confirm Cash on Delivery payment has been collected', 'warning');
       return;
+    }
+
+    let originalText = '';
+    if (btn) {
+      btn.disabled = true;
+      originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Verifying Customer OTP...';
     }
 
     try {
@@ -621,7 +830,13 @@ const DeliveryActive = {
       await this.loadOrder(orderId);
       DeliveryDashboard.load();
     } catch (e) {
-      DeliveryToast.show(e.message || 'Invalid OTP. Please recheck with customer.', 'error');
+      console.error('submitOtpVerification error:', e);
+      DeliveryToast.show(e.message || 'Invalid Customer Delivery OTP. Please recheck with customer.', 'error');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText || '✓ Verify OTP & Complete Delivery';
+      }
     }
   }
 };
@@ -707,11 +922,24 @@ const DeliveryProfile = {
   }
 };
 
-// Auto-initialize upon script load
-document.addEventListener('DOMContentLoaded', async () => {
-  const authRes = await DeliveryGuard.init();
-  if (authRes) {
-    DeliveryShift.init(authRes.data.shiftStatus || 'available');
-    DeliveryNav.go('dashboard');
+// Auto-initialize upon script load (works across web, mobile, and PWA WebViews)
+async function startDeliveryApp() {
+  try {
+    const authRes = await DeliveryGuard.init();
+    if (authRes) {
+      DeliveryShift.init(authRes.data.shiftStatus || 'available');
+      DeliveryNav.go('dashboard');
+    }
+  } catch (err) {
+    console.error('startDeliveryApp error:', err);
+    // Always remove flash prevention style even on unexpected initialization errors
+    const s = document.getElementById('delivery-auth-guard-style');
+    if (s) s.remove();
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startDeliveryApp);
+} else {
+  startDeliveryApp();
+}

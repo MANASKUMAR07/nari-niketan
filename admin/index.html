@@ -20,7 +20,7 @@
   <!-- ===== SIDEBAR ===== -->
   <aside class="admin-sidebar" id="admin-sidebar">
     <div class="sidebar-brand">
-      <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan" class="sidebar-brand-logo">
+      <img src="../images/logo-circle.webp?v=4.0" alt="Nari Niketan" class="sidebar-brand-logo">
       <div>
         <div class="sidebar-brand-name">Nari Niketan</div>
         <div class="sidebar-brand-sub">Admin Panel v3.0</div>
@@ -1334,6 +1334,29 @@
         </div>
         <div id="ai-sim-results" style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;min-height:100px">
           <span style="color:var(--text-muted);font-size:.82rem">Enter a prompt above and click "Test AI Match" to view matched products and generated styling tips.</span>
+        </div>
+      </div>
+
+      <!-- Nari AI Executive Business Operations Copilot -->
+      <div class="widget-card" style="margin-top:1.5rem;border:1px solid #8B1A4A;background:linear-gradient(135deg, rgba(139,26,74,0.03) 0%, rgba(212,175,55,0.05) 100%)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+          <div class="widget-title" style="color:#8B1A4A;margin-bottom:0">&#x1F916; Nari AI Executive Business Copilot (Powered by Gemini)</div>
+          <span style="background:#8B1A4A;color:#fff;font-size:0.72rem;padding:2px 8px;border-radius:12px;font-weight:700">Autonomous Reasoning</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem">Ask natural language questions about store telemetry, sales trends, delivery bottlenecks, inventory restocking, or revenue metrics.</p>
+        <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+          <input type="text" class="form-control" id="ai-copilot-query" placeholder="e.g. 'Summarize today\'s sales and identify pending order dispatch bottlenecks'" style="flex:1" onkeydown="if(event.key==='Enter')AdminAIStylist.askCopilot()">
+          <button class="btn btn-accent" id="btn-ask-copilot" onclick="AdminAIStylist.askCopilot()">&#x2728; Ask Copilot</button>
+        </div>
+        <!-- Quick Copilot Prompt Chips -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('ai-copilot-query').value='Summarize today\'s sales and active orders'; AdminAIStylist.askCopilot();">📊 Today's Sales Summary</button>
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('ai-copilot-query').value='What orders are pending rider pickup or OTP delivery?'; AdminAIStylist.askCopilot();">🚚 Delivery &amp; OTP Status</button>
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('ai-copilot-query').value='Which product categories have highest customer engagement?'; AdminAIStylist.askCopilot();">👗 Category Demand</button>
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('ai-copilot-query').value='Give me executive operational recommendations for this week'; AdminAIStylist.askCopilot();">💡 Operational Advice</button>
+        </div>
+        <div id="ai-copilot-results" style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem;min-height:90px;font-size:0.9rem;line-height:1.6">
+          <span style="color:var(--text-muted);font-size:.85rem">Ask a question above or click a prompt chip to generate executive AI business insights.</span>
         </div>
       </div>
     </section>

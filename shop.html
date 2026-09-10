@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,26 +9,31 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nari Niketan">
   <link rel="manifest" href="manifest.webmanifest">
-  <!-- Preconnect to Firebase Storage CDN so product images load faster -->
-  <link rel="preconnect" href="https://firebasestorage.googleapis.com">
+  <!-- Preconnect to Firebase Storage and CDN so product images load faster -->
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://wsrv.nl" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com">
+  <link rel="dns-prefetch" href="https://wsrv.nl">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=4.0">
-  <link rel="stylesheet" href="css/amazon-layout.css?v=1.7">
-  <link rel="stylesheet" href="css/shop.css?v=4.0">
+  <link rel="stylesheet" href="css/style.css?v=4.1">
+  <link rel="stylesheet" href="css/nn-layout.css?v=2.1">
+  <link rel="stylesheet" href="css/shop.css?v=4.1">
   <link rel="stylesheet" href="css/pwa.css?v=1.0">
-  <link rel="icon" type="image/png" href="images/icons/icon-96x96.png">
   <link rel="stylesheet" href="css/nari-ai-stylist.css?v=1.2">
   <link rel="stylesheet" href="css/nari-virtual-tryon.css?v=1.0">
   <link rel="stylesheet" href="css/nari-ai-search.css?v=1.1">
+  <link rel="stylesheet" href="css/nari-agent.css?v=1.1">
+  <link rel="stylesheet" href="css/wishlist.css?v=1.0">
 </head>
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
-        <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
+        <img src="images/logo-circle.webp?v=4.0" onerror="this.onerror=null;this.src='images/logo-circle.png?v=4.0'" alt="Nari Niketan Logo" class="nav-logo-img" width="34" height="34" style="width:34px;height:34px;max-width:34px;max-height:34px;border-radius:50%;object-fit:cover;">
         <div class="nav-logo-text"><span class="brand-name">Nari Niketan</span><span class="brand-tagline">Elegance Redefined</span></div>
       </a>
       <ul class="nav-links">
@@ -73,12 +78,35 @@
     </button>
   </nav>
 
-  <div class="page-content" >
+  <div class="page-content">
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         MOBILE CATEGORY PILL STRIP
+         Visible only on mobile (≤768px) — CSS sets display:none on desktop.
+         Gives instant access to category filters without opening the sidebar.
+         Pills are tightly coupled to the radio inputs in .shop-sidebar:
+         clicking a pill fires applyFilters() with the right category value.
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <nav class="shop-cat-pills" id="shop-cat-pills" aria-label="Category navigation">
+      <a href="#" class="shop-cat-pill active" id="pill-all"
+         onclick="selectCatPill(this,'All');return false;">🛍️ All</a>
+      <a href="#" class="shop-cat-pill" id="pill-sarees"
+         onclick="selectCatPill(this,'Sarees');return false;">🥻 Sarees</a>
+      <a href="#" class="shop-cat-pill" id="pill-suits"
+         onclick="selectCatPill(this,'Suits');return false;">👗 Suits</a>
+      <a href="#" class="shop-cat-pill" id="pill-lehengas"
+         onclick="selectCatPill(this,'Lehengas');return false;">💃 Lehengas</a>
+      <a href="#" class="shop-cat-pill" id="pill-kurtas"
+         onclick="selectCatPill(this,'Kurtas');return false;">🌸 Kurtas</a>
+      <a href="#" class="shop-cat-pill" id="pill-dupattas"
+         onclick="selectCatPill(this,'Dupattas');return false;">🧣 Dupattas</a>
+    </nav>
     <!-- Header -->
     <div class="shop-header" style="background:var(--primary);padding:2.5rem 1.5rem;text-align:center;color:var(--white);position:relative;overflow:hidden">
       <div style="position:relative;z-index:1;max-width:700px;margin:0 auto">
         <p class="section-tag" style="color:var(--accent);margin-bottom:0.5rem">&#10047; Curated Elegance</p>
-        <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;margin-bottom:0.5rem;color:var(--white)" id="shop-page-title">All Collections</h1>
+        <!-- font-size intentionally NOT set inline here; shop.css media queries control it at all breakpoints -->
+        <h1 style="font-family:var(--font-display);font-weight:700;margin-bottom:0.5rem;color:var(--white)" id="shop-page-title">All Collections</h1>
         <p style="color:rgba(255,255,255,.8);font-size:0.95rem">Explore premium Indian ethnic wear crafted for timeless beauty.</p>
       </div>
     </div>
@@ -96,12 +124,12 @@
         <div class="filter-section">
           <div class="filter-title">Category</div>
           <div class="filter-checkbox-list" id="category-filter">
-            <label class="filter-checkbox"><input type="radio" name="category" value="All" checked onchange="applyFilters()"> All Categories</label>
-            <label class="filter-checkbox"><input type="radio" name="category" value="Sarees" onchange="applyFilters()"> Sarees</label>
-            <label class="filter-checkbox"><input type="radio" name="category" value="Suits" onchange="applyFilters()"> Suits</label>
-            <label class="filter-checkbox"><input type="radio" name="category" value="Lehengas" onchange="applyFilters()"> Lehengas</label>
-            <label class="filter-checkbox"><input type="radio" name="category" value="Kurtas" onchange="applyFilters()"> Kurtas</label>
-            <label class="filter-checkbox"><input type="radio" name="category" value="Dupattas" onchange="applyFilters()"> Dupattas</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="All" checked onchange="updateCatPills('All');applyFilters()"> All Categories</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Sarees" onchange="updateCatPills('Sarees');applyFilters()"> Sarees</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Suits" onchange="updateCatPills('Suits');applyFilters()"> Suits</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Lehengas" onchange="updateCatPills('Lehengas');applyFilters()"> Lehengas</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Kurtas" onchange="updateCatPills('Kurtas');applyFilters()"> Kurtas</label>
+            <label class="filter-checkbox"><input type="radio" name="category" value="Dupattas" onchange="updateCatPills('Dupattas');applyFilters()"> Dupattas</label>
           </div>
         </div>
 
@@ -173,6 +201,17 @@
         <div id="ai-search-banner-wrap"></div>
         <div class="active-filters" id="active-filters"></div>
 
+        <!-- ✨ AI Occasion Stylist Quiz Banner -->
+        <div class="nn-quiz-banner" id="nn-quiz-banner">
+          <div class="nn-quiz-banner-text">
+            <p>&#10024; Not sure what to wear?</p>
+            <small>Find your perfect ethnic look in 30 seconds — curated just for you!</small>
+          </div>
+          <button class="nn-quiz-launch-btn" onclick="if(window.StyleQuiz)StyleQuiz.open()" id="nn-quiz-launch-btn">
+            &#127775; Take Style Quiz
+          </button>
+        </div>
+
         <div class="products-grid" id="products-grid" id="products-grid">
           <!-- Skeleton cards show instantly while data loads -->
           <div class="product-card skeleton-card" style="min-height:380px"><div class="product-card-img" style="background:linear-gradient(90deg,#f0e6d6 25%,#e8d5be 50%,#f0e6d6 75%);background-size:200%;aspect-ratio:3/4;animation:shimmer 1.4s ease-in-out infinite"></div><div style="padding:1rem"><div style="height:10px;background:#e8d5be;border-radius:4px;margin-bottom:8px;width:55%;animation:shimmer 1.4s infinite"></div><div style="height:14px;background:#e8d5be;border-radius:4px;margin-bottom:8px;animation:shimmer 1.4s infinite"></div><div style="height:12px;background:#e8d5be;border-radius:4px;width:35%;animation:shimmer 1.4s infinite"></div></div></div>
@@ -190,7 +229,7 @@
       <div class="footer-grid">
         <div>
           <div class="nav-logo" style="margin-bottom:1rem">
-            <img src="images/logo-circle.png?v=4.0" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
+            <img src="images/logo-circle.webp?v=4.0" onerror="this.onerror=null;this.src='images/logo-circle.png?v=4.0'" alt="Nari Niketan Logo" class="footer-logo-img" width="42" height="42" style="width:42px;height:42px;max-width:42px;max-height:42px;border-radius:50%;object-fit:cover;">
             <div class="nav-logo-text">
               <span class="brand-name" style="color:var(--white)">Nari Niketan</span>
               <span class="brand-tagline">Elegance Redefined</span>
@@ -238,16 +277,17 @@
     </div>
   </footer>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/nari-monitor.js?v=1.1"></script>
-<script src="js/store.js?v=3.8"></script>
-  <script src="js/cart.js?v=3.8"></script>
-  <script src="js/app.js?v=3.8"></script>
-  <script src="js/products.js?v=3.8"></script>
-  <script src="js/nari-ai-ads.js?v=1.0"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+  <script src="js/firebase-config.js" defer></script>
+  <script src="js/nari-monitor.js?v=1.1" defer></script>
+  <script src="js/store.js?v=3.8" defer></script>
+  <script src="js/cart.js?v=3.8" defer></script>
+  <script src="js/app.js?v=3.8" defer></script>
+  <script src="js/products.js?v=3.8" defer></script>
+  <script src="js/nari-ai-ads.js?v=1.0" defer></script>
+  <script src="js/nari-agent.js?v=1.0" defer></script>
   <script>
     let allLoadedProducts = [];
     let selectedSizes = [];
@@ -274,6 +314,8 @@
         if (radio) radio.checked = true;
         const titleEl = document.getElementById("shop-page-title");
         if (titleEl) titleEl.textContent = catParam;
+        // Also sync the mobile pill strip
+        if (typeof updateCatPills === 'function') updateCatPills(catParam);
       }
       if (searchParam) {
         setSearchTerm(searchParam);
@@ -290,7 +332,14 @@
       hookSearch();
       setTimeout(hookSearch, 500);
 
-      // PHASE 2: Render from Firestore DISK CACHE instantly (0 network wait)
+      // PHASE 1: Render from localStorage instantly (0ms)
+      const instantLocal = (typeof Store !== 'undefined' && Store.getCachedProducts) ? Store.getCachedProducts() : [];
+      if (instantLocal && instantLocal.length) {
+        allLoadedProducts = instantLocal;
+        applyFilters();
+      }
+
+      // PHASE 2: Render from Firestore DISK CACHE / Network
       try {
         const cached = await Store.getProducts();
         if (cached && cached.length) {
@@ -298,7 +347,7 @@
           applyFilters();
         }
       } catch (err) {
-        console.warn("Disk cache getProducts error:", err);
+        console.warn("getProducts error:", err);
       }
 
       // PHASE 3: Live sync — updates silently when server responds
@@ -413,22 +462,40 @@
       const fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 520'%3E%3Crect fill='%23F5ECD8' width='400' height='520'/%3E%3Ctext x='200' y='240' font-family='Georgia%2Cserif' font-size='16' fill='%238B1A4A' text-anchor='middle'%3E%F0%9F%9B%8D%EF%B8%8F%3C/text%3E%3Ctext x='200' y='270' font-family='Georgia%2Cserif' font-size='14' fill='%238B1A4A' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
       const shopImgStore = {};
 
-      grid.innerHTML = products.map(p => {
+      grid.innerHTML = products.map((p, idx) => {
         const hasSale     = p.salePrice && Number(p.salePrice) < Number(p.price);
         const displayPrice = hasSale ? Number(p.salePrice) : Number(p.price);
         const discount    = hasSale
           ? (p.discount || Math.round(((p.price - p.salePrice) / p.price) * 100))
           : 0;
 
-        const rawImg   = p.imageUrl || (p.images && p.images[0]) || p.image || '';
-        const isBase64 = rawImg.startsWith('data:');
-        const displayImg = isBase64 ? fallback : (rawImg || fallback);
-        if (isBase64) shopImgStore[p.id] = rawImg;
+        const rawDirectUrl = (typeof Products !== 'undefined' && Products.getRawImageUrl)
+          ? Products.getRawImageUrl(p, 'thumbnail')
+          : (p.thumbnail || p.imageUrl || fallback);
+        const thumbUrl = (typeof Products !== 'undefined' && Products.getImageUrl)
+          ? Products.getImageUrl(p, 'thumbnail', true)
+          : (p.thumbnail || (typeof p.images?.[0] === 'object' ? p.images[0].thumbnail : (p.imageUrl || p.images?.[0] || fallback)));
+        const srcset   = (typeof Products !== 'undefined' && Products.getImageSrcset) ? Products.getImageSrcset(p) : '';
+        const isLcp    = idx === 0;
+
+        const isBase64 = typeof thumbUrl === 'string' && thumbUrl.startsWith('data:');
+        const displayImg = isBase64 ? fallback : (thumbUrl || fallback);
+        if (isBase64) shopImgStore[p.id] = thumbUrl;
 
         return `
           <div class="product-card">
-            <div class="product-card-img-wrap" style="position:relative;overflow:hidden;border-radius:var(--radius-md) var(--radius-md) 0 0;background:var(--cream);aspect-ratio:3/4;">
-              <img src="${displayImg}" alt="${p.name || 'Product'}" class="product-card-img shop-img-el" data-pid="${p.id}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='${fallback}'">
+            <div class="product-card-img-wrap" style="position:relative;overflow:hidden;border-radius:var(--radius-md) var(--radius-md) 0 0;background:var(--cream,#F5ECD8);aspect-ratio:3/4;">
+              <img src="${displayImg}"
+                ${srcset ? `srcset="${srcset}" sizes="(max-width: 600px) 50vw, (max-width: 1024px) 33vw, 280px"` : ''}
+                alt="${p.name || 'Product'}"
+                class="product-card-img shop-img-el"
+                data-pid="${p.id}"
+                width="300" height="400"
+                loading="${isLcp ? 'eager' : 'lazy'}"
+                ${isLcp ? 'fetchpriority="high"' : ''}
+                decoding="async"
+                style="width:100%;height:100%;object-fit:cover;display:block;"
+                onerror="if(!this.dataset.fallbackApplied){this.dataset.fallbackApplied='1';this.removeAttribute('srcset');this.src='${rawDirectUrl}';}else{this.src='${fallback}';}">
               ${hasSale ? `<span class="product-badge sale" style="position:absolute;top:0.75rem;left:0.75rem;background:var(--accent);color:var(--dark);padding:0.25rem 0.6rem;border-radius:4px;font-size:0.72rem;font-weight:700;">${discount}% OFF</span>` : ''}
             </div>
             <div class="product-card-body" style="padding:1rem;">
@@ -482,7 +549,44 @@
       if (titleEl) titleEl.textContent = "All Collections";
       selectedSizes = [];
       document.querySelectorAll(".size-chip").forEach(el => el.classList.remove("active"));
+      // Reset mobile pill strip too
+      updateCatPills('All');
       applyFilters();
+    }
+
+    /* ── Mobile Category Pill Strip ──
+       selectCatPill(el, category):
+         - Activates the clicked pill visually
+         - Checks the matching radio button in the sidebar (keeps desktop in sync)
+         - Updates the page title
+         - Calls applyFilters() which re-renders the product grid
+       updateCatPills(category):
+         - Called when category changes via sidebar to keep pills in sync
+    */
+    function selectCatPill(el, category) {
+      // Visual: mark pill active
+      updateCatPills(category);
+      // Sync sidebar radio
+      const radio = document.querySelector(`input[name="category"][value="${category}"]`);
+      if (radio) { radio.checked = true; }
+      // Update header title
+      const titleEl = document.getElementById('shop-page-title');
+      if (titleEl) titleEl.textContent = category === 'All' ? 'All Collections' : category;
+      applyFilters();
+    }
+
+    function updateCatPills(category) {
+      document.querySelectorAll('.shop-cat-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      // Find the pill whose onclick contains this category
+      const catMap = {
+        'All': 'pill-all', 'Sarees': 'pill-sarees', 'Suits': 'pill-suits',
+        'Lehengas': 'pill-lehengas', 'Kurtas': 'pill-kurtas', 'Dupattas': 'pill-dupattas'
+      };
+      const pillId = catMap[category] || 'pill-all';
+      const target = document.getElementById(pillId);
+      if (target) target.classList.add('active');
     }
 
     document.addEventListener("DOMContentLoaded", initShop);
@@ -492,5 +596,6 @@
   <script src="js/nari-ai-search.js?v=1.0"></script>
   <script src="js/nari-ai-stylist.js?v=1.0"></script>
   <script src="js/nari-virtual-tryon.js?v=1.0"></script>
+  <script src="js/wishlist.js?v=1.0"></script>
 </body>
 </html>

@@ -23,13 +23,51 @@ const Store = {
   },
 
   // ===== PRODUCTS =====
+  getCachedProducts() {
+    try {
+      const raw = localStorage.getItem("nn_cached_products");
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  },
+
+  setCachedProducts(list) {
+    try {
+      if (Array.isArray(list) && list.length > 0) {
+        // Strip heavy fields before caching to keep localStorage tiny (<50KB)
+        const lightList = list.slice(0, 30).map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          salePrice: p.salePrice,
+          thumbnail: p.thumbnail,
+          imageUrl: p.imageUrl,
+          images: p.images,
+          featured: p.featured,
+          stock: p.stock,
+          rating: p.rating,
+          reviews: p.reviews,
+          active: p.active
+        }));
+        localStorage.setItem("nn_cached_products", JSON.stringify(lightList));
+      }
+    } catch (e) { console.warn("Cache write skipped:", e); }
+  },
+
   async getProducts(filters = {}) {
     try {
       const cacheKey = JSON.stringify(filters);
       if (this._cache[cacheKey]) return this._cache[cacheKey];
 
-      // NOTE: We don't filter active==true in Firestore because legacy products
-      // may not have the 'active' field at all. We filter client-side instead.
+      // If unfiltered, check fast localStorage first
+      if (Object.keys(filters).length === 0) {
+        const local = this.getCachedProducts();
+        if (local.length > 0) {
+          this._cache[cacheKey] = local;
+        }
+      }
+
+      // Query Firestore
       let query = db.collection("products");
       if (filters.category && filters.category !== "All") {
         query = query.where("category", "==", filters.category);
@@ -48,11 +86,14 @@ const Store = {
           .filter(p => p.active !== false)
       );
       this._cache[cacheKey] = list;
+      if (Object.keys(filters).length === 0) {
+        this.setCachedProducts(list);
+      }
       setTimeout(() => { delete this._cache[cacheKey]; }, 5 * 60 * 1000);
       return list;
     } catch (e) {
       console.error("getProducts error:", e.code, e.message);
-      return [];
+      return this.getCachedProducts();
     }
   },
 
@@ -91,6 +132,9 @@ const Store = {
           );
           const cacheKey = JSON.stringify(filters);
           this._cache[cacheKey] = list;
+          if (Object.keys(filters).length === 0) {
+            this.setCachedProducts(list);
+          }
           if (typeof callback === "function") callback(list);
         },
         (err) => { console.error("subscribeProducts error:", err.code, err.message); }
@@ -108,8 +152,29 @@ const Store = {
 
   async getProduct(id) {
     try {
+      if (!id) return null;
+      // 1. In-memory cache
+      if (this._cache[id]) return this._cache[id];
+
+      // 2. Fast localStorage cache (0ms instant display!)
+      const localList = this.getCachedProducts();
+      const localItem = localList.find(p => p.id === id);
+      if (localItem) {
+        this._cache[id] = localItem;
+        // Background sync
+        db.collection("products").doc(id).get().then(doc => {
+          if (doc.exists) {
+            this._cache[id] = { id: doc.id, ...doc.data() };
+          }
+        }).catch(() => {});
+        return localItem;
+      }
+
+      // 3. Firestore query
       const doc = await db.collection("products").doc(id).get();
-      return doc.exists ? { id: doc.id, ...doc.data() } : null;
+      const data = doc.exists ? { id: doc.id, ...doc.data() } : null;
+      if (data) this._cache[id] = data;
+      return data;
     } catch (e) {
       console.error("getProduct:", e);
       return null;
@@ -155,23 +220,110 @@ const Store = {
     }
   },
 
+  // ── Backend API Configuration ──
+  API_BASE_URL: (typeof window !== "undefined" && window.NARI_API_URL) 
+    || (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") 
+        ? "http://localhost:8080/api" 
+        : "https://nari-niketan-api-997712460310.asia-south1.run.app/api"),
+
+  async apiCall(endpoint, method = "GET", data = null) {
+    let token = null;
+    if (typeof auth !== "undefined" && auth && auth.currentUser) {
+      try {
+        token = await auth.currentUser.getIdToken();
+      } catch (e) {
+        console.warn("Could not retrieve Firebase ID token:", e);
+      }
+    }
+
+    const headers = {
+      "Content-Type": "application/json"
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const url = `${this.API_BASE_URL}${endpoint}`;
+    const options = { method, headers };
+    if (data && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
+      options.body = JSON.stringify(data);
+    }
+
+    const res = await fetch(url, options);
+    let json = {};
+    try {
+      json = await res.json();
+    } catch {
+      json = { success: false, error: `Invalid server response (HTTP ${res.status})` };
+    }
+
+    if (!res.ok || json.success === false) {
+      const errorMsg = json.error || (json.details && json.details.map(d => d.message).join(", ")) || `Request failed with status ${res.status}`;
+      throw new Error(errorMsg);
+    }
+    return json;
+  },
+
+  async validateCouponViaApi(code, subtotal) {
+    return this.apiCall("/coupons/validate", "POST", {
+      couponCode: code,
+      subtotal: Number(subtotal)
+    });
+  },
+
+  async submitUtrViaApi(orderId, upiUtr, screenshot = null) {
+    return this.apiCall("/payments/submit-utr", "POST", {
+      orderId,
+      upiUtr,
+      screenshot
+    });
+  },
+
+  async createOrderViaApi(orderData) {
+    const payload = {
+      items: (orderData.items || []).map(i => ({
+        productId: i.productId || i.id,
+        variantId: i.variantId || null,
+        sku: i.sku || null,
+        quantity: Number(i.qty || i.quantity || 1),
+        size: i.size || "",
+        color: i.color || ""
+      })),
+      couponCode: orderData.couponApplied || null,
+      fulfillmentType: orderData.fulfillmentType || "delivery",
+      shippingAddress: orderData.deliveryAddress ? {
+        line1: orderData.deliveryAddress.line1 || "",
+        line2: orderData.deliveryAddress.line2 || "",
+        city: orderData.deliveryAddress.city || "",
+        state: orderData.deliveryAddress.state || "",
+        pincode: String(orderData.deliveryAddress.pincode || ""),
+        country: orderData.deliveryAddress.country || "India",
+        latitude: orderData.deliveryAddress.latitude || null,
+        longitude: orderData.deliveryAddress.longitude || null
+      } : null,
+      customerName: orderData.customerName || "",
+      phone: orderData.phone || "",
+      paymentMethod: orderData.paymentMethod || "UPI",
+      upiUtr: orderData.upiUtr || null
+    };
+
+    const res = await this.apiCall("/orders", "POST", payload);
+    return {
+      id: res.order.orderId,
+      orderId: res.order.orderId,
+      ...res.order
+    };
+  },
+
   // ===== ORDERS =====
   async addOrder(data) {
-    const deliveryOtp = data.deliveryOtp || String(Math.floor(100000 + Math.random() * 900000));
-    const ref = await db.collection("orders").add({
-      ...data,
-      deliveryOtp,
-      otpVerified: false,
-      status: "Pending",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    // Forward all order creation to the secure Node.js backend API
     try {
-      db.collection("settings").doc("stats").set({
-        totalOrders: firebase.firestore.FieldValue.increment(1),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).catch(() => {});
-    } catch(e) {}
-    return ref;
+      return await this.createOrderViaApi(data);
+    } catch(err) {
+      console.error("API Order creation failed:", err);
+      throw err;
+    }
   },
 
   async getUserOrders(uid) {
@@ -211,6 +363,14 @@ const Store = {
   },
 
   async cancelOrder(id, reason = "") {
+    try {
+      if (this.apiCall) {
+        const res = await this.apiCall(`/orders/${id}/cancel`, "POST", { reason });
+        if (res && res.success) return res;
+      }
+    } catch (apiErr) {
+      console.warn("API cancelOrder fallback to direct Firestore:", apiErr);
+    }
     return db.collection("orders").doc(id).update({
       status: "Cancelled",
       cancellationReason: reason,
@@ -1017,13 +1177,13 @@ const Store = {
       throw new Error("Unauthorized: Order is not assigned to this delivery partner.");
     }
 
-    const currentState = order.deliveryState || "assigned";
+    const currentState = String(order.deliveryState || "assigned").trim().toLowerCase();
 
     // Valid state transition map
     const validTransitions = {
-      assigned: ["accepted", "rejected"],
+      assigned: ["accepted", "rejected", "reached_store"],
       accepted: ["reached_store", "picked_up", "cancelled_by_customer"],
-      reached_store: ["picked_up", "cancelled_by_customer"],
+      reached_store: ["picked_up", "cancelled_by_customer", "reached_store"],
       picked_up: ["out_for_delivery", "cancelled_by_customer"],
       out_for_delivery: ["reached_customer", "delivered", "failed", "customer_unavailable", "wrong_address", "customer_cancelled"],
       reached_customer: ["delivered", "failed", "customer_unavailable", "wrong_address", "customer_cancelled"],
@@ -1053,8 +1213,30 @@ const Store = {
       update.deliveryState = "rejected";
     } else if (nextState === "reached_store") {
       update.reachedStoreAt = firebase.firestore.FieldValue.serverTimestamp();
+      if (!order.acceptedAt) {
+        update.acceptedAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+      if (!order.status || order.status === "Pending") {
+        update.status = "Processing";
+      }
+      // Ensure Store Handover Code exists for merchant
+      if (!order.storeHandoverOtp && !order.storePickupCode) {
+        const generatedStoreOtp = String(Math.floor(100000 + Math.random() * 900000));
+        update.storeHandoverOtp = generatedStoreOtp;
+        update.storePickupCode = generatedStoreOtp;
+      }
     } else if (nextState === "picked_up") {
+      // ── STEP 1: STORE PACKAGE HANDOVER CODE VERIFICATION ──
+      const expectedStoreCode = String(order.storeHandoverOtp || order.storePickupCode || order.deliveryOtp || "").trim();
+      if (!order.pickupVerified && !metadata.pickupVerified) {
+        const enteredStoreOtp = String(metadata.enteredStoreOtp || metadata.enteredOtp || "").trim();
+        if (!enteredStoreOtp || (expectedStoreCode && enteredStoreOtp !== expectedStoreCode)) {
+          throw new Error("Invalid Store Handover Code. Please ask the merchant/store manager for the 6-digit pickup verification code.");
+        }
+      }
       update.pickedUpAt = firebase.firestore.FieldValue.serverTimestamp();
+      update.pickupVerified = true;
+      update.storePickupVerifiedAt = firebase.firestore.FieldValue.serverTimestamp();
       update.status = "Shipped";
     } else if (nextState === "out_for_delivery") {
       update.outForDeliveryAt = firebase.firestore.FieldValue.serverTimestamp();
@@ -1062,10 +1244,12 @@ const Store = {
     } else if (nextState === "reached_customer") {
       update.reachedCustomerAt = firebase.firestore.FieldValue.serverTimestamp();
     } else if (nextState === "delivered") {
-      // Must verify OTP if not already verified
+      // ── STEP 2: CUSTOMER DELIVERY OTP VERIFICATION ──
       if (!order.otpVerified && !order.deliveryOtpVerified && !metadata.otpVerified) {
-        if (!metadata.enteredOtp || String(metadata.enteredOtp).trim() !== String(order.deliveryOtp || "").trim()) {
-          throw new Error("Delivery OTP verification is mandatory before marking as Delivered.");
+        const enteredOtp = String(metadata.enteredOtp || "").trim();
+        const expectedOtp = String(order.deliveryOtp || "").trim();
+        if (!enteredOtp || (expectedOtp && enteredOtp !== expectedOtp)) {
+          throw new Error("Invalid Customer Delivery OTP. Please ask the customer for the 6-digit OTP displayed in their My Orders screen.");
         }
       }
       update.status = "Delivered";
@@ -1093,18 +1277,113 @@ const Store = {
 
     if (metadata.notes) update.deliveryNotes = metadata.notes;
 
-    await db.collection("orders").doc(orderId).update(update);
+    try {
+      await db.collection("orders").doc(orderId).update(update);
+    } catch (err) {
+      console.warn("Primary updateDeliveryState failed, attempting fallback:", err);
+      // Fallback with base permitted fields if any extra timestamp is constrained
+      const fallbackUpdate = {
+        deliveryState: nextState,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if (update.status) fallbackUpdate.status = update.status;
+      if (update.acceptedAt) fallbackUpdate.acceptedAt = update.acceptedAt;
+      if (update.pickedUpAt) fallbackUpdate.pickedUpAt = update.pickedUpAt;
+      if (update.outForDeliveryAt) fallbackUpdate.outForDeliveryAt = update.outForDeliveryAt;
+      if (update.deliveredAt) fallbackUpdate.deliveredAt = update.deliveredAt;
+      if (update.deliveryOtpVerified) fallbackUpdate.deliveryOtpVerified = true;
+      if (update.otpVerified) fallbackUpdate.otpVerified = true;
+      if (update.codCollected) fallbackUpdate.codCollected = true;
+      await db.collection("orders").doc(orderId).update(fallbackUpdate);
+    }
     return update;
+  },
+
+  /**
+   * Seller verifies delivery agent's OTP when agent visits shop to collect package
+   * @param {string} orderId
+   * @param {string} sellerId
+   * @param {string} enteredOtp
+   */
+  async sellerVerifyDeliveryAgentOtp(orderId, sellerId, enteredOtp) {
+    if (!orderId) throw new Error("Order ID is required.");
+    if (!enteredOtp) throw new Error("Please enter the 6-digit OTP provided by the delivery agent.");
+
+    const docRef = db.collection("orders").doc(orderId);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      throw new Error(`Order #${orderId.slice(-8).toUpperCase()} not found.`);
+    }
+
+    const order = doc.data();
+
+    // Check seller authorization
+    const isAuthorizedSeller = Array.isArray(order.sellerIds) && order.sellerIds.includes(sellerId);
+    if (!isAuthorizedSeller) {
+      throw new Error("Unauthorized: This order does not contain products from your store.");
+    }
+
+    // Expected code check: storeHandoverOtp || storePickupCode || deliveryOtp
+    const expectedOtp = String(order.storeHandoverOtp || order.storePickupCode || order.deliveryOtp || "").trim();
+    const cleanEntered = String(enteredOtp).trim();
+
+    if (!expectedOtp || cleanEntered !== expectedOtp) {
+      throw new Error("Invalid Handover OTP. Please ask the delivery agent to confirm the 6-digit verification code on their delivery app.");
+    }
+
+    const updatePayload = {
+      pickupVerified: true,
+      storePickupVerifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      pickedUpAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: "Shipped",
+      deliveryState: "picked_up",
+      sellerHandoverVerifiedBy: sellerId,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await docRef.update(updatePayload);
+    return { success: true, orderId, orderNumber: orderId.slice(-8).toUpperCase(), status: "Shipped", deliveryState: "picked_up" };
+  },
+
+  /**
+   * Quick verification: search pending orders for this seller matching the entered OTP
+   * @param {string} sellerId
+   * @param {string} enteredOtp
+   */
+  async sellerFindAndVerifyOtp(sellerId, enteredOtp) {
+    if (!enteredOtp) throw new Error("Please enter the 6-digit OTP provided by the delivery agent.");
+    const cleanOtp = String(enteredOtp).trim();
+
+    const snap = await db.collection("orders")
+      .where("sellerIds", "array-contains", sellerId)
+      .get();
+
+    const candidates = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(o => {
+      if (o.status === "Delivered" || o.status === "Cancelled" || o.pickupVerified) return false;
+      const expected = String(o.storeHandoverOtp || o.storePickupCode || o.deliveryOtp || "").trim();
+      return expected === cleanOtp;
+    });
+
+    if (!candidates.length) {
+      throw new Error("No pending order found matching OTP '" + cleanOtp + "'. Please check the code with the delivery agent.");
+    }
+
+    const targetOrder = candidates[0];
+    return await this.sellerVerifyDeliveryAgentOtp(targetOrder.id, sellerId, cleanOtp);
   },
 
   async getDeliveryPartnerEarnings(partnerId) {
     try {
       const snap = await db.collection("orders")
         .where("assignedDeliveryPartnerId", "==", partnerId)
-        .where("status", "==", "Delivered")
         .get();
 
-      let totalOrders = snap.size;
+      const deliveredDocs = snap.docs.filter(d => {
+        const o = d.data();
+        return o.status === "Delivered" || o.deliveryState === "delivered";
+      });
+
+      let totalOrders = deliveredDocs.length;
       let commissionPerOrder = 50; // default ₹50 per delivered parcel
 
       // Get custom commission rate if set on profile
@@ -1123,7 +1402,7 @@ const Store = {
       let monthCount = 0;
       let totalCodCollected = 0;
 
-      snap.docs.forEach(d => {
+      deliveredDocs.forEach(d => {
         const o = d.data();
         const dMs = o.deliveredAt?.toMillis?.() || (o.deliveredAt?.seconds ? o.deliveredAt.seconds * 1000 : 0);
         if (dMs >= startOfDay) todayCount++;

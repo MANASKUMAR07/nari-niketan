@@ -1,0 +1,767 @@
+﻿/* ============================================================
+   NARI NIKETAN — Wishlist System v1.0
+   Slide-over drawer, heart button, badges
+   ============================================================ */
+
+/* ── HEART BUTTON ON PRODUCT CARDS ─────────────────────────── */
+.product-wishlist {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(4px);
+  color: #999;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  opacity: 1; /* always visible on mobile */
+}
+/* Make visible on hover for desktop */
+@media (hover: hover) {
+  .product-card .product-wishlist { opacity: 0; }
+  .product-card:hover .product-wishlist { opacity: 1; }
+  .product-wishlist.nn-wl-active { opacity: 1 !important; }
+}
+.product-wishlist:hover {
+  transform: scale(1.12);
+  background: #fff0f5;
+  color: #cc1144;
+}
+.product-wishlist.nn-wl-active {
+  background: #fff0f5;
+  color: #cc1144;
+}
+/* Bounce animation on toggle */
+@keyframes wl-bounce {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  60%  { transform: scale(0.90); }
+  80%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.product-wishlist.nn-wl-bounce {
+  animation: wl-bounce 0.45s ease forwards;
+}
+
+/* ── WISHLIST ICON IN NAVBAR ────────────────────────────────── */
+/* Uses .nn-cart-btn style for consistency — see nn-layout.css */
+
+.nn-wl-nav-badge {
+  position: absolute;
+  top: -3px;
+  right: 0px;
+  background: #D4AF37;
+  color: #1A0A0F;
+  font-size: 0.6rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+.nn-wl-nav-badge.visible { display: flex; }
+#nn-wl-badge-header { display: none; }
+
+/* ── BACKDROP OVERLAY ───────────────────────────────────────── */
+.nn-wl-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 10, 15, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 1090;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.nn-wl-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── SLIDE-OVER DRAWER ──────────────────────────────────────── */
+.nn-wl-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(420px, 96vw);
+  height: 100dvh;
+  background: #fff;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(110%);
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.18);
+}
+.nn-wl-drawer.open {
+  transform: translateX(0);
+}
+
+/* ── DRAWER HEADER ──────────────────────────────────────────── */
+.nn-wl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: #8B1A4A;
+  color: #fff;
+  flex-shrink: 0;
+}
+.nn-wl-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nn-wl-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+.nn-wl-count-badge {
+  background: #D4AF37;
+  color: #1A0A0F;
+  font-size: 0.7rem;
+  font-weight: 800;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+.nn-wl-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  background: none;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.nn-wl-close-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* ── DRAWER BODY (ITEM LIST) ────────────────────────────────── */
+.nn-wl-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+  scroll-behavior: smooth;
+}
+/* Empty state */
+.nn-wl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 2rem;
+}
+.nn-wl-empty-icon {
+  font-size: 3rem;
+  opacity: 0.3;
+}
+.nn-wl-empty h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  color: #8B1A4A;
+  margin: 0;
+}
+.nn-wl-empty p {
+  font-size: 0.88rem;
+  color: #888;
+  margin: 0;
+  line-height: 1.5;
+}
+.nn-wl-explore-btn {
+  display: inline-block;
+  background: #8B1A4A;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+.nn-wl-explore-btn:hover { background: #6d1238; }
+
+/* ── WISHLIST ITEM CARD ─────────────────────────────────────── */
+.nn-wl-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #f2e8ee;
+  animation: fadeSlideIn 0.25s ease;
+}
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.nn-wl-item-img {
+  width: 74px;
+  height: 98px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #f5ecd8;
+  border: 1px solid #e8d5be;
+}
+.nn-wl-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.nn-wl-item-cat {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #8B1A4A;
+}
+.nn-wl-item-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1A0A0F;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nn-wl-item-price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #8B1A4A;
+}
+.nn-wl-item-orig {
+  font-size: 0.78rem;
+  color: #aaa;
+  text-decoration: line-through;
+  margin-left: 4px;
+}
+.nn-wl-item-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+.nn-wl-add-cart-btn {
+  background: #8B1A4A;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.nn-wl-add-cart-btn:hover { background: #6d1238; }
+.nn-wl-view-btn {
+  background: none;
+  color: #8B1A4A;
+  border: 1.5px solid #8B1A4A;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+.nn-wl-view-btn:hover { background: #f5e6ec; }
+.nn-wl-remove-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  transition: color 0.2s;
+}
+.nn-wl-remove-btn:hover { color: #e53935; }
+
+/* ── DRAWER FOOTER ──────────────────────────────────────────── */
+.nn-wl-footer {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid #f0e5ea;
+  background: #fdfaf6;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.nn-wl-footer-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nn-wl-move-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #D4AF37;
+  color: #1A0A0F;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  width: 100%;
+  font-family: inherit;
+}
+.nn-wl-move-all-btn:hover { background: #c8a020; transform: translateY(-1px); }
+.nn-wl-wa-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: none;
+  color: #25D366;
+  border: 1.5px solid #25D366;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  font-family: inherit;
+}
+.nn-wl-wa-share-btn:hover { background: rgba(37,211,102,0.08); }
+
+/* ── QUIZ PROMO BANNER ──────────────────────────────────────── */
+.nn-quiz-banner {
+  background: linear-gradient(135deg, #8B1A4A 0%, #5A0E2E 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 1.1rem 1.4rem;
+  margin: 1rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px rgba(139, 26, 74, 0.28);
+  position: relative;
+  overflow: hidden;
+}
+.nn-quiz-banner::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.12);
+}
+.nn-quiz-banner-text p {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+}
+.nn-quiz-banner-text small {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+}
+.nn-quiz-launch-btn {
+  flex-shrink: 0;
+  background: #D4AF37;
+  color: #1A0A0F;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+  position: relative;
+  z-index: 1;
+}
+.nn-quiz-launch-btn:hover { background: #c8a020; transform: scale(1.04); }
+
+/* ── STYLE QUIZ MODAL ───────────────────────────────────────── */
+.nn-quiz-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,10,15,0.72);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.nn-quiz-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.nn-quiz-modal {
+  background: #fff;
+  border-radius: 20px;
+  width: min(540px, 100%);
+  max-height: 90dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  transform: scale(0.95) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nn-quiz-overlay.open .nn-quiz-modal {
+  transform: scale(1) translateY(0);
+}
+.nn-quiz-modal-header {
+  background: linear-gradient(135deg, #8B1A4A, #5A0E2E);
+  color: #fff;
+  padding: 1.25rem 1.5rem 1rem;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.nn-quiz-modal-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+}
+.nn-quiz-modal-header p {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+  margin: 0;
+}
+.nn-quiz-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.35);
+  background: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+  transition: background 0.2s;
+}
+.nn-quiz-close:hover { background: rgba(255,255,255,0.15); }
+
+/* Progress dots */
+.nn-quiz-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.75rem 1.5rem 0;
+  flex-shrink: 0;
+}
+.nn-quiz-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e8d5be;
+  transition: background 0.3s, transform 0.3s;
+}
+.nn-quiz-dot.active {
+  background: #8B1A4A;
+  transform: scale(1.35);
+}
+.nn-quiz-dot.done {
+  background: #D4AF37;
+}
+
+/* Step body */
+.nn-quiz-step {
+  padding: 1rem 1.5rem 1.5rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 0.25s ease;
+}
+.nn-quiz-step.active { display: flex; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nn-quiz-step-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1A0A0F;
+  margin: 0;
+  text-align: center;
+}
+.nn-quiz-step-sub {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: center;
+  margin: -0.35rem 0 0.25rem;
+}
+.nn-quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.nn-quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border: 2px solid #f0e5ea;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #fdfaf6;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  font-family: inherit;
+}
+.nn-quiz-option:hover {
+  border-color: #8B1A4A;
+  background: #fff0f5;
+  transform: translateY(-2px);
+}
+.nn-quiz-option.selected {
+  border-color: #8B1A4A;
+  background: #fff0f5;
+  color: #8B1A4A;
+}
+.nn-quiz-option-emoji { font-size: 1.3rem; }
+
+/* Results screen */
+.nn-quiz-results {
+  padding: 1rem 1.25rem 1.5rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease;
+}
+.nn-quiz-results.active { display: flex; }
+.nn-quiz-results-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #8B1A4A;
+  text-align: center;
+  margin: 0;
+}
+.nn-quiz-results-sub {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: center;
+  margin: -0.5rem 0 0.25rem;
+}
+.nn-quiz-result-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.nn-quiz-result-card {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid #f0e5ea;
+  border-radius: 12px;
+  background: #fdfaf6;
+  animation: fadeSlideIn 0.3s ease;
+}
+.nn-quiz-result-img {
+  width: 62px;
+  height: 82px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #f5ecd8;
+}
+.nn-quiz-result-info { flex: 1; min-width: 0; }
+.nn-quiz-result-match {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #2E7D32;
+  background: rgba(46,125,50,0.1);
+  border-radius: 99px;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-bottom: 3px;
+}
+.nn-quiz-result-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1A0A0F;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nn-quiz-result-price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #8B1A4A;
+  margin: 2px 0;
+}
+.nn-quiz-result-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+.nn-quiz-cart-btn {
+  background: #8B1A4A;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+.nn-quiz-cart-btn:hover { background: #6d1238; }
+.nn-quiz-wl-btn {
+  background: none;
+  color: #cc1144;
+  border: 1.5px solid #cc1144;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+.nn-quiz-wl-btn:hover { background: #fff0f5; }
+.nn-quiz-retake-btn {
+  background: none;
+  color: #8B1A4A;
+  border: 2px solid #8B1A4A;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  font-family: inherit;
+  text-align: center;
+}
+.nn-quiz-retake-btn:hover { background: #fff0f5; }
+.nn-quiz-browse-btn {
+  display: block;
+  text-align: center;
+  background: #D4AF37;
+  color: #1A0A0F;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  text-decoration: none;
+  font-family: inherit;
+}
+.nn-quiz-browse-btn:hover { background: #c8a020; }
+
+/* ── WHATSAPP CONSULT BUTTON ON PRODUCT PAGE ─────────────────── */
+.nn-wa-consult-wrap {
+  margin: 0.75rem 0;
+}
+.nn-wa-consult-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-family: inherit;
+  text-align: left;
+}
+.nn-wa-consult-btn:hover {
+  background: #1ebe5d;
+  transform: translateY(-1px);
+}
+.nn-wa-consult-btn svg { flex-shrink: 0; }
+.nn-wa-consult-text small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.76rem;
+  opacity: 0.88;
+  margin-top: 1px;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .nn-quiz-options { grid-template-columns: 1fr; }
+  .nn-wl-drawer { width: 96vw; }
+  .nn-quiz-banner { gap: 0.7rem; }
+  .nn-quiz-launch-btn { width: 100%; text-align: center; }
+}
+

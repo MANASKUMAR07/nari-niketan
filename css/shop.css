@@ -1,4 +1,14 @@
 /* ===== SHOP PAGE ===== */
+
+/* ── Mobile Horizontal Category Pill Strip ─────────────────────────────────
+   Visible ONLY on mobile (≤768px). Provides the scrollable category nav that
+   is otherwise buried inside the hidden sidebar filter on mobile.
+   Desktop: display:none — sidebar filter handles this on wider screens.
+   ─────────────────────────────────────────────────────────────────────────── */
+.shop-cat-pills {
+  display: none; /* hidden on desktop — shown via media query below */
+}
+
 .shop-layout{display:grid;grid-template-columns:260px 1fr;gap:2rem;align-items:start;max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
 .shop-sidebar{position:sticky;top:calc(var(--navbar-h) + 1rem);background:var(--white);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow-sm)}
 .filter-section{margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid rgba(139,26,74,.1)}
@@ -89,7 +99,12 @@
 .color-dot.active,.color-dot:hover{transform:scale(1.15)}
 .color-dot.active::after{content:'?';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--white);text-shadow:0 1px 2px rgba(0,0,0,.5)}
 
-.shop-main{}
+/* Give shop-main enough bottom clearance so floating AI capsule (bottom:16-24px)
+   never occludes the last product card's "View Details" button. */
+.shop-main {
+  /* min bottom clearance: capsule height (~48px) + gap (24px) + safe-area */
+  padding-bottom: 88px;
+}
 .shop-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
 .shop-results-info{font-size:0.88rem;color:var(--text-muted)}
 .shop-results-info strong{color:var(--text);font-weight:600}
@@ -136,8 +151,8 @@
 .size-selector{display:flex;flex-wrap:wrap;gap:0.5rem}
 .size-option{padding:0.4rem 1rem;border:2px solid rgba(139,26,74,.2);border-radius:var(--radius-sm);font-size:0.85rem;font-weight:600;cursor:pointer;transition:var(--transition-fast);background:var(--white);color:var(--text)}
 .size-option:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
-.size-option.selected{border-color:var(--primary);background:var(--primary);color:var(--white)}
 .size-option:disabled{opacity:0.4;cursor:not-allowed;text-decoration:line-through}
+.size-option.out-of-stock{opacity:0.45;text-decoration:line-through;border-color:rgba(198,40,40,0.35);background:#fff5f5;color:#999}
 .color-selector{display:flex;gap:0.6rem;flex-wrap:wrap}
 .color-option{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;outline:2px solid transparent;transition:var(--transition-fast)}
 .color-option:hover{outline-color:rgba(139,26,74,.4)}
@@ -248,6 +263,67 @@
   .cart-layout,.checkout-layout{grid-template-columns:1fr}
   .product-detail-layout{grid-template-columns:1fr}
   .form-grid-2{grid-template-columns:1fr}
+
+  /* ── Show mobile category pill strip ── */
+  .shop-cat-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* horizontal scroll — touch-friendly, no visible scrollbar */
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* sticky below the navbar so it's always visible */
+    position: sticky;
+    top: var(--navbar-h, 60px);
+    z-index: 90;
+    background: #fff;
+    border-bottom: 1px solid rgba(139,26,74,0.1);
+    padding: 10px 12px;
+    /* Ensure it's full-width and doesn't create overflow */
+    width: 100%;
+    box-sizing: border-box;
+    /* Prevent page-level scroll from being triggered */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+  }
+  .shop-cat-pills::-webkit-scrollbar { display: none; }
+
+  .shop-cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    /* Do NOT let pills shrink — they must stay full-width for readability */
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--cream, #FFF8F0);
+    border: 1.5px solid rgba(139,26,74,0.2);
+    color: var(--text, #2C1810);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    /* Minimum 44px tall for comfortable touch target */
+    min-height: 36px;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .shop-cat-pill:hover,
+  .shop-cat-pill.active {
+    background: var(--primary, #8B1A4A);
+    color: #fff;
+    border-color: var(--primary, #8B1A4A);
+  }
+  /* First pill gets a tiny left indent so it's not flush against the edge */
+  .shop-cat-pill:first-child { margin-left: 0; }
+  /* Last pill gets breathing room at the right end of the scroll */
+  .shop-cat-pill:last-child { margin-right: 4px; }
 }
 
 /* ===== PRODUCT DETAIL PAGE ===== */
@@ -450,6 +526,8 @@
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    /* Keep the bottom clearance even at tablet widths */
+    padding-bottom: 88px !important;
   }
   .product-detail-layout {
     grid-template-columns: 1fr !important;
@@ -469,34 +547,70 @@
 }
 
 @media(max-width: 600px) {
+  /* ── Shop Hero Header ──
+     The shop-header has inline padding & h1 font-size (inline styles can't be
+     overridden without !important in an external stylesheet). We target the
+     wrapping div's direct children using attribute selectors to avoid relying
+     on specificity alone. */
   .shop-header {
-    padding: 1.5rem 1rem !important;
+    padding: 1.5rem 1rem 1.25rem !important;
   }
+  /* Override inline font-size on the h1 (set via style attribute) */
+  #shop-page-title,
   .shop-header h1 {
     font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.4rem !important;
   }
   .shop-header p {
     font-size: 0.82rem !important;
+    line-height: 1.5 !important;
   }
   .shop-layout {
     padding: 0.75rem 0.6rem !important;
   }
+  /* Toolbar: count + visual search button on one line, sort select below */
   .shop-toolbar {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 0.75rem !important;
+    gap: 0.6rem !important;
     width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+  /* First row of toolbar: count + visual search side by side */
+  .shop-toolbar > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .shop-results-info {
+    font-size: 0.82rem !important;
+    flex-shrink: 1 !important;
+  }
+  /* Visual search button — keep compact and non-overflowing */
+  .btn-visual-search {
+    font-size: 0.72rem !important;
+    padding: 4px 8px !important;
+    flex-shrink: 0 !important;
+    margin-left: 0 !important;
+    max-width: calc(100% - 120px) !important;
   }
   .shop-toolbar-right {
     display: flex !important;
-    justify-content: space-between !important;
+    justify-content: stretch !important;
     width: 100% !important;
   }
   .sort-select {
     flex: 1 !important;
     width: 100% !important;
+    min-width: 0 !important;
+    font-size: 0.82rem !important;
   }
+  /* Product grid: 2-col with consistent gap */
   .products-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -508,15 +622,130 @@
     min-width: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    border-radius: 10px !important;
+  }
+  /* Product image: fixed portrait ratio, proper cropping */
+  .product-card-img {
+    aspect-ratio: 3/4 !important;
+    overflow: hidden !important;
+  }
+  .product-card-img img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+    display: block !important;
   }
   .product-card-body {
-    padding: 0.6rem !important;
+    padding: 0.5rem 0.5rem 0.6rem !important;
+  }
+  .product-card-category {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 2px !important;
   }
   .product-card-title {
-    font-size: 0.8rem !important;
+    font-size: 0.78rem !important;
     line-height: 1.3 !important;
+    margin-bottom: 0.3rem !important;
+    /* 2-line clamp — don't let titles overflow card body */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  /* Price row: wrap at very narrow widths, keep readable */
+  .product-card-price-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: baseline !important;
+    gap: 3px !important;
+    margin-bottom: 0.4rem !important;
   }
   .product-card-price {
-    font-size: 0.95rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+  }
+  .product-card-original-price {
+    font-size: 0.7rem !important;
+  }
+  .product-discount {
+    font-size: 0.65rem !important;
+  }
+  /* View Details button — compact but tappable */
+  .btn-full {
+    font-size: 0.75rem !important;
+    padding: 0.45rem 0.5rem !important;
+    border-radius: 6px !important;
+  }
+  /* Discount badge — keep inside the card */
+  .product-badge {
+    font-size: 0.62rem !important;
+    padding: 2px 6px !important;
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+  .product-badge.sale {
+    font-size: 0.62rem !important;
+  }
+  /* Inline badge from renderProducts (positioned absolutely via inline style) */
+  .product-card .product-card-img-wrap > span.product-badge {
+    font-size: 0.62rem !important;
+    padding: 2px 5px !important;
+    top: 0.4rem !important;
+    left: 0.4rem !important;
+  }
+}
+
+/* ── Very narrow phones (≤ 360px) ── */
+@media(max-width: 360px) {
+  .shop-layout {
+    padding: 0.5rem 0.4rem !important;
+  }
+  .products-grid {
+    gap: 6px !important;
+  }
+  .product-card-body {
+    padding: 0.4rem !important;
+  }
+  .product-card-title {
+    font-size: 0.72rem !important;
+  }
+  .product-card-price {
+    font-size: 0.82rem !important;
+  }
+  .sort-select {
+    font-size: 0.78rem !important;
+  }
+  .shop-header {
+    padding: 1.25rem 0.75rem 1rem !important;
+  }
+  #shop-page-title,
+  .shop-header h1 {
+    font-size: 1.3rem !important;
+  }
+  .shop-cat-pills {
+    padding: 8px 8px;
+    gap: 6px;
+  }
+  .shop-cat-pill {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+}
+
+/* ── Landscape mode on phones ── */
+@media(max-width: 768px) and (orientation: landscape) {
+  .shop-header {
+    padding: 1rem 1rem 0.75rem !important;
+  }
+  #shop-page-title,
+  .shop-header h1 {
+    font-size: 1.4rem !important;
+  }
+  .products-grid {
+    /* 3-col in landscape: gives more width per card */
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
   }
 }

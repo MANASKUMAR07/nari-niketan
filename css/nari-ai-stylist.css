@@ -18,15 +18,10 @@
   --ai-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
 }
 
-/* ===== FLOATING LAUNCHER BUTTON ===== */
+/* ===== FLOATING LAUNCHER BUTTON (Unified into Nari Agent) ===== */
 #nari-ai-launcher {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 99990;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: none !important;
+}
   background: linear-gradient(135deg, var(--ai-primary), var(--ai-primary-dark));
   border: 1.5px solid var(--ai-accent);
   color: #fff;

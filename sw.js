@@ -1,9 +1,9 @@
-// ============================================================================
+﻿// ============================================================================
 // NARI NIKETAN — Progressive Web App (PWA) Service Worker
 // Version: 1.0.0
 // ============================================================================
 
-const CACHE_NAME = 'nari-niketan-v5.9';
+const CACHE_NAME = 'nari-niketan-v8.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -15,15 +15,20 @@ const PRECACHE_ASSETS = [
   './privacy-policy.html',
   './return-policy.html',
   './offline.html',
-  './css/style.css?v=4.0',
-  './js/app.js',
-  './js/store.js',
-  './js/products.js',
-  './js/auth.js',
+  './css/style.css?v=5.0',
+  './css/nn-layout.css?v=1.7',
+  './css/pwa.css?v=2.0',
+  './css/shop.css?v=4.0',
+  './js/app.js?v=3.8',
+  './js/store.js?v=3.8',
+  './js/products.js?v=3.8',
+  './js/cart.js?v=3.8',
   './js/pwa-install.js',
   './manifest.webmanifest',
   './manifest.json',
+  './images/logo.webp',
   './images/logo.png',
+  './images/logo-circle.webp',
   './images/logo-circle.png',
   './images/favicon.png',
   './images/icons/icon-192x192.png',
@@ -37,7 +42,7 @@ const PRECACHE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[NariNiketan SW] Pre-caching offline shell');
+      console.log('[NariNiketan SW] Pre-caching offline shell v7.0');
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
         console.warn('[NariNiketan SW] Some assets failed to precache:', err);
       });
@@ -66,12 +71,15 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Ignore non-GET requests, Chrome extension URLs, and Firebase/external API traffic
+  // Ignore non-GET requests, Chrome extension URLs, and Firebase/external API/delivery/admin traffic
   if (request.method !== 'GET') return;
   if (!url.protocol.startsWith('http')) return;
   if (url.hostname.includes('firestore.googleapis.com') ||
       url.hostname.includes('identitytoolkit.googleapis.com') ||
       url.hostname.includes('firebaseio.com') ||
+      url.hostname.includes('run.app') ||
+      url.pathname.includes('/delivery/') ||
+      url.pathname.includes('/admin/') ||
       url.hostname.includes('google-analytics.com')) {
     return;
   }
@@ -99,7 +107,7 @@ self.addEventListener('fetch', (event) => {
 
   // Strategy 2: Static Assets (CSS, JS, Fonts, Images) — Stale-While-Revalidate
   const isStaticAsset = (
-    url.pathname.match(/\.(css|js|woff2?|ttf|png|jpg|jpeg|svg|webp|ico|json|webmanifest)$/i) ||
+    url.pathname.match(/\.(css|js|woff2?|ttf|png|jpg|jpeg|svg|webp|avif|ico|json|webmanifest)$/i) ||
     url.hostname.includes('fonts.googleapis.com') ||
     url.hostname.includes('fonts.gstatic.com')
   );
@@ -198,4 +206,5 @@ self.addEventListener('periodicsync', (event) => {
     );
   }
 });
+
 

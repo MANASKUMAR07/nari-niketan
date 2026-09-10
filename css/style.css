@@ -679,3 +679,22 @@ footer { background: var(--dark); color: rgba(255,255,255,.75); padding: 4rem 0 
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
+/* ===== MOBILE TOUCH & RENDERING OPTIMIZATION ===== */
+*, *:before, *:after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, a, input, select, textarea,
+.product-card, .category-card, .btn, .qty-btn, .gallery-thumb {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .footer, .offers-section, .reviews-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 350px;
+  }
+}
+

@@ -22,7 +22,7 @@
   <!-- ─── TOPBAR ──────────────────────────────────────── -->
   <header class="delivery-topbar">
     <a href="#" class="delivery-brand" onclick="DeliveryNav.go('dashboard'); return false;">
-      <img src="../images/logo-circle.png?v=4.0" alt="Nari Niketan">
+      <img src="../images/logo-circle.webp?v=4.0" alt="Nari Niketan">
       <div>
         <div class="delivery-brand-title">Nari Niketan</div>
         <div class="delivery-brand-sub">🛵 Delivery Partner</div>
@@ -190,7 +190,7 @@
         </div>
       </div>
 
-      <a href="tel:+919876543210" class="btn-delivery btn-delivery-outline" style="margin-bottom:0.75rem;">
+      <a href="tel:+916307032042" class="btn-delivery btn-delivery-outline" style="margin-bottom:0.75rem;">
         📞 Contact Operations Support Hotline
       </a>
 
@@ -226,11 +226,31 @@
     </button>
   </nav>
 
-  <!-- ─── MODAL: OTP KEYPAD & DELIVERY VERIFICATION ──── -->
+  <!-- ─── MODAL 1: STORE PICKUP & MERCHANT HANDOVER VERIFICATION ──── -->
+  <div id="modal-store-pickup-otp" class="modal-overlay">
+    <div class="modal-sheet">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 style="font-size:1.1rem; font-weight:800; color:#fff;">🏪 Store Handover Verification</h3>
+        <button style="background:transparent; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;" onclick="this.closest('.modal-overlay').classList.remove('open')">✕</button>
+      </div>
+
+      <p style="font-size:0.84rem; color:var(--text-muted); line-height:1.4;">
+        Ask the store manager or merchant for their <strong>6-digit Store Handover Code</strong> to confirm physical package receipt into your custody.
+      </p>
+
+      <input type="number" id="store-otp-code-input" class="otp-input-field" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+
+      <button class="btn-delivery btn-delivery-primary" id="btn-submit-store-otp" onclick="DeliveryActive.submitStorePickupVerification()">
+        ✓ Verify Store Code &amp; Pick Up Package
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── MODAL 2: CUSTOMER OTP & DELIVERY COMPLETION ──── -->
   <div id="modal-otp-keypad" class="modal-overlay">
     <div class="modal-sheet">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-        <h3 style="font-size:1.1rem; font-weight:800; color:#fff;">🔐 Delivery Verification</h3>
+        <h3 style="font-size:1.1rem; font-weight:800; color:#fff;">🔐 Customer Delivery Verification</h3>
         <button style="background:transparent; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;" onclick="this.closest('.modal-overlay').classList.remove('open')">✕</button>
       </div>
 
@@ -248,8 +268,8 @@
         </label>
       </div>
 
-      <button class="btn-delivery btn-delivery-success" onclick="DeliveryActive.submitOtpVerification()">
-        ✓ Verify OTP & Complete Delivery
+      <button class="btn-delivery btn-delivery-success" id="btn-submit-customer-otp" onclick="DeliveryActive.submitOtpVerification()">
+        ✓ Verify OTP &amp; Complete Delivery
       </button>
     </div>
   </div>
@@ -313,8 +333,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="../js/firebase-config.js"></script>
-  <script src="../js/store.js"></script>
-  <script src="delivery.js"></script>
+  <script src="../js/firebase-config.js?v=4.3"></script>
+  <script src="../js/store.js?v=4.3"></script>
+  <script src="delivery.js?v=4.3"></script>
 </body>
 </html>
