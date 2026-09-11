@@ -10,9 +10,9 @@ const {
   shippingSchema,
   pricingSchema,
   upsertProductSchema
-} = require('./server/src/validators/sellerValidator');
+} = require('./src/validators/sellerValidator');
 
-const { computeInventoryMetrics } = require('./server/src/controllers/sellerController');
+const { computeInventoryMetrics } = require('./src/controllers/sellerController');
 
 console.log('🧪 Starting Variant Inventory & Seller Management Verification Tests...\n');
 

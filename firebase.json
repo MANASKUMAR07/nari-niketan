@@ -1,16 +1,16 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "frontend",
     "ignore": [
       "firebase.json",
-      ".firebaserc",
       "**/.*",
       "**/node_modules/**",
-      "firestore.rules",
-      "storage.rules",
-      "*.pdf",
-      "server/**",
-      "scratch/**"
+      "admin",
+      "css",
+      "delivery",
+      "images",
+      "js",
+      "seller"
     ],
     "cleanUrls": false,
     "headers": [
@@ -85,9 +85,10 @@
     ]
   },
   "firestore": {
-    "rules": "firestore.rules"
+    "rules": "backend/firestore.rules",
+    "indexes": "backend/firestore.indexes.json"
   },
   "storage": {
-    "rules": "storage.rules"
+    "rules": "backend/storage.rules"
   }
 }

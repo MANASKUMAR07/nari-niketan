@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const sharp = require('../server/node_modules/sharp');
-const imageService = require('../server/src/services/imageService');
+const sharp = require('../backend/node_modules/sharp');
+const imageService = require('../backend/src/services/imageService');
 
 async function testImageService() {
   console.log('🧪 Testing Image Optimization Service...');

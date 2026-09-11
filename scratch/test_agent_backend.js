@@ -1,5 +1,5 @@
 // Test Agentic AI backend tools and service
-const agentService = require('../server/src/services/agentService');
+const agentService = require('../backend/src/services/agentService');
 
 async function runTests() {
   console.log('🧪 Starting Agentic AI Backend Test Suite...\n');

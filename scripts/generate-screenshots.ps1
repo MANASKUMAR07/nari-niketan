@@ -1,13 +1,13 @@
 Add-Type -AssemblyName System.Drawing
 
-$screenshotsDir = Join-Path $PSScriptRoot "..\images\screenshots"
+$screenshotsDir = Join-Path $PSScriptRoot "..\frontend\images\screenshots"
 if (-not (Test-Path $screenshotsDir)) {
     New-Item -ItemType Directory -Force -Path $screenshotsDir | Out-Null
 }
 
-$logoPath = Join-Path $PSScriptRoot "..\images\logo-circle.png"
+$logoPath = Join-Path $PSScriptRoot "..\frontend\images\logo-circle.png"
 if (-not (Test-Path $logoPath)) {
-    $logoPath = Join-Path $PSScriptRoot "..\images\logo.png"
+    $logoPath = Join-Path $PSScriptRoot "..\frontend\images\logo.png"
 }
 $logo = [System.Drawing.Image]::FromFile($logoPath)
 

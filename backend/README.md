@@ -18,7 +18,7 @@ High-performance, secure Node.js + Express backend API for **Nari Niketan Premiu
 ## 📁 Directory Structure
 
 ```
-server/
+backend/
 ├── src/
 │   ├── app.js                     # Express application entry & middleware orchestration
 │   ├── config/
@@ -66,7 +66,7 @@ server/
 
 ### 1. Install Dependencies
 ```bash
-cd server
+cd backend
 npm install
 ```
 
@@ -105,9 +105,9 @@ Ensure `gcloud` is logged in and configured with your project:
 gcloud config set project nari-niketan
 ```
 
-Deploy directly from the `server` directory:
+Deploy directly from the `backend` directory:
 ```bash
-cd server
+cd backend
 gcloud run deploy nari-niketan-api \
   --source . \
   --region asia-south1 \

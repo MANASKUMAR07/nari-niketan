@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
+    "test": "node test-variant-inventory.js && node test-backend-comprehensive.js",
     "lint": "eslint src/"
   },
   "engines": {

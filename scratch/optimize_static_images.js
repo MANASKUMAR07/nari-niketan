@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const sharp = require('../server/node_modules/sharp');
+const sharp = require('../backend/node_modules/sharp');
 
-const IMAGES_DIR = path.join(__dirname, '..', 'images');
+const IMAGES_DIR = path.join(__dirname, '..', 'frontend', 'images');
 const CATEGORIES_DIR = path.join(IMAGES_DIR, 'categories');
 
 async function optimizeImage(inputPath, webpPath, optOrigPath = null, options = {}) {

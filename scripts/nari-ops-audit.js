@@ -1,4 +1,4 @@
-﻿/**
+/**
  * =========================================================================
  * NARI NIKETAN — Standalone Operations & QA Audit Suite
  * Automated Test Runner for Node.js / CI / Production Verification
@@ -10,6 +10,7 @@ const path = require('path');
 const assert = require('assert');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
+const FRONTEND_DIR = path.resolve(__dirname, '..', 'frontend');
 console.log('🚀 [Nari AI Operations Center] Starting Full Automated Health & QA Audit...\n');
 
 let totalTests = 0;
@@ -41,7 +42,7 @@ const coreRoutes = [
 
 coreRoutes.forEach(r => {
   check(`Route file exists: ${r}`, () => {
-    const fullPath = path.join(ROOT_DIR, r);
+    const fullPath = path.join(FRONTEND_DIR, r);
     assert(fs.existsSync(fullPath), `File ${r} missing from distribution`);
     const content = fs.readFileSync(fullPath, 'utf8');
     assert(content.length > 500, `File ${r} is unexpectedly small or empty`);
@@ -51,14 +52,14 @@ coreRoutes.forEach(r => {
 // ── PILLAR 2: RESPONSIVE OVERFLOW & DRAWER BOUNDARIES ────────────────────────
 console.log('\n--- Pillar 2: Responsive Zero-Overflow Architecture ---');
 check('Layout CSS enforces transform-based drawer with visibility hidden', () => {
-  const layoutCss = fs.readFileSync(path.join(ROOT_DIR, 'css/nn-layout.css'), 'utf8');
+  const layoutCss = fs.readFileSync(path.join(FRONTEND_DIR, 'css/nn-layout.css'), 'utf8');
   assert(layoutCss.includes('transform: translateX(-110%)'), 'Drawer must use translateX(-110%) when closed');
   assert(layoutCss.includes('visibility: hidden;'), 'Drawer must use visibility: hidden when closed');
   assert(layoutCss.includes('max-width: 85vw'), 'Drawer must be constrained with max-width: 85vw');
 });
 
 check('Global mobile overflow protection enabled on html and body', () => {
-  const layoutCss = fs.readFileSync(path.join(ROOT_DIR, 'css/nn-layout.css'), 'utf8');
+  const layoutCss = fs.readFileSync(path.join(FRONTEND_DIR, 'css/nn-layout.css'), 'utf8');
   assert(layoutCss.includes('overflow-x: hidden !important;'), 'html, body must have overflow-x: hidden');
   assert(layoutCss.includes('max-width: 100vw !important;'), 'html, body must have max-width: 100vw');
 });
@@ -66,12 +67,12 @@ check('Global mobile overflow protection enabled on html and body', () => {
 // ── PILLAR 3: SEARCH & FILTER CHIPS RESPONSIVENESS ───────────────────────────
 console.log('\n--- Pillar 3: Search, Chips & Empty State QA ---');
 check('AI search suggestions wrap naturally without horizontal scrolling', () => {
-  const searchCss = fs.readFileSync(path.join(ROOT_DIR, 'css/nari-ai-search.css'), 'utf8');
+  const searchCss = fs.readFileSync(path.join(FRONTEND_DIR, 'css/nari-ai-search.css'), 'utf8');
   assert(searchCss.includes('flex-wrap: wrap;'), 'Search suggestions must have flex-wrap: wrap');
 });
 
 check('Shop empty state is centered and constrained to max-width', () => {
-  const shopCss = fs.readFileSync(path.join(ROOT_DIR, 'css/shop.css'), 'utf8');
+  const shopCss = fs.readFileSync(path.join(FRONTEND_DIR, 'css/shop.css'), 'utf8');
   assert(shopCss.includes('.empty-state'), 'shop.css must style .empty-state');
   assert(shopCss.includes('max-width: 440px;'), 'Empty state card must be constrained to 440px');
 });
@@ -79,7 +80,7 @@ check('Shop empty state is centered and constrained to max-width', () => {
 // ── PILLAR 4: FLOATING WIDGET SAFE AREA INSET ────────────────────────────────
 console.log('\n--- Pillar 4: Floating UI & Safe-Area Compliance ---');
 check('AI Stylist floating launcher respects mobile safe-area-inset-bottom', () => {
-  const stylistCss = fs.readFileSync(path.join(ROOT_DIR, 'css/nari-ai-stylist.css'), 'utf8');
+  const stylistCss = fs.readFileSync(path.join(FRONTEND_DIR, 'css/nari-ai-stylist.css'), 'utf8');
   assert(stylistCss.includes('env(safe-area-inset-bottom'), 'Launcher must use env(safe-area-inset-bottom)');
 });
 
@@ -87,7 +88,7 @@ check('AI Stylist floating launcher respects mobile safe-area-inset-bottom', () 
 console.log('\n--- Pillar 5: SEO & Metadata Integrity ---');
 ['index.html', 'shop.html', 'product.html'].forEach(page => {
   check(`${page} contains valid <title> and meta viewport`, () => {
-    const html = fs.readFileSync(path.join(ROOT_DIR, page), 'utf8');
+    const html = fs.readFileSync(path.join(FRONTEND_DIR, page), 'utf8');
     assert(html.includes('<title>'), `${page} missing <title> tag`);
     assert(html.includes('name="viewport"'), `${page} missing viewport meta`);
   });
@@ -104,7 +105,7 @@ check('Firebase hosting configuration enforces security headers', () => {
 // ── PILLAR 7: DYNAMIC HEALTH SCORE ENGINE FORMULA ────────────────────────────
 console.log('\n--- Pillar 7: Dynamic Scoring Formula Accuracy ---');
 check('Dynamic score calculation penalizes issues correctly', () => {
-  const engine = require(path.join(ROOT_DIR, 'js/nari-ops-engine.js'));
+  const engine = require(path.join(FRONTEND_DIR, 'js/nari-ops-engine.js'));
   engine.state.pillarResults.responsive.findings = [
     { severity: 'HIGH' }
   ];

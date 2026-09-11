@@ -18,9 +18,9 @@ const {
   quickUpdateInventorySchema,
   shippingSchema,
   pricingSchema
-} = require('./server/src/validators/sellerValidator');
+} = require('./src/validators/sellerValidator');
 
-const { computeInventoryMetrics } = require('./server/src/controllers/sellerController');
+const { computeInventoryMetrics } = require('./src/controllers/sellerController');
 
 console.log('===============================================================');
 console.log('🚀 NARI NIKETAN — COMPREHENSIVE AUTOMATED VERIFICATION SUITE');

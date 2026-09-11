@@ -1,11 +1,11 @@
 Add-Type -AssemblyName System.Drawing
-$srcPath = Join-Path $PSScriptRoot "..\images\logo-circle.png"
+$srcPath = Join-Path $PSScriptRoot "..\frontend\images\logo-circle.png"
 if (-not (Test-Path $srcPath)) {
-    $srcPath = Join-Path $PSScriptRoot "..\images\logo.png"
+    $srcPath = Join-Path $PSScriptRoot "..\frontend\images\logo.png"
 }
 
 $srcImg = [System.Drawing.Image]::FromFile($srcPath)
-$outDir = Join-Path $PSScriptRoot "..\images\icons"
+$outDir = Join-Path $PSScriptRoot "..\frontend\images\icons"
 if (-not (Test-Path $outDir)) {
     New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 }

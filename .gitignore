@@ -3,10 +3,10 @@
 .env.*
 !.env.example
 *.env
-server/.env
-server/.env.*
-!server/.env.example
-server/env.yaml
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/env.yaml
 *.pem
 *.key
 *.json
@@ -14,12 +14,12 @@ server/env.yaml
 !package.json
 !package-lock.json
 !manifest.webmanifest
-!server/package.json
-!server/package-lock.json
+!backend/package.json
+!backend/package-lock.json
 
 # Node modules
 node_modules/
-server/node_modules/
+backend/node_modules/
 
 # Logs
 *.log

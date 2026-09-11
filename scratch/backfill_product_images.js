@@ -6,7 +6,7 @@
 const { execSync } = require('child_process');
 const https = require('https');
 const http = require('http');
-const sharp = require('../server/node_modules/sharp');
+const sharp = require('../backend/node_modules/sharp');
 
 const PROJECT_ID = 'nari-niketan';
 const BUCKET_NAME = 'nari-niketan.firebasestorage.app';
