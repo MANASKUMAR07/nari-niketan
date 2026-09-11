@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -776,16 +776,9 @@
             price: i.price, 
             imageUrl: i.imageUrl 
           })),
-          subtotal: Cart.subtotal(),
-          discountAmount: Cart.discountAmount(),
-          couponApplied: coupon ? coupon.code : null,
-          shipping: Cart.shipping(activeFulfillment),
-          totalAmount: Cart.total(activeFulfillment),
           paymentMethod: payment === "UPI" ? "BharatPe UPI (Anshu Kumari)" : payment,
-          paymentStatus: payment === "Cash on Delivery" ? "Pending (COD)" : "Paid via UPI",
-          upiVpa: payment === "UPI" ? OFFICIAL_UPI_VPA : null,
-          upiUtr: utr || null,
-          clientCreatedAt: new Date().toISOString()
+          couponApplied: coupon ? coupon.code : null,
+          upiUtr: utr || null
         };
 
         const orderRef = await Store.addOrder(orderData);
@@ -793,10 +786,14 @@
         Cart.clear();
         window.location.href = "confirmation.html?orderId=" + orderRef.id;
       } catch(e) {
-        console.error("Place order error:", e);
-        App.toast("Error placing order: " + e.message, "error");
+        // Log internally but do not expose raw error internals to the user
+        console.error("Place order error (internal):", e && e.message ? e.message : "Unknown");
+        const userMsg = (e && e.message && !e.message.includes('undefined'))
+          ? e.message
+          : "Something went wrong placing your order. Please try again.";
+        App.toast(userMsg, "error");
         btn.disabled = false; 
-        btn.innerHTML = "Confirm & Place Order " + Cart.formatPrice(Cart.total(activeFulfillment)) + " &rarr;";
+        btn.innerHTML = "Confirm &amp; Place Order " + Cart.formatPrice(Cart.total(activeFulfillment)) + " &rarr;";
       }
     }
 

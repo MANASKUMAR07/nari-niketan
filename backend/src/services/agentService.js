@@ -88,11 +88,16 @@ const FALLBACK_PRODUCTS = [
 ];
 
 /**
- * Get an initialized GoogleGenAI instance using environment or request key.
+ * Get an initialized GoogleGenAI instance using only the server-side environment key.
+ * The API key is NEVER accepted from the client request — it is always sourced from
+ * process.env.GEMINI_API_KEY set on Cloud Run (via Secret Manager or env vars).
  */
-function getGeminiClient(customApiKey) {
-  const key = customApiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  if (!key) return null;
+function getGeminiClient() {
+  const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!key) {
+    console.warn('[AgentService] GEMINI_API_KEY is not set — AI features will use the heuristic fallback engine.');
+    return null;
+  }
   return new GoogleGenAI({ apiKey: key });
 }
 
@@ -445,8 +450,8 @@ BEHAVIOR & RESPONSE GUIDELINES
 /**
  * Process a customer chat message through the Gemini Agentic loop.
  */
-async function processCustomerMessage({ message, history = [], apiKey = null, imageBase64 = null, mimeType = 'image/jpeg' }) {
-  const ai = getGeminiClient(apiKey);
+async function processCustomerMessage({ message, history = [], imageBase64 = null, mimeType = 'image/jpeg' }) {
+  const ai = getGeminiClient();
 
   // Fallback heuristic engine if no API key is available
   if (!ai) {
@@ -761,9 +766,9 @@ What would you like to know today? ✨`,
 // 4. SELLER 1-PHOTO AUTO-CATALOG VISION COPILOT
 // ============================================================================
 
-async function analyzeProductPhoto({ imageBase64, mimeType = 'image/jpeg', apiKey = null }) {
+async function analyzeProductPhoto({ imageBase64, mimeType = 'image/jpeg' }) {
   const cleanBase64 = (imageBase64 || '').replace(/^data:image\/[a-z]+;base64,/, '');
-  const ai = getGeminiClient(apiKey);
+  const ai = getGeminiClient();
 
   if (!ai || !cleanBase64) {
     return {
@@ -846,7 +851,7 @@ async function analyzeProductPhoto({ imageBase64, mimeType = 'image/jpeg', apiKe
 // 5. ADMIN BUSINESS OPERATIONS COPILOT
 // ============================================================================
 
-async function processAdminQuery({ query, apiKey = null }) {
+async function processAdminQuery({ query }) {
   let context = {
     totalProducts: 5,
     totalOrders: 0,
@@ -883,7 +888,7 @@ async function processAdminQuery({ query, apiKey = null }) {
     // Keep baseline metrics
   }
 
-  const ai = getGeminiClient(apiKey);
+  const ai = getGeminiClient();
   if (!ai) {
     return {
       reply: `📊 **Nari Niketan Executive Business Summary**:

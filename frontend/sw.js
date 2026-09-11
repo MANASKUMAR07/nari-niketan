@@ -1,9 +1,9 @@
-﻿// ============================================================================
+// ============================================================================
 // NARI NIKETAN — Progressive Web App (PWA) Service Worker
 // Version: 1.0.0
 // ============================================================================
 
-const CACHE_NAME = 'nari-niketan-v8.0';
+const CACHE_NAME = 'nari-niketan-v9.0'; // Increment this on every deployment to bust stale caches
 
 const PRECACHE_ASSETS = [
   './',
@@ -42,7 +42,7 @@ const PRECACHE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[NariNiketan SW] Pre-caching offline shell v7.0');
+      console.log('[NariNiketan SW] Pre-caching offline shell v9.0');
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
         console.warn('[NariNiketan SW] Some assets failed to precache:', err);
       });
@@ -80,6 +80,7 @@ self.addEventListener('fetch', (event) => {
       url.hostname.includes('run.app') ||
       url.pathname.includes('/delivery/') ||
       url.pathname.includes('/admin/') ||
+      url.pathname.includes('/seller/') ||
       url.hostname.includes('google-analytics.com')) {
     return;
   }

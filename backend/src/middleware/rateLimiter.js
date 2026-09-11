@@ -53,10 +53,20 @@ const authLimiter = rateLimit({
   message: { success: false, error: 'Too many authentication requests.' },
 });
 
+// AI agent routes (Gemini) — expensive external calls, keep tight
+const agentLimiter = rateLimit({
+  windowMs: WINDOW_MS,
+  max:      20,
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message: { success: false, error: 'Too many AI requests. Please wait a moment before trying again.' },
+});
+
 module.exports = {
   standardLimiter,
   orderLimiter,
   couponLimiter,
   paymentLimiter,
   authLimiter,
+  agentLimiter,
 };

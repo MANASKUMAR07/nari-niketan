@@ -3,8 +3,8 @@
   "name": "Nari Niketan — Premium Indian Ethnic Wear",
   "short_name": "Nari Niketan",
   "description": "Discover exquisite handcrafted Indian ethnic wear — Sarees, Lehengas, Salwar Suits, Kurtas, and Bridal Collections.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "id": "nari-niketan-pwa-v1",
   "display": "standalone",
   "display_override": [
@@ -29,14 +29,14 @@
   },
   "tab_strip": {
     "home_tab": {
-      "url": "./index.html"
+      "url": "/"
     },
     "new_tab_button": {
-      "url": "./shop.html"
+      "url": "/shop.html"
     }
   },
   "share_target": {
-    "action": "./shop.html",
+    "action": "/shop.html",
     "method": "GET",
     "params": {
       "title": "title",
@@ -47,7 +47,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+nariniketan",
-      "url": "./shop.html?search=%s"
+      "url": "/shop.html?search=%s"
     }
   ],
   "scope_extensions": [
@@ -168,28 +168,28 @@
       "name": "Shop Collection",
       "short_name": "Shop",
       "description": "Browse all ethnic wear catalog",
-      "url": "./shop.html",
+      "url": "/shop.html",
       "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Sarees Collection",
       "short_name": "Sarees",
       "description": "Explore handcrafted silk and designer sarees",
-      "url": "./shop.html?cat=Sarees",
+      "url": "/shop.html?cat=Sarees",
       "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Bridal Lehengas",
       "short_name": "Lehengas",
       "description": "Exquisite bridal & wedding lehengas",
-      "url": "./shop.html?cat=Lehengas",
+      "url": "/shop.html?cat=Lehengas",
       "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "My Orders & Tracking",
       "short_name": "My Orders",
       "description": "Check real-time delivery status",
-      "url": "./my-orders.html",
+      "url": "/my-orders.html",
       "icons": [{ "src": "images/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png" }]
     }
   ]

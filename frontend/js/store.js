@@ -363,21 +363,12 @@ const Store = {
   },
 
   async cancelOrder(id, reason = "") {
-    try {
-      if (this.apiCall) {
-        const res = await this.apiCall(`/orders/${id}/cancel`, "POST", { reason });
-        if (res && res.success) return res;
-      }
-    } catch (apiErr) {
-      console.warn("API cancelOrder fallback to direct Firestore:", apiErr);
-    }
-    return db.collection("orders").doc(id).update({
-      status: "Cancelled",
-      cancellationReason: reason,
-      cancelledAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    // SECURITY: Only cancel via authenticated backend API — never bypass with direct Firestore writes.
+    const res = await this.apiCall(`/orders/${id}/cancel`, "POST", { reason });
+    if (res && res.success) return res;
+    throw new Error("Order cancellation failed. Please try again or contact support.");
   },
+
 
   async getOrder(id) {
     try {

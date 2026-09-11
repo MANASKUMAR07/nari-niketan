@@ -124,8 +124,10 @@ service cloud.firestore {
     }
 
     match /feedbacks/{feedbackId} {
+      // Public read so testimonials/ratings can be displayed on the storefront.
+      // Create requires authentication to prevent anonymous spam.
       allow read: if true;
-      allow create: if true;
+      allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
 
@@ -162,8 +164,14 @@ service cloud.firestore {
     }
 
     // 12. NOTIFICATIONS COLLECTION
+    // Only admins can write. Authenticated users can read their own notifications.
+    // Admins can read all notifications.
     match /notifications/{notificationId} {
-      allow read: if true;
+      allow read: if isAdmin() ||
+        (isAuthenticated() && (
+          !('targetUid' in resource.data) ||
+          resource.data.targetUid == request.auth.uid
+        ));
       allow create, update, delete: if isAdmin();
     }
 

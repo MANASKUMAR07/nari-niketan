@@ -1,9 +1,19 @@
 User-agent: *
 Allow: /
+
+# Private portals — no indexing
 Disallow: /admin/
 Disallow: /seller/
+Disallow: /delivery/
+
+# User account & transactional pages — no indexing
 Disallow: /my-account.html
 Disallow: /my-orders.html
 Disallow: /checkout.html
+Disallow: /confirmation.html
+Disallow: /cart.html
+
+# Internal documentation
+Disallow: /project-documentation.html
 
 Sitemap: https://www.nariniketan.shop/sitemap.xml

@@ -9,6 +9,8 @@ backend/.env.*
 backend/env.yaml
 *.pem
 *.key
+*service-account*.json
+*firebase-adminsdk*.json
 *.json
 !firebase.json
 !package.json
